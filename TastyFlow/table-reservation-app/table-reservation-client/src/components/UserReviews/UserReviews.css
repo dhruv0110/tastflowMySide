@@ -1,0 +1,116 @@
+.reviews-page-section {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #1b1c1f; /* Dark background */
+    color: #fff; /* White text for better readability */
+    box-sizing: border-box;
+  }
+  
+  /* Review Page Styling */
+  .reviews-page-section .review-page {
+    width: 100%;
+    max-width: 1225px; /* Keep max-width for central alignment */
+    color: #fff; /* White text color for better readability */
+    font-size: 14px;
+    background-color: #1B1C1F; /* Dark background for the list container */
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+    border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
+    margin: 0 auto;
+    overflow: auto; /* Allow scrolling if content overflows */
+  }
+  
+  /* User Name Styling */
+  .reviews-page-section .user-name {
+    text-align: center; /* Center user name */
+    font-size: 24px; /* Larger font size for emphasis */
+    margin-bottom: 20px; /* Space below the name */
+  }
+  
+  /* Reviews List Styling */
+  .reviews-page-section .reviews-list {
+    list-style: none; /* Remove default list styling */
+    padding: 0; /* Remove padding */
+    width: 100%;
+  }
+  
+  /* Review Item Styling */
+  /* Review Item Styling */
+.reviews-page-section .review-item {
+    display: flex; /* Use flexbox for alignment */
+    justify-content: space-between; /* Align items with space in between */
+    align-items: center; /* Center items vertically */
+    width: 100%; /* Take full width of the parent */
+    background: rgba(255, 255, 255, 0.1); /* Semi-transparent background for reviews */
+    border-radius: 5px; /* Rounded corners */
+    padding: 15px; /* Padding inside each review */
+    margin: 10px 0; /* Margin between reviews */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-wrap: wrap; /* Allow items to wrap */
+}
+
+/* Review Text Styling */
+.reviews-page-section .review-text {
+    margin: 0; /* Remove default margin */
+    flex-grow: 1; /* Allow text to take available space */
+    word-wrap: break-word; /* Allow long words to break */
+    max-width: 80%; /* Set a max width to prevent overflow */
+}
+
+/* Date Styling */
+.reviews-page-section .review-date {
+    font-size: 12px; /* Smaller font size for the date */
+    color: #a9a9a9; /* Lighter color for distinction */
+    margin: 0 auto;
+    white-space: nowrap; /* Prevent line breaks */
+}
+
+  
+  .reviews-page-section .review-item:hover {
+    transform: scale(1.01); /* Slight scale effect on hover */
+  }
+  
+  /* Review Count and Text Styling */
+  .reviews-page-section .review-count-container {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Vertically center align items */
+  }
+  
+  /* Review Count Styling */
+  .reviews-page-section .review-count {
+    text-align: left; /* Align the count text to the left */
+    font-size: 1.3rem; /* Slightly larger font for visibility */
+    color: #a9a9a9; /* Lighter color for distinction */
+    margin-right: 10px; /* Space between count and reviews */
+  }
+  
+
+  
+  /* No Reviews Message Styling */
+  .reviews-page-section .no-reviews {
+    text-align: center; /* Center text */
+    font-style: italic; /* Italicize message */
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .reviews-page-section .review-page {
+      padding: 1rem; /* Reduced padding for smaller screens */
+    }
+  
+    .reviews-page-section .user-name {
+      font-size: 20px; /* Slightly smaller font size */
+    }
+  
+    .reviews-page-section .review-item {
+      flex-direction: column; /* Stack items on smaller screens */
+      align-items: flex-start; /* Align items to the start */
+    }
+  
+    .reviews-page-section .review-date {
+      margin-top: 5px; /* Space above the date when stacked */
+      text-align: left; /* Align text to the left */
+      width: 100%; /* Take full width */
+    }
+  }

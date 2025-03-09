@@ -1,0 +1,127 @@
+/* src/components/ArtisanComponent.css */
+
+.artisan-container {
+    max-width: 1400px;
+    
+    margin-top: 5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #fff;
+    /* width: 100%; */
+    flex-wrap: wrap; /* Wrap content for smaller screens */
+  }
+  
+  .artisan-content {
+    max-width: 50%; /* Responsive width to allow the button to align right */
+    padding-right: 1.5rem; /* Add spacing between text and button */
+  }
+  
+  .artisan-tag {
+    color: #ff4135;
+    font-size: 1.5rem; /* Increased for larger screens */
+    font-style: italic;
+    font-weight: bold;
+  }
+  
+  .artisan-title {
+    font-size: 3rem; /* Adjust to be flexible */
+    margin: 10px 0;
+    font-weight: bold;
+    font-family: "Playfair Display", serif;
+  }
+  
+  .artisan-description {
+    font-size: 1.2rem;
+    color: #777;
+    line-height: 1.5;
+  }
+  
+  .view-more-btn {
+    background-color: black;
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    align-self: flex-start; /* Aligns to the right initially */
+    margin-top: auto;
+  }
+  
+  .view-more-btn:hover {
+    background-color: #ff4135;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Responsive Design */
+  
+  /* For tablets or smaller screens */
+  @media (max-width: 1024px) {
+    .artisan-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .artisan-content {
+      max-width: 100%; /* Full width for smaller devices */
+      padding-right: 0; /* Remove extra padding on small screens */
+    }
+  
+    .artisan-title {
+      font-size: 2.5rem;
+    }
+  
+    .view-more-btn {
+      margin-top: 1rem; /* Keep a bit of space between the button and content */
+      align-self: flex-start; /* Make sure button aligns to start on small screens */
+    }
+  }
+  
+  /* For mobile phones or very small screens */
+  @media (max-width: 768px) {
+    .artisan-container {
+      padding: 1.5rem;
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .artisan-content {
+      max-width: 100%;
+      text-align: center; /* Center the text on small screens */
+      margin-bottom: 1rem;
+    }
+  
+    .artisan-title {
+      font-size: 2rem;
+      margin: 0.5rem 0;
+    }
+  
+    .artisan-description {
+      font-size: 1rem;
+      color: #555;
+    }
+  
+    .view-more-btn {
+      align-self: center; /* Center button on small screens */
+      padding: 0.75rem 2rem; /* Adjust button padding */
+      font-size: 1rem;
+    }
+  }
+  
+  /* For extra small screens */
+  @media (max-width: 480px) {
+    .artisan-title {
+      font-size: 1.8rem;
+    }
+  
+    .artisan-description {
+      font-size: 0.9rem;
+    }
+  
+    .view-more-btn {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.9rem;
+    }
+  }
+  

@@ -1,0 +1,68 @@
+.HomepageGalleryBody{
+    background-color: #f7f2e2;
+    padding-top: 85px;
+    padding-bottom: 4rem;
+}
+
+.HomepageGalleryDesc{
+    text-align: center;
+}
+.HomepageGalleryDesc .title{
+  color: black;
+}
+.marquee-container {
+    overflow: hidden; /* Hide any overflow */
+    width: 100vw; /* Full viewport width */
+    position: relative;
+  }
+  
+  .marquee {
+    display: flex;
+    width: 200%; /* Double the container width for seamless scrolling */
+    animation: marquee 10s linear infinite; /* Continuous scrolling */
+  }
+  
+  .marquee-content {
+    display: flex;
+    width: 49.2%; /* Each content block takes 50% of the marquee width */
+  }
+  
+  .marquee img {
+    object-fit: contain;
+    height: 13vw;
+    margin: 0 10px;
+    border-radius: 20px;
+  }
+  
+  @keyframes marquee-left {
+    0% {
+      transform: translateX(-50%); /* Start at position 0 */
+    }
+    100% {
+      transform: translateX(0%); /* Move left by half the width of the container (50%) */
+    }
+  }
+
+  @keyframes marquee-right {
+    0% {
+      transform: translateX(0%); /* Start at -50% to begin from the duplicated section */
+    }
+    100% {
+      transform: translateX(-50%); /* Move right to the start */
+    }
+  }
+  
+  .marquee-left {
+    animation: marquee-left 15s linear infinite; /* Continuous right-to-left scrolling */
+  }
+  
+  /* Apply left-to-right animation */
+  .marquee-right {
+    margin-top: 2.5rem;
+    animation: marquee-right 15s linear infinite; /* Continuous left-to-right scrolling */
+  }
+
+  /* Remove horizontal scroll bar */
+  body {
+    overflow-x: hidden;
+  }

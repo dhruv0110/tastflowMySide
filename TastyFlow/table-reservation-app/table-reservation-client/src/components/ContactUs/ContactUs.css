@@ -1,0 +1,229 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style-type: none;
+}
+
+.contactUS{
+  background-color: #f9f9f9;
+  width: 100%;
+}
+/* General page styling */
+.contact-container{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 50px 12px;
+}
+
+  
+  .contact-container .contact-info {
+    flex: 1;
+    padding-right: 30px;
+    max-width: 600px;
+  }
+  
+  .contact-container .contact-tagline {
+    color: #ff3b3b;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    font-style: italic;
+  }
+  
+  .contact-container .contact-title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #1b1c1f;
+    font-family: "Playfair Display", serif;
+  }
+  
+  .contact-container .contact-description {
+    color: #595959;
+    margin-bottom: 10px;
+    font-family: "Inter", sans-serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  
+  .contact-container .open-hours h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    margin-top: 3rem;
+    font-family: "Playfair Display", serif;
+    font-weight: 600;
+  }
+  
+  .contact-container .open-hours p {
+    color: #595959;
+    font-size: 1rem;
+    font-weight: 400;
+  }
+  
+  /* Form styling */
+  .contact-container .contact-form {
+    flex: 1;
+    max-width: 100%;
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .contact-container .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .contact-container .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  
+  .contact-container .form-row .form-group label {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    padding-left: 12px;
+    font-weight: bold;
+    font-family: "Playfair Display", serif;
+  }
+  .contact-container  .form-group label {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    padding-left: 12px;
+    font-weight: bold;
+    font-family: "Playfair Display", serif;
+  }
+  .contact-container .full-width{
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    padding-left: 12px;
+    font-weight: bold;
+    font-family: "Playfair Display", serif;
+  }
+  
+  .contact-container .contact-form .form-group input,
+  .form-group textarea {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    color: #393939;
+  }
+  
+  .contact-container .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: #ff3b3b;
+    outline: none;
+  }
+  
+  .contact-container .form-group textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+  
+  .contact-container .reserve-button {
+    display: block;
+    /* width: 100%; */
+    margin-top: 2rem;
+    padding: 15px;
+    border-radius: 30px;
+    font-family: "Inter", sans-serif;
+    font-size: 1.2rem;
+    text-align: center;
+    font-weight: bold;
+    background-color: #ff3b3b;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .contact-container .reserve-button:hover {
+    background-color: #1b1c1f;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 1024px) {
+    .contact-container .contact-info {
+      padding-left: 0;
+    }
+  
+    .contact-container{
+      padding: 30px;
+    }
+  
+    .contact-container .contact-title {
+      font-size: 2.5rem;
+    }
+  
+    .contact-container .contact-description {
+      font-size: 1.1rem;
+    }
+  
+    .contact-container .reserve-button {
+      width: 100%;
+      padding: 15px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .contact-container {
+      flex-direction: column;
+      padding: 20px;
+    }
+  
+    .contact-container .contact-info {
+    margin: auto;
+      text-align: center;
+      padding: 0;
+    }
+  
+    .contact-container .contact-title {
+      font-size: 2.2rem;
+    }
+  
+    .contact-container .contact-description {
+      font-size: 1rem;
+    }
+  
+    .contact-container .contact-form {
+      margin-top: 20px;
+      margin-right: 0;
+    }
+  
+    .contact-container .reserve-button {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1rem;
+    }
+  
+    .contact-container .form-row {
+      flex-direction: column;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .contact-container .contact-title {
+      font-size: 2rem;
+    }
+  
+    .contact-container .contact-description {
+      font-size: 0.9rem;
+    }
+  
+    .contact-container .reserve-button {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+    }
+  }
+  

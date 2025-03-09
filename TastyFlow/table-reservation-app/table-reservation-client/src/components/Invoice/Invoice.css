@@ -1,0 +1,394 @@
+/* General Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 0;
+}
+
+/* Invoice container */
+.invoice-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+
+
+
+
+
+
+
+
+/* Header Section */
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.invoice-info {
+  width: 50%;
+  text-align: left;
+}
+
+.invoice-info h4 {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.invoice-info p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.company-info {
+  max-width: 350px;
+  width: 45%;
+  text-align: right;
+}
+
+.company-info h3 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.company-info p {
+  font-size: 1rem;
+  color: #555;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* User Details Section */
+.user-details {
+  margin-top: 20px;
+}
+
+.user-details h5 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.user-details p {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Food Details Section */
+.invoice-container .food-details {
+  margin-top: 20px;
+}
+
+.food-details h5 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.food-details table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.food-details table th,
+.food-details table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.food-details table th {
+  background-color: #f4f4f4;
+}
+
+.food-details table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+
+/* Send Invoice Button */
+.send-invoice-btn {
+  background-color: #4CAF50;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 48%; /* Make the buttons take up 48% of the width each */
+  padding: 12px;
+  text-align: center;
+}
+.send-invoice-btn:hover {
+  background-color: #3b883e; /* Darker blue when hovering */
+}
+
+.send-invoice-btn:disabled {
+  background-color: #B0BEC5; /* Greyed-out color for disabled state */
+  cursor: not-allowed;
+}
+
+/* Print Invoice Button */
+.print-invoice-btn {
+  background-color: #2980b9;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 48%; /* Make the buttons take up 48% of the width each */
+  padding: 12px;
+  text-align: center;
+}
+.print-invoice-btn:hover {
+  background-color: #1a6da5; /* Darker green when hovering */
+}
+
+/* Total Summary */
+.total-summary {
+  margin-top: 20px;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.final-total {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+/* Button container to align both buttons in one line */
+.button-container {
+  display: flex;
+  justify-content: space-between; /* Distribute space between the buttons */
+  gap: 10px; /* Adds space between the buttons */
+  margin-top: 20px;
+}
+
+/* Print Invoice Button */
+.print-invoice-btn {
+  background-color: #2980b9;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 48%; /* Make the buttons take up 48% of the width each */
+  padding: 12px;
+  text-align: center;
+}
+
+/* Send Invoice Button */
+.send-invoice-btn {
+  background-color: #4CAF50;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 48%; /* Make the buttons take up 48% of the width each */
+  padding: 12px;
+  text-align: center;
+}
+
+
+/* Footer Section */
+.invoice-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.invoice-footer p {
+  margin: 5px 0;
+}
+
+/* Print-specific styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .invoice-container, .invoice-container * {
+    visibility: visible;
+  }
+
+  .invoice-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-invoice-btn {
+    display: none;
+  }
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1200px) {
+  
+
+
+  .company-info h3 {
+    font-size: 1.5rem;
+  }
+
+  .invoice-info h4 {
+    font-size: 1.6rem;
+  }
+  /* Header Section */
+.invoice-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.invoice-info {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.invoice-info h4 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.invoice-info p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.company-info {
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.company-info h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.company-info p {
+  font-size: 1rem;
+  color: #555;
+}
+}
+
+@media (max-width: 768px) {
+  .invoice-container {
+    max-width: 95%;
+  }
+
+  .invoice-info h4 {
+    font-size: 1.4rem;
+  }
+
+  .company-info h3 {
+    font-size: 1.3rem;
+  }
+
+  .food-details table th,
+  .food-details table td {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .total-summary {
+    font-size: 0.9rem;
+  }
+
+  .final-total {
+    font-size: 1.2rem;
+  }
+
+  .user-details p {
+    font-size: 0.9rem;
+  }
+
+  .print-invoice-btn {
+    font-size: 1rem;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .invoice-container {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .invoice-info h4 {
+    font-size: 1.2rem;
+  }
+
+  .company-info h3 {
+    font-size: 1.2rem;
+  }
+
+  .food-details table th,
+  .food-details table td {
+    font-size: 0.8rem;
+    padding: 6px;
+  }
+
+  .total-summary {
+    font-size: 0.8rem;
+  }
+
+  .final-total {
+    font-size: 1.1rem;
+  }
+
+  .user-details p {
+    font-size: 0.8rem;
+  }
+
+  .print-invoice-btn {
+    font-size: 1rem;
+    padding: 8px;
+  }
+}

@@ -1,0 +1,19 @@
+.graph {
+    width: 100%;
+    max-width: 1225px;
+    background-color: #1B1C1F;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-top: 1.5px solid #a9a9a9;
+    margin: 0 auto;
+}
+
+.graph .header {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #ff4135;
+    border-bottom: 2px solid #ff4135;
+    padding-bottom: 1rem;
+  }

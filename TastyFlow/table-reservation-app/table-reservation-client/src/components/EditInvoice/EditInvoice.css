@@ -1,0 +1,321 @@
+/* General Container Styling */
+.edit-invoice-container {
+  display: flex;
+  width: 100%;
+}
+
+.edit-invoice-detail {
+  width: 100%;
+  max-width: 1225px;
+  color: #fff; /* White text color for better readability */
+  font-size: 14px;
+  background-color: #1B1C1F; /* Dark background for the list container */
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+  border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
+  margin: 0 auto;
+}
+
+.edit-invoice-detail .header {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #ff4135; /* Accent color */
+  border-bottom: 2px solid #ff4135;
+  padding-bottom: 1rem;
+}
+
+/* Heading Styling */
+.edit-invoice-detail h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 24px;
+  color: #ff9f00; /* Highlighted text for main title */
+}
+
+.food-item-container p {
+  margin-bottom: 0;
+}
+
+/* Error Message Styling */
+.error-message {
+  color: #ff4d4d;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+/* Form Section Styling */
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+.edit-invoice-detail .form-section p {
+  font-weight: bold;
+  font-size: 16px;
+  color: #ff9f00; /* Yellow accent color */
+}
+
+.index_num {
+  font-weight: bold;
+  font-size: 16px;
+  color: #ff9f00; /* Yellow accent color */
+}
+
+.edit-invoice-container .tax-details {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.edit-invoice-container .tax-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 23%; /* Make it responsive for 4 columns */
+  margin-bottom: 1rem;
+}
+
+.tax-item label {
+  font-weight: bold;
+}
+
+.tax-item p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.food-item-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.food-item {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #383a42;
+  justify-content: space-between;
+}
+
+.food-item h5 {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  font-size: 18px;
+  color: #ff9f00;
+}
+
+.edit-invoice-detail .food-details {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.food-details div {
+  margin-right: 20px;
+}
+
+.food-details input {
+  width: 80px;
+  padding: 0.5rem;
+  border-radius: 5px;
+  text-align: center;
+  border: 1px solid #aaa;
+  background-color: #555;
+  color: white;
+}
+
+.food-details input:focus {
+  border-color: #ff9f00;
+}
+
+.food-details button {
+  background-color: #ff9f00;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.food-details button:hover {
+  background-color: #c9302c;
+}
+
+/* Dropdown Styling */
+.food-dropdown {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #383a42;
+  border: 1px solid #555;
+  color: white;
+  border-radius: 5px;
+  margin-top: 0.5rem;
+}
+
+.food-dropdown:focus {
+  border-color: #ff9f00;
+}
+
+/* Submit Button Styling */
+.edit-invoice-detail .submit-btn {
+  width: 15%;
+  background-color: #ff4135;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #e68900;
+}
+
+.edit-invoice-detail .invoice-table-format {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 2fr 2fr 2fr;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background-color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+.edit-invoice-detail .invoice-table {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 1rem;
+}
+
+
+.edit-invoice-detail .invoice-table-format:hover {
+  background-color: #444;
+  transform: scale(1.02);
+}
+
+.edit-invoice-detail .invoice-table-format b {
+  font-weight: 600;
+  color: #ff4135;
+}
+
+.edit-invoice-detail .invoice-table-format p {
+  margin: 0;
+  color: #fff;
+}
+
+
+.invoice-table-format .cursor:hover {
+  color: #ff6f61;
+}
+
+
+
+
+
+
+
+
+
+/* Input field inside the table */
+.quantity-input {
+  width: 60px;
+  padding: 0.3rem;
+  text-align: center;
+  background-color: transparent;
+  color: white;
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+
+.quantity-input:focus {
+  border-color: #ff9f00;
+}
+
+/* Button inside the table */
+.remove-btn {
+  background-color: #ff4135;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.remove-btn:hover {
+  background-color: #c9302c;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .tax-item {
+      width: 48%; /* 2 items per row */
+  }
+
+  .food-item {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .food-details {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .food-details div {
+      margin-bottom: 10px;
+  }
+
+  .food-dropdown {
+      width: 100%;
+  }
+
+  .submit-btn {
+      padding: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .edit-invoice-detail {
+      padding: 1rem;
+      margin: 1rem;
+  }
+
+  .food-item-container {
+      margin-top: 1rem;
+  }
+
+  .tax-details {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .tax-item {
+      width: 100%;
+      margin-bottom: 10px;
+  }
+
+  .submit-btn {
+      padding: 1rem;
+      font-size: 14px;
+  }
+}

@@ -1,0 +1,120 @@
+/* src/components/List/List.css */
+
+.list {
+    width: 100%;
+    max-width: 1225px;
+    color: #fff; /* White text color for better readability */
+    font-size: 14px;
+    background-color: #1B1C1F; /* Dark background for the list container */
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+    border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
+    margin: 0 auto;
+}
+
+.list .header {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #ff4135; /* Accent color */
+    border-bottom: 2px solid #ff4135;
+    padding-bottom: 1rem;
+  }
+
+.list-table {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.list-table-format {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1.5fr 1fr 0.5fr; /* Adjusted column widths */
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border: 1px solid #333; /* Darker border for better contrast */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #333; /* Dark background for list rows */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effect */
+    cursor: pointer; /* Indicate clickable rows */
+}
+
+.list-table-format:hover {
+    background-color: #444; /* Slightly lighter background on hover */
+    transform: scale(1.02); /* Slight zoom on hover for better feedback */
+}
+
+.list-table-format img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px; /* Rounded corners for images */
+}
+
+.list-table-format b {
+    font-weight: 600; /* Make headings bolder */
+    color: #ff4135; /* Accent color for headings */
+}
+
+.list-table-format.title {
+    background-color: #444; /* Different background for headers */
+    font-weight: 700; /* Make header text bold */
+}
+
+.list-table-format p {
+    margin: 0;
+    color: #fff; /* White text color */
+}
+
+.list-table-format .cursor {
+    color: #ff4135; /* Accent color for delete action */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.list-table-format .cursor:hover {
+    color: #ff6f61; /* Lighter color on hover */
+}
+
+.no-data-message {
+    text-align: center;
+    color: #888;
+    font-size: 1.2rem;
+    padding: 2rem;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .list-table-format {
+        grid-template-columns: 1fr 2fr 1fr 1fr; /* Adjust columns for smaller screens */
+        gap: 8px;
+    }
+    .list-table-format.title {
+        display: none; /* Hide headers on very small screens */
+    }
+    .list{
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .list-table-format {
+        grid-template-columns: 1fr 2fr; /* Further adjust for very small screens */
+        gap: 6px;
+        padding: 10px 12px;
+    }
+    .list-table-format img {
+        width: 60px;
+        height: 45px;
+    }
+    .list-table-format.title {
+        display: none; /* Hide headers on very small screens */
+    }
+    .header {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+}

@@ -1,0 +1,423 @@
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure it appears above other content */
+  backdrop-filter: blur(4px); /* Apply blur effect */
+  -webkit-backdrop-filter: blur(4px); /* For Safari */
+}
+
+
+/* Modal Content */
+.modal-content {
+  background-color: transparent;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto; /* Allow scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.modal-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Close Button */
+.modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ff4135;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.modal-close-button:hover {
+  background-color: #e03d2f;
+}
+
+/* Close button in the modal */
+.modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #FF4135;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.modal-close-button:hover {
+  background: #e03d2f;
+}
+
+/* Existing styles from your previous code */
+.user-food-page-wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem;
+  background-color: #121212;
+  flex-wrap: wrap; /* Allow wrapping of elements */
+}
+
+/* Food Page Layout */
+.user-food-page {
+  height: 80vh;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; /* Allow wrapping for small screens */
+  width: 100%;
+  gap: 20px; /* Add gap between the two main sections */
+}
+
+/* Food List Styling */
+.food-list {
+  width: 48%; /* Set width to 48% on larger screens */
+  background-color: #1F1F1F;
+  padding: 20px;
+  border-radius: 10px;
+  flex: 1;
+  max-height: 77vh; /* Limit the height and make it scrollable */
+  overflow-y: auto; /* Enable vertical scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+.food-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Selected Foods Styling */
+.selected-foods {
+  width: 48%; /* Set width to 48% on larger screens */
+  background-color: #1F1F1F;
+  padding: 20px;
+  border-radius: 10px;
+  flex: 1;
+  max-height: 77vh; /* Limit the height and make it scrollable */
+  overflow-y: auto; /* Enable vertical scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+.selected-foods::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.food-list h3, .selected-foods h3 {
+  color: #FF6347;
+  margin-bottom: 20px;
+}
+
+/* Food List Styling */
+.food-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.user-food-page .food-item {
+  background-color: #333;
+  color: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-wrap: wrap; /* Allow flex items to wrap */
+}
+
+.food-details img {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.user-food-page-wrapper .food-item:hover {
+  transform: scale(1.05); /* Slight zoom-in effect */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+.food-item button {
+  background-color: #FF4135;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.food-item button:hover {
+  background-color: #e03d2f; /* Darker shade on hover */
+}
+
+.food-item .food-details {
+  flex-grow: 1;
+}
+
+.food-item .food-price {
+  margin-right: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.food-item .food-name {
+  margin-left: 1rem;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.user-food-page .header {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #ff4135; /* Accent color */
+  border-bottom: 2px solid #ff4135;
+  padding-bottom: 1rem;
+}
+
+/* Additional Styling for Buttons and Actions */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px; /* Add gap between buttons */
+  flex-wrap: wrap; /* Allow buttons to wrap */
+}
+
+/* Selected Foods List Styling */
+.selected-foods ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.selected-foods li {
+  background-color: #333;
+  padding: 20px;
+  color: white;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.selected-foods .user-details p {
+  color: white;
+  font-size: 16px;
+}
+
+.selected-foods li .food-name {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.selected-foods li .food-price {
+  margin-right: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.selected-foods li .quantity-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-foods li .quantity-controls button {
+  background-color: #FF4135;
+  color: white;
+  border: none;
+  padding: 0px 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background-color 0.3s ease;
+}
+
+.selected-foods li .quantity-controls button:hover {
+  background-color: #e03d2f;
+}
+
+.selected-foods li .food-quantity {
+  font-size: 1.2rem;
+  margin: 0 10px;
+  width: 40px;
+  text-align: center;
+}
+
+.selected-foods li .food-name-price {
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+}
+
+.total-price {
+  color: white;
+}
+
+.action-button {
+  background-color: #FF4135;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 48%;
+  text-align: center;
+}
+
+.action-button:hover {
+  background-color: #e03d2f;
+}
+
+/* Make sure everything is responsive on smaller screens */
+@media (max-width: 1024px) {
+  .food-list, .selected-foods {
+    width: 100%; /* Make sections full width on medium screens */
+    margin-bottom: 20px;
+  }
+
+  .food-item {
+    flex-direction: column; /* Stack food item details vertically */
+    align-items: flex-start; /* Align the text to the start */
+  }
+
+  .food-item button {
+    width: 100%; /* Make the buttons take full width */
+    margin-top: 10px;
+  }
+
+  .food-item .food-price {
+    margin-top: 10px;
+  }
+
+  .food-item .food-name {
+    margin-bottom: 10px;
+  }
+
+  .actions {
+    flex-direction: column; /* Stack buttons vertically */
+    width: 100%; /* Make buttons full width */
+    gap: 10px;
+  }
+
+  .action-button {
+    width: 100%; /* Make action buttons take full width */
+  }
+
+  .selected-foods li {
+    flex-direction: column; /* Stack selected food items vertically */
+  }
+
+  .selected-foods .quantity-controls {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-food-page {
+    height: 100vh;
+    flex-direction: column; /* Stack the user-food page sections vertically */
+    gap: 20px; /* Add gap between the sections */
+  }
+
+  .food-list, .selected-foods {
+    width: 100%; /* Ensure full width for both sections */
+  }
+
+  .food-item {
+    flex-direction: column; /* Stack the food details vertically */
+    align-items: flex-start;
+  }
+
+  .food-item .food-price {
+    margin-top: 10px;
+  }
+
+  .food-item .food-details img {
+    width: 50px; /* Adjust the image size for smaller screens */
+    height: 30px;
+  }
+
+  .food-item button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .selected-foods .quantity-controls {
+    justify-content: space-between;
+    width: 100%; /* Adjust quantity controls layout */
+  }
+
+  .total-price {
+    margin-top: 20px;
+  }
+
+  .selected-foods li .food-name-price {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .selected-foods .user-details {
+    margin-bottom: 1rem; /* Reduce margin */
+  }
+
+  .selected-foods li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .selected-foods li .food-name-price {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .food-item .food-details img {
+    width: 40px; /* Further reduce image size for small screens */
+    height: 30px;
+  }
+
+  .food-item .food-price {
+    font-size: 1rem; /* Smaller font size for price */
+  }
+
+  .food-item .food-name {
+    font-size: 1rem; /* Adjust font size for smaller screens */
+  }
+
+  .action-button {
+    font-size: 14px; /* Make action buttons smaller on mobile */
+  }
+
+  .selected-foods li .food-price,
+  .selected-foods li .food-name {
+    font-size: 1rem; /* Adjust font size for smaller screens */
+  }
+
+  .selected-foods li .quantity-controls button {
+    padding: 0 20px;
+  }
+}

@@ -1,0 +1,170 @@
+.user-section {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #1b1c1f; /* Dark background */
+  color: #fff; /* White text for better readability */
+  box-sizing: border-box;
+}
+
+.user-section .user {
+  width: 100%;
+  max-width: 1225px;
+  color: #fff; /* White text color for better readability */
+  font-size: 14px;
+  background-color: #1B1C1F; /* Dark background for the list container */
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+  border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
+  margin: 0 auto;
+  overflow: auto; /* Allow scrolling if content overflows */
+}
+
+.user-section .header {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #ff4135; /* Accent color */
+  border-bottom: 2px solid #ff4135;
+  padding-bottom: 1rem;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between user cards */
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background-color: #444;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-card:hover {
+  background-color: #555;
+  transform: scale(1.01);
+}
+
+.profile-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  color: #ff4135;
+  border: 1px solid #ff4135;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-right: 15px; /* Spacing between circle and text */
+}
+
+.user-info {
+  flex: 1; /* Take up remaining space */
+  min-width: 0; /* Prevent overflow */
+}
+
+.user-list .info-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ff4135;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.user-info p {
+  margin: 0; /* Remove default margin */
+  white-space: nowrap; /* Prevent email from overflowing */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Show ellipsis for overflow */
+}
+
+.info-button:hover {
+  background-color: #e0332a; /* Darker shade on hover */
+}
+
+.no-users {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #888;
+  padding: 2rem;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .user {
+    padding: 1.5rem;
+  }
+
+  .header {
+    font-size: 1.6rem; /* Adjust header size */
+  }
+
+  .user-card {
+    padding: 12px; /* Adjust padding */
+  }
+}
+
+@media (max-width: 992px) {
+  .header {
+    font-size: 1.4rem;
+  }
+
+  .user-card {
+    flex-direction: column; /* Stack items on smaller screens */
+    align-items: flex-start; /* Align items to the left */
+    padding: 10px;
+  }
+
+  .profile-circle {
+    margin-bottom: 10px; /* Spacing below the circle */
+  }
+
+  .info-button {
+    align-self: flex-end; /* Align button to the right */
+  }
+}
+
+@media (max-width: 768px) {
+  .user-card {
+    flex-direction: column; /* Stack items on smaller screens */
+    align-items: flex-start; /* Align items to the left */
+  }
+
+  .profile-circle {
+    margin-bottom: 10px; /* Spacing below the circle */
+  }
+
+  .info-button {
+    align-self: flex-end; /* Align button to the right */
+  }
+
+  .user-info {
+    width: 100%; /* Ensure it takes full width */
+    text-align: left; /* Align text to the left */
+  }
+}
+
+@media (max-width: 576px) {
+  .user-section .header {
+    font-size: 1.2rem; /* Adjust header size for extra small devices */
+  }
+
+  .profile-circle {
+    width: 35px; /* Smaller profile circle */
+    height: 35px; /* Smaller profile circle */
+    font-size: 1rem; /* Smaller font size */
+  }
+
+  .user-info p {
+    font-size: 0.9rem; /* Smaller font size for user info */
+  }
+}

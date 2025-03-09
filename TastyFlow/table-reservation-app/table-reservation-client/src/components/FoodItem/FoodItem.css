@@ -1,0 +1,105 @@
+/* Container for the whole section */
+.main-food-div .food-item {
+    width: 100%;
+    margin: auto;
+    border-radius: 30px;
+    transition: 0.3s;
+    animation: fadeIn 1s;
+    overflow: hidden;
+    position: relative; /* Ensure the button is positioned relative to this container */
+}
+
+.main-food-div {
+    background-color: #f1f1f1;
+    padding: 35px 30px;
+    border-radius: 30px;
+    width: 100%;
+    position: relative; /* Needed for the absolute positioning of the button */
+    overflow: hidden;
+}
+
+.main-food-div:hover {
+    background-color: #f7f2e2;
+}
+
+.food-item-image {
+    width: 100%;
+    height: 20rem;
+    border-radius: 30px;
+    transition: transform 0.3s ease;
+    object-fit: cover;
+}
+
+.main-food-div:hover .food-item-image {
+    transform: scale(1.05);
+}
+
+.food-item-info {
+    padding: 10px;
+    padding-bottom: 60px; /* Ensure there is space for the button */
+}
+
+.food-item-name-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px; /* Optional: Add some space below */
+}
+
+.food-item-name {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.food-item-desc {
+    color: #676767;
+    font-size: 12px;
+}
+
+.food-item-price {
+    color: #ff4135;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 10px 0px;
+}
+
+/* Fix the button at the bottom-left side on large screens */
+.view-more {
+    background-color: black;
+    text-align: center;
+    padding: 1rem 2rem;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    position: absolute;
+    bottom: 20px;
+    left: 40px; /* Left side positioning on large screens */
+    width: auto; /* Dynamic width */
+    transition: all 0.3s ease;
+}
+
+/* Media query for smaller screens (up to 768px) */
+@media (max-width: 992px) {
+    .view-more {
+        left: 20px;
+        right: 20px;
+        width: calc(100% - 40px); /* Full width minus some padding */
+        border-radius: 30px; /* Keep the button rounded */
+    }
+}
+
+/* Media query for very small screens (up to 480px) */
+@media (max-width: 480px) {
+    .view-more {
+        left: 20px;
+        right: 20px;
+        width: calc(100% - 40px); /* Full width minus some padding */
+        border-radius: 30px; /* Keep the button rounded */
+    }
+    p {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}

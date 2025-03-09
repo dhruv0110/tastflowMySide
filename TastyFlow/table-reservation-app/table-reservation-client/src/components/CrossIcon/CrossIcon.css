@@ -1,0 +1,20 @@
+/* CrossIcon.css */
+.cross-icon {
+    cursor: pointer;
+    color: #ff4d4d; /* A vibrant red color for attention */
+    font-size: 24px; /* Larger size for better visibility */
+    transition: color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+    display: inline-flex; /* Align the icon properly */
+    align-items: center; /* Center SVG within the span */
+  }
+  
+  .cross-icon:hover {
+    color: #cc0000; /* Darker red on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+  }
+  
+  .cross-icon svg {
+    display: block; /* Ensure SVG is properly sized */
+    filter: drop-shadow(0 0 3px rgba(0,0,0,0.2)); /* Subtle shadow effect */
+  }
+  

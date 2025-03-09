@@ -1,0 +1,91 @@
+/* Container for the whole section */
+.app-container {
+  margin-top: 12rem;
+  width: 100%;
+  height: 100%;
+  color: #000000;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Wrapper for content within the container */
+.wrapper {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  flex-direction: column;
+}
+
+/* Heading styles */
+.restoh1 {
+  font-size: 2.5rem;
+  margin: 10px 0;
+  font-weight: bold;
+  font-family: "Playfair Display", serif;
+  text-align: center;
+}
+
+/* Paragraph styles */
+.restop {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: grey;
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* Marquee container */
+.marquee {
+  display: flex;
+  width: 100%; /* Full width of the screen */
+  overflow: hidden;
+  user-select: none;
+  margin-top: 1rem;
+}
+
+/* Keyframes for scrolling animation */
+@keyframes scrollX {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Common style for Marquee groups */
+.marquee-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  white-space: nowrap;
+  width: 100%;
+  animation: scrollX 15s linear infinite;
+}
+
+/* Individual image group styles */
+.image-group {
+  display: grid;
+  place-items: center;
+  width: 50rem;
+}
+
+/* Image styles */
+.image {
+  object-fit: contain;
+  width: 12rem;
+  height: 10rem;
+  border-radius: 0.5rem;
+  padding: 10px 20px;
+}
+
+
+@media(max-width:1220px){
+  .app-container {
+    margin-top: 1rem;
+  }
+}

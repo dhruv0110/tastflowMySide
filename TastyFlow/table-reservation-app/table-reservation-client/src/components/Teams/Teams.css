@@ -1,0 +1,119 @@
+.team-section {
+    padding: 50px 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+  }
+  
+  .ourTeam {
+    color: #ff6347;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .team-section .title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+  
+  .team-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .member-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 30%;
+    /* transition: transform 0.3s ease; */
+  }
+  
+  /* .member-card:hover {
+    transform: translateY(-10px);
+  } */
+  .image-wrapper{
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .image-wrapper img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    object-fit: cover; 
+  }
+  .image-wrapper img:hover{
+    transform: scale(1.05);
+  }
+  
+  .member-name {
+    font-size: 1.5rem;
+    margin-top: 15px;
+    color: #333;
+  }
+  
+  .position {
+    font-size: 1.1rem;
+    color: #888;
+    margin: 10px 0;
+  }
+  
+  .social-icons {
+    margin-top: 15px;
+  }
+  
+  .social-icons a {
+    color: #555;
+    font-size: 1.3rem;
+    margin: 0 10px;
+    text-decoration: none;
+  }
+  
+  .social-icons a:hover {
+    color: #ff6347;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 1024px) {
+    .team-wrapper {
+      justify-content: space-between;
+    }
+  
+    .member-card {
+      width: 45%; /* Adjust card width on medium screens */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .team-wrapper {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .member-card {
+      width: 100%; /* Full width on smaller screens */
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+  
+    .title {
+      font-size: 2rem; /* Reduce title size for small screens */
+    }
+  
+    .subtitle {
+      font-size: 1rem;
+    }
+  }
+  

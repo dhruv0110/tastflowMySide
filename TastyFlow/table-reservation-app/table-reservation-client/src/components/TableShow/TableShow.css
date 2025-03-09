@@ -1,0 +1,189 @@
+/* src/components/TableShow/TableShow.css */
+
+/* Base Styles */
+.table-show {
+  width: 100%;
+  max-width: 1225px;
+  color: #fff; /* Set text color to white */
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #1B1C1F; /* Dark background for the container */
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+  border-top: 1.5px solid #a9a9a9;
+}
+
+.table-show h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #ff4135; /* Consistent accent color */
+}
+.table-show .header {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #ff4135; /* Accent color */
+  border-bottom: 2px solid #ff4135;
+  padding-bottom: 1rem;
+}
+
+.table-input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.table-input-container input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  width: 200px;
+  background-color: #333; /* Dark input background */
+  color: #fff; /* White text color */
+}
+
+.table-input-container button {
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ff4135; /* Accent color background */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.table-input-container button:hover {
+  background-color: #ff6f61;
+  transform: scale(1.05);
+}
+
+.table-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  justify-items: center;
+}
+
+.table-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.553);
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #333;
+  width: 200px;
+  color: #fff; /* Text color */
+}
+
+.table-item button {
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+/* Reserve button styles */
+.table-item .reserve-button {
+  background-color: #6a2d3189; /* Dark green for reserved tables */
+  color: #fff; /* White text color */
+}
+
+.table-item .reserve-button:hover {
+  background-color: #6a2d31c1; /* Lighter green on hover */
+}
+
+/* Unreserve button styles */
+.table-item .unreserve-button {
+  background-color: #c52222; /* Dark red for unreserve button */
+  color: #fff; /* White text color */
+}
+
+.table-item .unreserve-button:hover {
+  background-color: #a32e2e; /* Lighter red on hover */
+}
+
+/* Delete button styles */
+.table-item .delete-button {
+  margin-top: 8px;
+  background-color: #292828; /* Dark red for delete button */
+  color: #fff; /* White text color */
+}
+
+.table-item .delete-button:hover {
+  background-color: #1c1b1b97; /* Lighter red on hover */
+}
+
+/* Reserved info styling */
+.table-item .reserved-info {
+  font-size: 14px;
+  color: #d3d3d3; /* Light gray for reserved info */
+  text-align: center;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .table-show {
+    padding: 1.5rem; /* Adjust padding for medium screens */
+  }
+}
+
+@media (max-width: 992px) {
+  .table-input-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-input-container input,
+  .table-input-container button {
+    width: 100%; /* Full width on medium screens */
+    font-size: 14px; /* Adjust font size */
+    padding: 10px; /* Adjust padding */
+  }
+
+  .table-show h2 {
+    font-size: 1.25rem; /* Adjust heading size */
+  }
+}
+
+@media (max-width: 768px) {
+  .table-item {
+    width: 100%; /* Full width on small screens */
+    max-width: none; /* Remove max-width constraint */
+  }
+
+  .table-list {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust column size */
+    gap: 10px; /* Adjust gap */
+  }
+
+  .table-input-container input,
+  .table-input-container button {
+    font-size: 14px; /* Consistent font size */
+    padding: 8px; /* Adjust padding */
+  }
+}
+
+@media (max-width: 480px) {
+  .table-item {
+    font-size: 12px; /* Smaller font size */
+    padding: 10px; /* Adjust padding */
+  }
+
+  .table-input-container input,
+  .table-input-container button {
+    font-size: 12px; /* Adjust font size */
+    padding: 8px; /* Adjust padding */
+  }
+}

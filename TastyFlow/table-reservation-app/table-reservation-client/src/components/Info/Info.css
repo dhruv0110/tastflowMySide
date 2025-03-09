@@ -1,0 +1,137 @@
+/* src/components/Info/Info.css */
+
+.info {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #1B1C1F; /* Dark background for consistency */
+  color: #fff; /* White text color for better readability */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+  max-width: 800px; /* Constrain width for better readability */
+  margin: 20px auto;
+  box-sizing: border-box;
+}
+
+/* Heading styling */
+.info h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #ff4135; /* Accent color for the heading */
+  text-align: center;
+}
+
+/* Table styling */
+.info .user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.info .user-table th,
+.info .user-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #333; /* Dark border for rows */
+}
+
+.info .user-table th {
+  background-color: #333; /* Dark background for headers */
+  color: #ff4135; /* Accent color for header text */
+  font-weight: bold;
+}
+
+.info .user-table td {
+  color: #fff; /* White text color for table cells */
+}
+
+/* No details message */
+.info .no-details {
+  font-size: 1.2rem;
+  color: #ff4135; /* Accent color for no details message */
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Responsive styling */
+@media (max-width: 1200px) {
+  .info {
+    padding: 15px;
+    margin: 15px auto;
+  }
+
+  .info h1 {
+    font-size: 1.8rem;
+  }
+
+  .info .user-table th,
+  .info .user-table td {
+    padding: 10px;
+  }
+
+  .info .no-details {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .info {
+    padding: 10px;
+    margin: 10px auto;
+  }
+
+  .info h1 {
+    font-size: 1.6rem;
+  }
+
+  .info .user-table th,
+  .info .user-table td {
+    padding: 8px;
+  }
+
+  .info .no-details {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .info {
+    padding: 8px;
+    margin: 5px auto;
+    max-width: 100%; /* Full width on small screens */
+  }
+
+  .info h1 {
+    font-size: 1.4rem;
+  }
+
+  .info .user-table {
+    font-size: 0.9rem; /* Smaller font size for table on small screens */
+  }
+
+  .info .user-table th,
+  .info .user-table td {
+    padding: 6px;
+  }
+
+  .info .no-details {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .info {
+    padding: 5px;
+    margin: 0 auto;
+  }
+
+  .info h1 {
+    font-size: 1.2rem;
+  }
+
+  .info .user-table th,
+  .info .user-table td {
+    padding: 4px;
+  }
+
+  .info .no-details {
+    font-size: 0.8rem;
+  }
+}

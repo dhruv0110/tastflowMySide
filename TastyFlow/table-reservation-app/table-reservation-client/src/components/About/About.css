@@ -1,0 +1,419 @@
+* {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    box-sizing: border-box;
+}
+
+/* SectionOne */
+.AboutSectionOne {
+    background-color: #1b1c1f;
+}
+
+.AboutSectionOneLeft {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+
+.AboutSectionOneLeft h1 {
+    font-size: 4rem;
+    margin: 10px 0;
+    font-weight: bold;
+    font-family: "Inter", serif;
+    color: #ffff;
+}
+
+.AboutSectionOneLeft p {
+    max-width: 565px;
+    color: #ffff;
+    font-family: Inter, sans-serif;
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.AboutSectionOneLeft .hero-button {
+    margin-top: 2rem;
+    padding: 1rem 3rem;
+}
+
+/* Section Two */
+
+/* HeadingPart Css */
+.Subheadingflex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.AboutStoryheading {
+    font-family: Playfair Display, sans-serif;
+    font-size: 60px;
+    font-weight: bold;
+    max-width: 847px;
+
+}
+
+.AboutStorysubheading {
+    font-family: Inter, sans-serif;
+    color: #595959;
+    font-size: 18px;
+    line-height: 1.5;
+    max-width: 764px;
+    padding-top: 10px;
+}
+
+/* Story Part Css */
+.AboutStoryContainer {
+    grid-column-gap: 30px;
+}
+
+.AboutStorySectionTwoLeft img {
+    height: 100%;
+}
+
+.StoryImage {
+    object-fit: cover;
+    border-radius: 30px;
+    width: 100%;
+}
+
+.AboutStorySectionTwoRight {
+    display: flex;
+    flex-direction: column;
+    grid-row-gap: 25px;
+}
+
+.AboutStorySectionTwoTop {
+    background-color: #ff4135;
+    color: #ffffff;
+    border-radius: 30px;
+    padding: 45px 65px 45px 40px;
+}
+
+.AboutStorySectionTwoTop h2 {
+    font-family: Playfair Display, sans-serif;
+    font-size: 35px;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.AboutStorySectionTwoTop p {
+    /* margin-bottom: 35px; */
+    font-size: 20px;
+    max-width: 600px;
+    font-family: Inter, sans-serif;
+}
+
+.AboutStorySectionTwoTop .hero-button {
+    margin-top: 1rem;
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    border: none;
+    font-weight: 600;
+}
+
+.AboutStorySectionTwoTop .hero-button:hover {
+    background-color: #ffffff;
+    color: #1b1c1f;
+}
+
+.AboutStorySectionTwoBottom {
+    display: flex;
+    grid-column-gap: 18px;
+}
+
+/* Section Three */
+.AboutSectionThree {
+    background-color: #1b1c1f;
+    margin-top: 5rem;
+    padding-bottom: 10rem;
+}
+
+.AboutSectionThreeHeadingflex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.AboutSectionThreeheading {
+    font-family: Playfair Display, sans-serif;
+    font-size: 60px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.AboutSectionThreeubheading {
+    font-family: Inter, sans-serif;
+    color: #ffffff;
+    font-size: 18px;
+    line-height: 1.5;
+    max-width: 776px;
+    padding-top: 10px;
+}
+
+/* Carousel Css*/
+
+.AboutSlickSlide {
+    padding: 10px;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0.6;
+    /* Default opacity for inactive slides */
+}
+
+/* Highlight the active slide */
+.AboutSlickSlide.active {
+    transform: scale(1.1);
+    /* Slightly enlarge the active slide */
+    opacity: 1;
+    /* Full opacity for the active slide */
+    z-index: 2;
+    /* Bring the active slide to the front */
+}
+
+.AboutCarouselCard img{
+    border-radius: 20px;
+}
+
+/* Ensure inactive slides are not overlapping */
+.AboutSlickSlide:not(.active) {
+    transform: scale(0.9);
+    /* Slightly shrink inactive slides */
+    z-index: 1;
+    /* Push inactive slides to the back */
+}
+
+/* Carousel card styling */
+.AboutCarouselCard {
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Image styling with border radius */
+.AboutCarouselImage {
+    object-fit: cover;
+    position: relative;
+}
+
+/* Text box styles */
+.carousel-text {
+    background-color: #ff4135;
+    color: white;
+    font-size: 20px;
+    padding: 20px 30px;
+    position: absolute;
+    bottom: 20px;
+    left: 38%;
+    transform: translateX(-50%) translateY(10px);
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    font-family: Playfair Display, sans-serif;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Add a shadow for a floating effect */
+}
+
+/* Show text box on active slide */
+.AboutSlickSlide.active .carousel-text {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    /* Move to original position */
+}
+
+/* Inactive carousel images styling */
+.AboutSlickSlide:not(.active) .AboutCarouselImage {
+    filter: brightness(80%);
+    /* Darken inactive images */
+}
+
+/* Reset filter for active image */
+.AboutSlickSlide.active .AboutCarouselImage {
+    filter: none;
+    /* Full brightness for active image */
+    border-radius: 20px;
+}
+
+/* Dots styling */
+.slick-dots li button::before {
+    color: rgba(255, 255, 255, 0.4);
+    opacity: 1;
+    font-size: 18px;
+}
+
+.slick-dots li.slick-active button::before {
+    color: white;
+}
+
+/* Arrows styling */
+.AboutSlickPrev::before,
+.AboutSlickNext::before {
+    content: '' !important;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    border: 2px solid #fff;
+    text-align: center;
+    line-height: 36px;
+    font-size: 20px;
+    color: white;
+}
+
+.AboutSlickPrev:hover::before,
+.AboutSlickNext:hover::before {
+    background-color: #ff4135;
+    border-color: #ff4135;
+    color: white;
+    transition: 0.3s ease-in-out;
+}
+
+.AboutSlickPrev {
+    left: -50px;
+    z-index: 2;
+}
+
+.AboutSlickNext {
+    right: -50px;
+    z-index: 2;
+}
+
+/* Section-5 Css */
+/* Menu Css */
+.menu-container {
+    margin: 50px auto;
+    max-width: 800px;
+}
+
+/* Circular Images */
+.circular-images {
+    position: relative;
+    width: 100%;
+    height: 500px;
+}
+
+.circle {
+    position: absolute;
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.circle img {
+    width: 170px;
+    height: 170px;
+    object-fit: cover;
+}
+
+/* Positioning the circles*/
+
+/* Left top */
+.circle-1 {
+    top: 44%;
+    left: -18%;
+}
+
+/* Right top */
+.circle-2 {
+    top: 44%;
+    right: -18%;
+}
+
+/* Middle large top */
+.circle-3 {
+    height: 300px;
+    width: 300px;
+    left: 30%;
+    top: 16%;
+}
+
+.circle-3 img{
+    height: 250px;
+    width: 250px;
+
+}
+/* Left bottom Circle */
+.circle-4 {
+    bottom: -48%;
+    left: -31%;
+}
+
+
+/* Right Bottom Circle */
+.circle-5 {
+    bottom: -48%;
+    right: -30%;
+}
+
+.AboutMenu-text-content {
+    text-align: center;
+    background-color: #fff;
+}
+
+.AboutMenu-text-content h1 {
+    font-size: 60px;
+    font-family: "Playfair Display", sans-serif;
+    font-weight: bold;
+}
+
+.AboutMenu-text-content p {
+    color: #595959;
+    font-size: 18px;
+    font-family: Inter, sans-serif;
+    margin-bottom: 20px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.AboutMenuButton {
+    background-color: #ff4135;
+    color: #ffffff;
+    border-radius: 40px;
+    padding: 18px 45px;
+    font-family: Inter, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+}
+
+.AboutMenuButton:hover {
+    background-color: #1b1c1f;
+    transition: all 0.2s;
+}
+
+.menu-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5rem;
+}
+
+.menu-links span {
+    font-family: "Playfair Display", sans-serif;
+    font-size: 20px;
+    color: #1b1c1f;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.menu-links span.active {
+    border-bottom: 3px solid #ff4135;
+}
+
+/* Testimonial css */
+.AboutRepeats{
+    margin-top: 8rem;
+}
