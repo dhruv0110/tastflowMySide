@@ -4,7 +4,7 @@ const slot1Schema = new mongoose.Schema({
   number: {
     type: Number,
     required: true,
-    unique: false
+    unique: false,
   },
   capacity: {
     type: Number,
@@ -29,6 +29,5 @@ const slot1Schema = new mongoose.Schema({
     immutable: true,
   },
 });
-
 
 module.exports = mongoose.model('Slot1', slot1Schema);

@@ -52,7 +52,16 @@ const userSchema = new mongoose.Schema({
         default: Date.now
       }
     }
-  ]
+  ],
+  payments: [
+    {
+      paymentIntentId: String,
+      amount: Number,
+      currency: String,
+      status: String,
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 module.exports = mongoose.model("User", userSchema);

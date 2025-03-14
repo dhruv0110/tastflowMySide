@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import UserPanel from './components/UserPanel/UserPanel';
 import Login from './components/LoginSignup/Login';
 import Alert from './components/Alert/Alert';
@@ -9,8 +11,6 @@ import Signup from './components/LoginSignup/signup';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import ResetPassword from './components/ResetPassword/ResetPassword';
 import Admin from './components/Sidebar/Admin';
-// import Slot1Table from './components/TableShow/Slot1Table';
-// import Slot2Table from './components/TableShow/Slot2Table';
 import Add from './components/Add/Add';
 import List from './components/List/List';
 import TableComponent from './components/TableComponent/TableComponent';
@@ -30,7 +30,8 @@ import EditInvoice from './components/EditInvoice/EditInvoice';
 import UserInvoice from "./components/UserInvoice/UserInvoice";
 import Graph from "./components/Graph/Graph";
 
-
+// Initialize Stripe with your publishable key
+const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf'); // Replace with your Stripe Publishable Key
 
 function PrivateRoute({ element, ...rest }) {
   const token = localStorage.getItem("token");
@@ -102,14 +103,25 @@ function App() {
         <Route path="/info" element={<PrivateRoute element={<Info showAlert={showAlert} />} />} />
         <Route path="/forgot-password" element={<ForgotPassword showAlert={showAlert} />} />
         <Route path="/reset-password" element={<ResetPassword showAlert={showAlert} />} />
-        <Route path="/table-reserve" element={localStorage.getItem("token") ? <TableComponent showAlert={showAlert} /> : <Navigate to="/login" />} />
+        <Route
+          path="/table-reserve"
+          element={
+            localStorage.getItem("token") ? (
+              <Elements stripe={stripePromise}>
+                <TableComponent showAlert={showAlert} />
+              </Elements>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
         <Route path="/admin" element={<AdminRoute element={<Admin showAlert={showAlert} />} />} />
         <Route path="/admin/list" element={<AdminRoute element={<List showAlert={showAlert} />} />} />
         <Route path="/admin/add" element={<AdminRoute element={<Add showAlert={showAlert} />} />} />
         <Route path="/admin/all-users" element={<AdminRoute element={<UserData showAlert={showAlert} />} />} />
         <Route path="/admin/all-reviews" element={<AdminRoute element={<Reviews showAlert={showAlert} />} />} />
-        <Route path="/admin/users/reviews/:userId" element={<PrivateRoute element={<UserReviews />} />} /> {/* Add this route for UserReviews */}
-        <Route path="/admin/admin-table" element={<AdminRoute element={<AdminTable   showAlert={showAlert} />} />} />
+        <Route path="/admin/users/reviews/:userId" element={<PrivateRoute element={<UserReviews />} />} />
+        <Route path="/admin/admin-table" element={<AdminRoute element={<AdminTable showAlert={showAlert} />} />} />
         <Route path="/admin/slot/:slotNumber" element={<AdminRoute element={<SlotTable showAlert={showAlert} />} />} />
         <Route path="/admin/create-bill" element={<AdminRoute element={<UsersList showAlert={showAlert} />} />} />
         <Route path="/admin/user/:userId/create-bill" element={<AdminRoute element={<UserFoodPage showAlert={showAlert} />} />} />
@@ -120,11 +132,7 @@ function App() {
         <Route path="/admin/invoices/edit/:invoiceId" element={<AdminRoute element={<EditInvoice showAlert={showAlert} />} />} />
         <Route path="/admin/users/invoice/:userId" element={<PrivateRoute element={<UserInvoice />} />} />
         <Route path="/admin/graph" element={<AdminRoute element={<Graph />} />} />
-
-        
         <Route path="*" element={<Navigate to="/" />} />
-
-        {/* About Path */}
         <Route path="/About" element={<About />} />
       </Routes>
     </Router>

@@ -1,0 +1,217 @@
+.payment-form-container {
+    width: 100%;
+    max-width: 500px; /* Increase max-width for a wider form */
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .payment-header {
+    margin-bottom: 25px;
+  }
+  
+  .payment-form-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .lock-icon {
+    color: #007bff;
+    font-size: 20px;
+  }
+  
+  .payment-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-top: 8px;
+  }
+  
+  .reservation-details {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 25px;
+  }
+  
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 10px;
+  }
+  
+  .detail-item strong {
+    color: #2c3e50;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .input-group label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .card-input-wrapper {
+    position: relative;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    background: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%; /* Make the input container full width */
+  }
+  
+  .card-input-wrapper:hover {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+  }
+  
+  .card-input-wrapper .StripeElement {
+    width: 100%;
+    padding: 10px 0;
+  }
+  
+  /* Position the card brand logo on the right side */
+  .card-input-wrapper .StripeElement .CardBrandIcon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px; /* Adjust size as needed */
+    height: 24px; /* Adjust size as needed */
+  }
+  
+  /* Ensure the card number input is aligned to the left */
+  .card-input-wrapper .StripeElement .InputElement {
+    width: calc(100% - 30px); /* Adjust width to leave space for the logo */
+    padding-right: 30px; /* Add padding to avoid overlap with the logo */
+  }
+  
+  .input-row {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .input-row .input-group {
+    flex: 1; /* Make both fields take equal space */
+  }
+  
+  .payment-form-error {
+    color: #ff4135;
+    font-size: 14px;
+    margin-top: 10px;
+    background: #ffe5e5;
+    padding: 8px;
+    border-radius: 6px;
+  }
+  
+  .payment-form-button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .payment-form-button:disabled {
+    background: #a0a0a0;
+    cursor: not-allowed;
+  }
+  
+  .payment-form-button:hover:not(:disabled) {
+    background: linear-gradient(90deg, #0056b3, #00429d);
+    transform: translateY(-2px);
+  }
+  
+  .spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid #ffffff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .payment-notice {
+    font-size: 13px;
+    color: #856404;
+    background: #fff3cd;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ffeeba;
+    margin: 12px 0;
+    text-align: left;
+  }
+  
+  .non-refundable-notice {
+    font-size: 13px;
+    color: #d32f2f;
+    background: #ffebee;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #d32f2f;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .notice-icon {
+    color: #d32f2f;
+    font-size: 16px;
+  }
+  
+  .success-message {
+    font-size: 18px;
+    font-weight: bold;
+    color: #28a745;
+    background: #e8f5e9;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #c8e6c9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .success-icon {
+    color: #28a745;
+    font-size: 20px;
+  }
+  
+  .card-brands {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .card-brand-icon {
+    width: 40px; /* Adjust size as needed */
+    height: auto;
+  }

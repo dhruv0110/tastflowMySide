@@ -166,14 +166,8 @@
     background-color: #f1f1f1;
 }
 
-
-/* Spinner container for loading state */
-.spinner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
+  
+  
 /* Media query for small screens */
 @media (max-width: 600px) {
     .table-heading {
