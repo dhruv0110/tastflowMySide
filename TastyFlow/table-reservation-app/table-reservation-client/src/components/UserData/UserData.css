@@ -2,28 +2,23 @@
   display: flex;
   width: 100%;
   min-height: 100vh;
-  background-color: #1b1c1f; /* Dark background */
-  color: #fff; /* White text for better readability */
+  background-color: #1b1c1f;
+  color: #fff;
   box-sizing: border-box;
-}
-.controls-container {
-  display: flex;
-  align-items: center;
-  gap: 20px; /* Space between search input and dropdown */
 }
 
 .user-section .user {
   width: 100%;
   max-width: 1225px;
-  color: #fff; /* White text color for better readability */
+  color: #fff;
   font-size: 14px;
-  background-color: #1b1c1f; /* Dark background for the list container */
+  background-color: #1b1c1f;
   padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
-  border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-top: 1.5px solid #a9a9a9;
   margin: 0 auto;
-  position: relative; /* Ensure the container is positioned relative */
-  min-height: 80vh; /* Ensure the container has a minimum height */
+  position: relative;
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
 }
@@ -33,15 +28,76 @@
   font-weight: 700;
   margin-bottom: 2rem;
   text-align: center;
-  color: #ff4135; /* Accent color */
+  color: #ff4135;
   border-bottom: 2px solid #ff4135;
   padding-bottom: 1rem;
+}
+
+.user-section .controls-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.user-section .search-input {
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: #333;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+
+.search-input:focus {
+  background-color: #333;
+  outline: none;
+  border-color: #ff4135;
+}
+
+.users-per-page {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.users-per-page label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.users-per-page select {
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.users-per-page select:hover {
+  background-color: #444;
+  border-color: #666;
+}
+
+.users-per-page select:focus {
+  outline: none;
+  border-color: #ff4135;
 }
 
 .user-list {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Space between user cards */
+  gap: 15px;
 }
 
 .user-card {
@@ -70,15 +126,22 @@
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  margin-right: 15px; /* Spacing between circle and text */
+  margin-right: 15px;
 }
 
 .user-info {
-  flex: 1; /* Take up remaining space */
-  min-width: 0; /* Prevent overflow */
+  flex: 1;
+  min-width: 0;
 }
 
-.user-list .info-button {
+.user-info p {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-button {
   padding: 8px 12px;
   border: none;
   border-radius: 5px;
@@ -88,15 +151,8 @@
   transition: background-color 0.3s;
 }
 
-.user-info p {
-  margin: 0; /* Remove default margin */
-  white-space: nowrap; /* Prevent email from overflowing */
-  overflow: hidden; /* Hide overflow */
-  text-overflow: ellipsis; /* Show ellipsis for overflow */
-}
-
 .info-button:hover {
-  background-color: #e0332a; /* Darker shade on hover */
+  background-color: #e0332a;
 }
 
 .no-users {
@@ -106,74 +162,18 @@
   padding: 2rem;
 }
 
-/* Search Input Field */
-.user-section .search-input {
-  width: 300px;
-  padding: 10px;
-  border: 1px solid #333;
-  border-radius: 5px;
-  font-size: 16px;
-  background-color: #333;
-  color: white;
-  transition: background-color 0.3s ease;
-}
-
-.user-section .search-input::placeholder {
-  color: #aaa;
-}
-
-.user-section .search-input:focus {
-  background-color: #333;
-  outline: none;
-  border-color: #333;
-}
-
-/* Users Per Page Dropdown Styles */
-.users-per-page {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.users-per-page label {
-  font-size: 14px;
-  font-weight: bold;
-  color: #fff;
-}
-
-.users-per-page select {
-  padding: 8px 12px;
-  font-size: 14px;
-  background-color: #333;
-  color: white;
-  border: 1px solid #555;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.users-per-page select:hover {
-  background-color: #444;
-  border-color: #666;
-}
-
-.users-per-page select:focus {
-  outline: none;
-  border-color: #ff4135;
-}
-
 .pagination1 {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  padding: 20px 0; /* Add some padding */
-  background-color: #1b1c1f; /* Match the background color */
-  z-index: 1; /* Ensure it stays above other content */
-  width: 100%; /* Ensure it takes full width */
-  max-width: 1225px; /* Match the container width */
-  margin: 0 auto; /* Center the pagination */
-  margin-top: auto; /* Push pagination to the bottom */
+  padding: 20px 0;
+  background-color: #1b1c1f;
+  z-index: 1;
+  width: 100%;
+  max-width: 1225px;
+  margin: 0 auto;
+  margin-top: auto;
 }
 
 .pagination1 .pagination-button {
@@ -185,8 +185,8 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
-  min-width: 40px; /* Ensure buttons have a fixed width */
-  text-align: center; /* Center text inside buttons */
+  min-width: 40px;
+  text-align: center;
 }
 
 .pagination1 .pagination-button:disabled {
@@ -201,59 +201,18 @@
   border-color: #ff4135;
 }
 
-/* Users Per Page Dropdown Styles */
-.users-per-page {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.users-per-page label {
-  font-size: 14px;
-  font-weight: bold;
-  color: #fff;
-}
-
-.users-per-page select {
-  padding: 8px 12px;
-  font-size: 14px;
-  background-color: #333;
-  color: white;
-  border: 1px solid #555;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.users-per-page select:hover {
-  background-color: #444;
-  border-color: #666;
-}
-
-.users-per-page select:focus {
-  outline: none;
-  border-color: #ff4135;
-}
-/* Change background color when input is focused */
-.search-input:focus {
-  background-color: #333; /* Background color when focused */
-  outline: none; /* Remove default outline */
-  border-color: #FF4135; /* Optional: Change border color for better visibility */
-}
-
-/* Responsive design */
+/* Responsive Design */
 @media (max-width: 1200px) {
   .user {
     padding: 1.5rem;
   }
 
   .header {
-    font-size: 1.6rem; /* Adjust header size */
+    font-size: 1.6rem;
   }
 
   .user-card {
-    padding: 12px; /* Adjust padding */
+    padding: 12px;
   }
 }
 
@@ -263,52 +222,71 @@
   }
 
   .user-card {
-    flex-direction: column; /* Stack items on smaller screens */
-    align-items: flex-start; /* Align items to the left */
+    flex-direction: column;
+    align-items: flex-start;
     padding: 10px;
   }
 
   .profile-circle {
-    margin-bottom: 10px; /* Spacing below the circle */
+    margin-bottom: 10px;
   }
 
   .info-button {
-    align-self: flex-end; /* Align button to the right */
+    align-self: flex-end;
   }
 }
 
 @media (max-width: 768px) {
+  .controls-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
   .user-card {
-    flex-direction: column; /* Stack items on smaller screens */
-    align-items: flex-start; /* Align items to the left */
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .profile-circle {
-    margin-bottom: 10px; /* Spacing below the circle */
+    margin-bottom: 10px;
   }
 
   .info-button {
-    align-self: flex-end; /* Align button to the right */
+    align-self: flex-end;
   }
 
   .user-info {
-    width: 100%; /* Ensure it takes full width */
-    text-align: left; /* Align text to the left */
+    width: 100%;
+    text-align: left;
   }
 }
 
 @media (max-width: 576px) {
   .user-section .header {
-    font-size: 1.2rem; /* Adjust header size for extra small devices */
+    font-size: 1.2rem;
   }
 
   .profile-circle {
-    width: 35px; /* Smaller profile circle */
-    height: 35px; /* Smaller profile circle */
-    font-size: 1rem; /* Smaller font size */
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
   }
 
   .user-info p {
-    font-size: 0.9rem; /* Smaller font size for user info */
+    font-size: 0.9rem;
+  }
+
+  .pagination1 {
+    flex-wrap: wrap;
+  }
+
+  .pagination1 .pagination-button {
+    padding: 6px 10px;
+    font-size: 12px;
+    min-width: 30px;
   }
 }

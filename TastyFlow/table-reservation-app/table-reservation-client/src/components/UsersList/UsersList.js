@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import { toast } from "react-toastify";
 import './UsersList.css';
+import Pagination from "../../components/Pagination/Pagination";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -284,32 +285,13 @@ const UsersList = () => {
           )}
         </div>
 
-        {/* Pagination Controls */}
-        <div className="pagination">
-  <button
-    onClick={() => paginate(currentPage - 1)}
-    disabled={currentPage === 1}
-    className="pagination-button"
-  >
-    Previous
-  </button>
-  {Array.from({ length: Math.ceil(filteredUsers.length / usersPerPage) }, (_, i) => (
-    <button
-      key={i + 1}
-      onClick={() => paginate(i + 1)}
-      className={`pagination-button ${currentPage === i + 1 ? "active" : ""}`}
-    >
-      {i + 1}
-    </button>
-  ))}
-  <button
-    onClick={() => paginate(currentPage + 1)}
-    disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
-    className="pagination-button"
-  >
-    Next
-  </button>
-</div>
+        {/* Pagination */}
+        <Pagination
+  totalItems={filteredUsers.length}
+  itemsPerPage={usersPerPage}
+  currentPage={currentPage}
+  paginate={paginate}
+/>
       </div>
     </div>
   );

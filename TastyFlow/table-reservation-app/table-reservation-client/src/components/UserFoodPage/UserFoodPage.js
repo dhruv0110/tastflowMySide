@@ -15,6 +15,7 @@ const UserFoodPage = () => {
   const [isSelectionSaved, setIsSelectionSaved] = useState(false); // Track if the selection is saved
   const [isModalOpen, setIsModalOpen] = useState(false); // Control modal visibility
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [addedFoods, setAddedFoods] = useState([]); // Track added food IDs
 
   useEffect(() => {
     // Fetch food items
@@ -49,10 +50,10 @@ const UserFoodPage = () => {
 
   const addFoodToUser = (food) => {
     setSelectedFoods((prev) => {
-      const existingFoodIndex = prev.findIndex(f => f.foodId === food._id);
+      const existingFoodIndex = prev.findIndex((f) => f.foodId === food._id);
 
       if (existingFoodIndex > -1) {
-        return prev;
+        return prev; // If the food is already added, do nothing
       }
 
       const updatedFoods = [
@@ -63,11 +64,14 @@ const UserFoodPage = () => {
           name: food.name,
           price: food.price,
           quantity: 1,
-        }
+        },
       ];
       updateTotal(updatedFoods);
       return updatedFoods;
     });
+
+    // Add the food ID to the addedFoods state
+    setAddedFoods((prev) => [...prev, food._id]);
   };
 
   const updateTotal = (foods) => {
@@ -98,7 +102,12 @@ const UserFoodPage = () => {
           return food;
         })
         .filter((food) => food.quantity > 0); // Remove foods with quantity 0
-  
+
+      // If the quantity of a food item reaches 0, remove it from addedFoods
+      if (updatedFoods.length < prev.length) {
+        setAddedFoods((prevAdded) => prevAdded.filter((id) => id !== foodId));
+      }
+
       updateTotal(updatedFoods);
       return updatedFoods;
     });
@@ -111,41 +120,41 @@ const UserFoodPage = () => {
       return; // Stop the invoice generation process if the selection isn't saved
     }
     const cgstAmount = (total * 0.025);
-  const sgstAmount = (total * 0.025);
+    const sgstAmount = (total * 0.025);
 
-  // Round off logic
-  const totalBeforeRoundOff =
-  total + parseFloat(cgstAmount) + parseFloat(sgstAmount);
-  const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
-  const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
-  const invoiceData = {
-    userId: userId,
-    foods: selectedFoods.map(food => ({
-      foodId: food.foodId,
-      name: food.name,
-      price: food.price,
-      quantity: food.quantity,
-    })),
-    totalAmount: finalAmount,
-    cgst: cgstAmount.toFixed(2),
-    sgst: sgstAmount.toFixed(2),
-    roundOff: roundOffAmount.toFixed(2),
-  };
+    // Round off logic
+    const totalBeforeRoundOff =
+      total + parseFloat(cgstAmount) + parseFloat(sgstAmount);
+    const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
+    const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
+    const invoiceData = {
+      userId: userId,
+      foods: selectedFoods.map((food) => ({
+        foodId: food.foodId,
+        name: food.name,
+        price: food.price,
+        quantity: food.quantity,
+      })),
+      totalAmount: finalAmount,
+      cgst: cgstAmount.toFixed(2),
+      sgst: sgstAmount.toFixed(2),
+      roundOff: roundOffAmount.toFixed(2),
+    };
 
-  fetch("http://localhost:5000/api/invoice/create", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "auth-token": localStorage.getItem("token"),
-    },
-    body: JSON.stringify(invoiceData),
-  })
-  .then((response) => response.json())
-  .then((data) => {
-    setInvoiceGenerated(true);
-    setInvoiceId(data.invoice._id);
-    setIsModalOpen(true); // Open the modal after invoice is generated
-  })
+    fetch("http://localhost:5000/api/invoice/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("token"),
+      },
+      body: JSON.stringify(invoiceData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setInvoiceGenerated(true);
+        setInvoiceId(data.invoice._id);
+        setIsModalOpen(true); // Open the modal after invoice is generated
+      })
       .catch((err) => console.error("Error creating invoice:", err));
   };
 
@@ -174,7 +183,7 @@ const UserFoodPage = () => {
       <div className="user-food-page">
         <div className="food-list">
           <h1 className="header">All Foods List</h1>
-          
+
           {/* Search Input Field */}
           <input
             type="text"
@@ -192,7 +201,12 @@ const UserFoodPage = () => {
                   <span className="food-name">{food.name}</span>
                 </div>
                 <span className="food-price">{food.price.toFixed(2)}</span>
-                <button onClick={() => addFoodToUser(food)}>Add Food</button>
+                <button
+                  onClick={() => addFoodToUser(food)}
+                  disabled={addedFoods.includes(food._id)} // Disable the button if the food is already added
+                >
+                  {addedFoods.includes(food._id) ? "Added" : "Add Food"}
+                </button>
               </li>
             ))}
           </ul>
@@ -200,7 +214,7 @@ const UserFoodPage = () => {
 
         <div className="selected-foods">
           <h1 className="header">Selected Foods for User</h1>
-          
+
           {/* Display User's Details */}
           {user && (
             <div className="user-details">
@@ -253,7 +267,6 @@ const UserFoodPage = () => {
       {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-           
             {invoiceGenerated && user && invoiceId && (
               <Invoice invoiceId={invoiceId} user={userId} />
             )}

@@ -3,14 +3,30 @@
 .list {
     width: 100%;
     max-width: 1225px;
-    color: #fff; /* White text color for better readability */
+    color: #fff;
     font-size: 14px;
-    background-color: #1B1C1F; /* Dark background for the list container */
+    background-color: #1b1c1f;
     padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
-    border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-top: 1.5px solid #a9a9a9;
     margin: 0 auto;
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
 }
+.list .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto; /* Push pagination to the bottom */
+    padding: 20px 0; /* Add some padding */
+    position: sticky; /* Make pagination sticky */
+    bottom: 0; /* Stick to the bottom */
+    background-color: #1b1c1f; /* Match the background color */
+    z-index: 1; /* Ensure it stays above other content */
+  }
 
 .list .header {
     font-size: 1.8rem;
@@ -33,7 +49,7 @@
     grid-template-columns: 1fr 2fr 1.5fr 1fr 0.5fr; /* Adjusted column widths */
     align-items: center;
     gap: 10px;
-    padding: 12px 15px;
+    padding: 8px 15px;
     border: 1px solid #333; /* Darker border for better contrast */
     border-radius: 8px; /* Rounded corners */
     background-color: #333; /* Dark background for list rows */
@@ -48,8 +64,8 @@
 }
 
 .list-table-format img {
-    width: 80px;
-    height: 60px;
+    width: 45px;
+    height: 35px;
     object-fit: cover;
     border-radius: 4px; /* Rounded corners for images */
 }
@@ -92,16 +108,15 @@
     grid-template-columns: 1fr 2fr 1.5fr 1fr 0.5fr; /* Match the column widths of the table */
     align-items: center;
     gap: 10px;
-    padding: 12px 15px;
+    padding: 6px 9px;
     border: 1px solid #444; /* Darker border for better contrast */
     border-radius: 8px; /* Rounded corners */
     background-color: #444; /* Dark background for filter row */
-    margin-bottom: 10px; /* Spacing between filter row and list */
   }
   
   .filter-input {
     width: 100%;
-    padding: 8px;
+    padding: 4px;
     border: 1px solid #333;
     border-radius: 5px;
     font-size: 14px;

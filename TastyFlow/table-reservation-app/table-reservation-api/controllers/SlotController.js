@@ -215,14 +215,6 @@ const addSlot = async (req, res) => {
     }
   };
   
-  
-  
-  
-  
-  
-  
-  
-
 module.exports = {
   getAllSlots,
   reserveSlot,

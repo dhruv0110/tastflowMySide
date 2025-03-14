@@ -1,0 +1,46 @@
+/* Pagination Container */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto; /* Push pagination to the bottom */
+    padding: 20px 0; /* Add some padding */
+    position: sticky; /* Make pagination sticky */
+    bottom: 0; /* Stick to the bottom */
+    background-color: #1b1c1f; /* Match the background color */
+    z-index: 1; /* Ensure it stays above other content */
+  }
+  
+  /* Pagination Buttons */
+  .pagination-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-width: 40px; /* Ensure buttons have a fixed width */
+    text-align: center; /* Center text inside buttons */
+  }
+  
+  .pagination-button:disabled {
+    background-color: #222;
+    color: #777;
+    cursor: not-allowed;
+  }
+  
+  .pagination-button.active {
+    background-color: #ff4135;
+    color: white;
+    border-color: #ff4135;
+  }
+  
+  /* Ellipsis Styling */
+  .pagination span {
+    color: #fff;
+    font-size: 14px;
+    padding: 0 10px;
+  }
