@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './List.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import Sidebar from '../../components/Sidebar/Sidebar'
+import Sidebar from '../../components/Sidebar/Sidebar';
 import CrossIcon from '../CrossIcon/CrossIcon';
 
 const List = () => {
   const [list, setList] = useState([]);
+  const [nameFilter, setNameFilter] = useState(''); // Filter for Name
+  const [categoryFilter, setCategoryFilter] = useState(''); // Filter for Category
+  const [priceFilter, setPriceFilter] = useState(''); // Filter for Price
 
   const fetchList = async () => {
     try {
@@ -35,9 +38,24 @@ const List = () => {
     }
   };
 
+  // Clear all filters
+  const clearFilters = () => {
+    setNameFilter('');
+    setCategoryFilter('');
+    setPriceFilter('');
+  };
+
   useEffect(() => {
     fetchList();
   }, []);
+
+  // Filter the list based on all filter criteria
+  const filteredList = list.filter((item) => {
+    const matchesName = item.name.toLowerCase().includes(nameFilter.toLowerCase());
+    const matchesCategory = item.category.toLowerCase().includes(categoryFilter.toLowerCase());
+    const matchesPrice = item.price.toString().includes(priceFilter);
+    return matchesName && matchesCategory && matchesPrice;
+  });
 
   return (
     <div style={{ display: "flex" }}>
@@ -53,15 +71,52 @@ const List = () => {
               <b>Price</b>
               <b>Action</b>
             </div>
-            {list.map((item, index) => (
-              <div key={index} className="list-table-format">
-                <img src={`http://localhost:5000/uploads/${item.image}`} alt={item.name} />
-                <p>{item.name}</p>
-                <p>{item.category}</p>
-                <p>${item.price}</p>
-                <CrossIcon onClick={() => removeFood(item._id)} />
-              </div>
-            ))}
+            {/* Filter Inputs Row */}
+            <div className="list-table-format filter-row">
+              <div></div> {/* Placeholder for Image column */}
+              <input
+                type="text"
+                placeholder="Filter by Name"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+                className="filter-input"
+              />
+              <input
+                type="text"
+                placeholder="Filter by Category"
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="filter-input"
+              />
+              <input
+                type="text"
+                placeholder="Filter by Price"
+                value={priceFilter}
+                onChange={(e) => setPriceFilter(e.target.value)}
+                className="filter-input"
+              />
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="clear-filter-button"
+              >
+                Clear
+              </button>
+            </div>
+            {/* Display Filtered List */}
+            {filteredList.length === 0 ? (
+              <div className="no-data-message">No matching food items found.</div>
+            ) : (
+              filteredList.map((item, index) => (
+                <div key={index} className="list-table-format">
+                  <img src={`http://localhost:5000/uploads/${item.image}`} alt={item.name} />
+                  <p>{item.name}</p>
+                  <p>{item.category}</p>
+                  <p>${item.price}</p>
+                  <CrossIcon onClick={() => removeFood(item._id)} />
+                </div>
+              ))
+            )}
           </div>
         </form>
       </div>

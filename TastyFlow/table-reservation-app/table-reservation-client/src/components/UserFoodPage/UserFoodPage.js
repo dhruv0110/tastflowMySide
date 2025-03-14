@@ -14,6 +14,7 @@ const UserFoodPage = () => {
   const [invoiceId, setInvoiceId] = useState(null);
   const [isSelectionSaved, setIsSelectionSaved] = useState(false); // Track if the selection is saved
   const [isModalOpen, setIsModalOpen] = useState(false); // Control modal visibility
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
 
   useEffect(() => {
     // Fetch food items
@@ -40,6 +41,11 @@ const UserFoodPage = () => {
       console.error("No token found");
     }
   }, [userId]);
+
+  // Filter foods based on search term
+  const filteredFoods = foods.filter((food) =>
+    food.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const addFoodToUser = (food) => {
     setSelectedFoods((prev) => {
@@ -168,8 +174,18 @@ const UserFoodPage = () => {
       <div className="user-food-page">
         <div className="food-list">
           <h1 className="header">All Foods List</h1>
+          
+          {/* Search Input Field */}
+          <input
+            type="text"
+            placeholder="Search food..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+
           <ul>
-            {foods.map((food) => (
+            {filteredFoods.map((food) => (
               <li key={food._id} className="food-item">
                 <div className="food-details">
                   <img src={`http://localhost:5000/uploads/${food.image}`} alt={food.name} />

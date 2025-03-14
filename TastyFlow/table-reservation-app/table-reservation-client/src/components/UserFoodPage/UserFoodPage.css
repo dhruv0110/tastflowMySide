@@ -291,6 +291,26 @@
   background-color: #e03d2f;
 }
 
+/* Add this to your UserFoodPage.css */
+.search-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: #333;
+  color: white;
+}
+.search-input::placeholder {
+  color: #aaa;
+}
+.search-input:focus {
+  background-color: #333;
+  outline: none;
+  border-color: #333;
+}
+
 /* Make sure everything is responsive on smaller screens */
 @media (max-width: 1024px) {
   .food-list, .selected-foods {

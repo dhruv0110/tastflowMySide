@@ -1,35 +1,43 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import Sidebar from "../../components/Sidebar/Sidebar"; // Import the Sidebar
-import { toast } from "react-toastify"; // Import toast for notifications
+import Sidebar from "../../components/Sidebar/Sidebar";
+import { toast } from "react-toastify";
 import './UsersList.css';
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
-  const [showForm, setShowForm] = useState(false); // To toggle the form visibility
+  const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    contact: "", // Updated to contact for phone number
+    contact: "",
     password: "",
-    confirmPassword: "", // Added confirm password to state
+    confirmPassword: "",
   });
   const { name, email, contact, password, confirmPassword } = formData;
-  const [searchFilter, setSearchFilter] = useState(""); // General search filter (both name and contact)
 
-  // Fetch all users from the backend when the component mounts
+  // Individual filters for each column
+  const [nameFilter, setNameFilter] = useState("");
+  const [emailFilter, setEmailFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage, setUsersPerPage] = useState(5); // Default users per page
+
+  // Fetch all users from the backend
   const fetchUsers = useCallback(async () => {
     try {
       const response = await fetch("http://localhost:5000/api/users/admin/all-users");
       const data = await response.json();
-      setUsers(data); // Set initial list of users
+      setUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
   }, []);
 
   useEffect(() => {
-    fetchUsers(); // Load users when component mounts
+    fetchUsers();
   }, [fetchUsers]);
 
   // Handle input changes in the form
@@ -49,7 +57,6 @@ const UsersList = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate password match
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
@@ -67,16 +74,15 @@ const UsersList = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // After successfully adding the new user, fetch the updated user list
-        fetchUsers(); // Re-fetch the users to include the newly created user
-        setShowForm(false); // Close the form with smooth transition
+        fetchUsers();
+        setShowForm(false);
         setFormData({
           name: "",
           email: "",
-          contact: "", // Reset contact
+          contact: "",
           password: "",
           confirmPassword: "",
-        }); // Reset form data
+        });
         toast.success("New customer added successfully!");
       } else {
         toast.error(result.error || "Error creating new user");
@@ -87,28 +93,70 @@ const UsersList = () => {
     }
   };
 
-  // Filter users based on both contact (phone number) and name
-  const filteredUsers = searchFilter
-    ? users.filter(
-        user =>
-          (user.contact && user.contact.includes(searchFilter)) ||
-          (user.name && user.name.toLowerCase().includes(searchFilter.toLowerCase()))
-      )
-    : users;
+  // Filter users based on individual column filters
+  const filteredUsers = users.filter((user) => {
+    const lowerCaseNameFilter = nameFilter.toLowerCase();
+    return (
+      (nameFilter
+        ? user.name.toLowerCase().includes(lowerCaseNameFilter) ||
+          (user.contact && user.contact.includes(nameFilter)) // Filter by name or phone
+        : true) &&
+      (emailFilter ? user.email.toLowerCase().includes(emailFilter.toLowerCase()) : true) &&
+      (roleFilter ? user.role.toLowerCase().includes(roleFilter.toLowerCase()) : true)
+    );
+  });
+
+  // Pagination logic
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Handle users per page change
+  const handleUsersPerPageChange = (e) => {
+    setUsersPerPage(Number(e.target.value)); // Update users per page
+    setCurrentPage(1); // Reset to the first page
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setNameFilter("");
+    setEmailFilter("");
+    setRoleFilter("");
+    setCurrentPage(1); // Reset to the first page when clearing filters
+  };
 
   return (
     <div style={{ display: "flex" }}>
-      <Sidebar /> {/* Add Sidebar */}
+      <Sidebar />
       <div className="users-list">
         <h1 className="header">Users List</h1>
 
-        {/* Add New Customer Button */}
-        <button
-          className="add-customer-btn"
-          onClick={handleAddNewCustomer}
-        >
-          {showForm ? "Close Form" : "Add New Customer"}
-        </button>
+        {/* Controls Container for Button and Dropdown */}
+        <div className="controls-container">
+          {/* Add New Customer Button */}
+          <button className="add-customer-btn" onClick={handleAddNewCustomer}>
+            {showForm ? "Close Form" : "Add New Customer"}
+          </button>
+
+          {/* Users Per Page Dropdown */}
+          <div className="users-per-page">
+            <label htmlFor="usersPerPage">Users per page:</label>
+            <select
+              id="usersPerPage"
+              value={usersPerPage}
+              onChange={handleUsersPerPageChange}
+            >
+              <option value={1}>1</option>
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+        </div>
 
         {/* Add Customer Form */}
         <div className={`add-customer-form ${showForm ? "show" : ""}`}>
@@ -187,19 +235,7 @@ const UsersList = () => {
           </form>
         </div>
 
-        {/* Phone & Name Filter Input */}
-        <div className="filter-container">
-          <label htmlFor="searchFilter">Filter by Name or Phone:</label>
-          <input
-            type="text"
-            name="searchFilter"
-            value={searchFilter}
-            onChange={e => setSearchFilter(e.target.value)}
-            placeholder="Enter name or contact"
-          />
-        </div>
-
-        {/* Users Table */}
+        {/* Users Table with Individual Filters */}
         <div className="users-table">
           <div className="users-table-format title">
             <b>Name</b>
@@ -207,8 +243,33 @@ const UsersList = () => {
             <b>Role</b>
             <b>Action</b>
           </div>
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
+          {/* Filter Inputs */}
+          <div className="users-table-format filters">
+            <input
+              type="text"
+              placeholder="Filter by Name or Phone"
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Filter by Email"
+              value={emailFilter}
+              onChange={(e) => setEmailFilter(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Filter by Role"
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+            />
+            <button className="clear-filters-btn" onClick={clearFilters}>
+              Clear
+            </button>
+          </div>
+          {/* Users List */}
+          {currentUsers.length > 0 ? (
+            currentUsers.map((user) => (
               <div key={user._id} className="users-table-format">
                 <p>{user.name}</p>
                 <p>{user.email}</p>
@@ -222,6 +283,33 @@ const UsersList = () => {
             <p>No users available</p>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        <div className="pagination">
+  <button
+    onClick={() => paginate(currentPage - 1)}
+    disabled={currentPage === 1}
+    className="pagination-button"
+  >
+    Previous
+  </button>
+  {Array.from({ length: Math.ceil(filteredUsers.length / usersPerPage) }, (_, i) => (
+    <button
+      key={i + 1}
+      onClick={() => paginate(i + 1)}
+      className={`pagination-button ${currentPage === i + 1 ? "active" : ""}`}
+    >
+      {i + 1}
+    </button>
+  ))}
+  <button
+    onClick={() => paginate(currentPage + 1)}
+    disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
+    className="pagination-button"
+  >
+    Next
+  </button>
+</div>
       </div>
     </div>
   );

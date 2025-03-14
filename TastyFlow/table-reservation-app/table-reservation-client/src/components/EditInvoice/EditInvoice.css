@@ -86,31 +86,6 @@
   font-size: 14px;
 }
 
-.food-item-container {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-}
-
-.food-item {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  border: 1px solid #333;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #383a42;
-  justify-content: space-between;
-}
-
-.food-item h5 {
-  width: 100%;
-  margin-bottom: 0.5rem;
-  font-size: 18px;
-  color: #ff9f00;
-}
-
 .edit-invoice-detail .food-details {
   display: flex;
   justify-content: space-between;

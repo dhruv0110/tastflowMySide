@@ -4,14 +4,18 @@
     max-width: 1225px;
     color: #fff;
     font-size: 14px;
-    background-color: #1B1C1F;
+    background-color: #1b1c1f;
     padding: 2rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-top: 1.5px solid #a9a9a9;
     margin: 0 auto;
-}
-
-.users-list .header {
+    position: relative; /* Ensure the container is positioned relative */
+    min-height: 80vh; /* Ensure the container has a minimum height */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .users-list .header {
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 2rem;
@@ -19,82 +23,18 @@
     color: #ff4135;
     border-bottom: 2px solid #ff4135;
     padding-bottom: 1rem;
-}
-
-.users-table {
+  }
+  
+  /* Controls Container Styles */
+  .controls-container {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.users-table-format {
-    display: grid;
-    grid-template-columns: 2fr 3fr 2fr 1fr;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
-    padding: 12px 15px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    background-color: #333;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    cursor: pointer;
-}
-
-.users-table-format:hover {
-    background-color: #444;
-    transform: scale(1.02);
-}
-
-.users-table-format b {
-    font-weight: 600;
-    color: #ff4135;
-}
-
-.users-table-format p {
-    margin: 0;
-    color: #fff;
-}
-
-.users-table-format .cursor {
-    color: #ff4135;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.users-table-format .cursor:hover {
-    color: #ff6f61;
-}
-
-.no-data-message {
-    text-align: center;
-    color: #888;
-    font-size: 1.2rem;
-    padding: 2rem;
-}
-
-.cursor {
-    text-decoration: none;
-}
-
-/* New Button to Add Customer */
-.add-customer-form {
-    display: block;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transform: translateY(-20px);
-    transition: max-height 0.5s ease-out, opacity 0.5s ease-out, transform 0.5s ease-out;
-    margin-top: 20px;
-}
-
-.add-customer-form.show {
-    max-height: 500px;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.add-customer-btn {
+    gap: 20px; /* Space between button and dropdown */
+  }
+  
+  /* Add New Customer Button */
+  .add-customer-btn {
     padding: 10px 20px;
     font-size: 16px;
     background-color: #007bff;
@@ -103,195 +43,356 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-bottom: 20px;
-}
-
-.add-customer-btn:hover {
+  }
+  
+  .add-customer-btn:hover {
     background-color: #0056b3;
-}
-
-/* Form styles */
-.add-customer-form .form-group {
+  }
+  
+  /* Users Per Page Dropdown Styles */
+  .users-per-page {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .users-per-page label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+  }
+  
+  .users-per-page select {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .users-per-page select:hover {
+    background-color: #444;
+    border-color: #666;
+  }
+  
+  .users-per-page select:focus {
+    outline: none;
+    border-color: #ff4135;
+  }
+  
+  /* Users Table Styles */
+  .users-table {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .users-table-format {
+    display: grid;
+    grid-template-columns: 2fr 3fr 2fr 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 9px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .users-table-format:hover {
+    background-color: #444;
+    transform: scale(1.02);
+  }
+  
+  .users-table-format b {
+    font-weight: 600;
+    color: #ff4135;
+  }
+  
+  .users-table-format p {
+    margin: 0;
+    color: #fff;
+  }
+  
+  .users-table-format .cursor {
+    color: #ff4135;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .users-table-format .cursor:hover {
+    color: #ff6f61;
+  }
+  
+  .no-data-message {
+    text-align: center;
+    color: #888;
+    font-size: 1.2rem;
+    padding: 2rem;
+  }
+  
+  .cursor {
+    text-decoration: none;
+  }
+  
+  /* Filter Inputs Styles */
+  .users-table-format.filters {
+    display: grid;
+    grid-template-columns: 2fr 3fr 2fr 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 9px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background-color: #444;
+  }
+  
+  .users-table-format.filters input {
+    width: 100%;
+    padding: 4px;
+    font-size: 14px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #333;
+    color: #fff;
+    transition: border-color 0.3s ease;
+  }
+  
+  .users-table-format.filters input:focus {
+    border-color: #333;
+    outline: none;
+  }
+  
+  .clear-filters-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #ff4135;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .clear-filters-btn:hover {
+    background-color: #e03d2f;
+  }
+  
+  /* Pagination Styles */
+/* Pagination Container */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto; /* Push pagination to the bottom */
+    padding: 20px 0; /* Add some padding */
+    position: sticky; /* Make pagination sticky */
+    bottom: 0; /* Stick to the bottom */
+    background-color: #1b1c1f; /* Match the background color */
+    z-index: 1; /* Ensure it stays above other content */
+  }
+  
+  .pagination-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-width: 40px; /* Ensure buttons have a fixed width */
+    text-align: center; /* Center text inside buttons */
+  }
+  
+  
+  .pagination-button:disabled {
+    background-color: #222;
+    color: #777;
+    cursor: not-allowed;
+  }
+  
+  .pagination-button.active {
+    background-color: #ff4135;
+    color: white;
+    border-color: #ff4135;
+  }
+  
+  /* Add Customer Form Styles */
+  .add-customer-form {
+    display: block;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-20px);
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out, transform 0.5s ease-out;
+    margin-top: 20px;
+  }
+  
+  .add-customer-form.show {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .add-customer-form .form-group {
     margin-bottom: 15px;
-}
-
-.add-customer-form .form-group label {
+  }
+  
+  .add-customer-form .form-group label {
     font-size: 14px;
     font-weight: bold;
     color: #9b9999;
-}
-
-.add-customer-form .form-group input {
+  }
+  
+  .add-customer-form .form-group input {
     width: 100%;
     padding: 10px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
-}
-
-.add-customer-form .form-group button {
+  }
+  
+  .add-customer-form .form-group button {
     padding: 10px 20px;
     background-color: #ff4135;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-}
-
-.add-customer-form .form-group button:hover {
+  }
+  
+  .add-customer-form .form-group button:hover {
     background-color: #e03d2f;
-}
-
-/* Two-column form group for side-by-side fields */
-.add-customer-form .form-group.double {
+  }
+  
+  /* Two-column form group for side-by-side fields */
+  .add-customer-form .form-group.double {
     display: flex;
     gap: 20px;
-}
-
-.add-customer-form .form-group.double > div {
+  }
+  
+  .add-customer-form .form-group.double > div {
     flex: 1;
-}
-
-/* Filter container styling */
-.filter-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.filter-container label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #fff;
-}
-
-.filter-container input {
-    padding: 8px 12px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #333;
-    color: #fff;
-    width: 200px;
-    transition: border-color 0.3s ease;
-}
-
-.filter-container input:focus {
-    border-color: #ff4135;
-    outline: none;
-}
-
-/* Media queries for responsiveness */
-@media (max-width: 1024px) {
+  }
+  
+  /* Media queries for responsiveness */
+  @media (max-width: 1024px) {
     /* For tablets */
     .users-list {
-        padding: 1.5rem;
+      padding: 1.5rem;
     }
-
+  
     .users-table-format {
-        grid-template-columns: 1fr 1fr 1fr 1fr; /* Adjust the columns to fit tablets */
+      grid-template-columns: 1fr 1fr 1fr 1fr; /* Adjust the columns to fit tablets */
     }
-
+  
     .add-customer-btn {
-        font-size: 14px;
-        padding: 8px 15px;
+      font-size: 14px;
+      padding: 8px 15px;
     }
-
+  
     .add-customer-form .form-group.double {
-        flex-direction: column;
-        gap: 10px;
+      flex-direction: column;
+      gap: 10px;
     }
-
-    .filter-container input {
-        width: 150px; /* Make the search input smaller for smaller screens */
+  
+    .users-table-format.filters input {
+      width: 100%; /* Make the search input full width on smaller screens */
     }
-}
-
-@media (max-width: 768px) {
+  }
+  
+  @media (max-width: 768px) {
     /* For smaller tablets and large mobile devices */
     .users-list {
-        padding: 1rem;
+      padding: 1rem;
     }
-
+  
     .users-table-format {
-        grid-template-columns: 1fr 1fr 1fr; /* Stack columns for better visibility */
+      grid-template-columns: 1fr 1fr 1fr; /* Stack columns for better visibility */
     }
-    .users-table .title{
-        display: none;
+    .users-table .title {
+      display: none;
     }
-
+  
     .add-customer-btn {
-        font-size: 14px;
-        padding: 8px 12px;
+      font-size: 14px;
+      padding: 8px 12px;
     }
-
-    .filter-container input {
-        width: 100%; /* Make the input full width on smaller screens */
+  
+    .users-table-format.filters {
+      grid-template-columns: 1fr 1fr 1fr; /* Adjust filter inputs for smaller screens */
     }
-
-    .add-customer-form .form-group.double {
-        flex-direction: column;
-        gap: 15px; /* Increase gap for better spacing */
+  
+    .clear-filters-btn {
+      grid-column: span 3; /* Make the clear button span all columns */
     }
-
-    .add-customer-form .form-group label,
-    .add-customer-form .form-group input {
-        font-size: 16px; /* Increase font size for better readability */
-    }
-}
-
-@media (max-width: 480px) {
+  }
+  
+  @media (max-width: 480px) {
     /* For mobile screens */
     .users-list {
-        padding: 1rem;
+      padding: 1rem;
     }
-
+  
     .users-table-format {
-        grid-template-columns: 1fr 1fr; /* Two columns layout for mobile */
+      grid-template-columns: 1fr 1fr; /* Two columns layout for mobile */
     }
-
+  
     .add-customer-btn {
-        font-size: 14px;
-        padding: 8px 12px;
+      font-size: 14px;
+      padding: 8px 12px;
     }
-
+  
     .add-customer-form .form-group {
-        font-size: 16px;
+      font-size: 16px;
     }
-
+  
     .add-customer-form .form-group.double {
-        flex-direction: column;
+      flex-direction: column;
     }
-
-    .filter-container input {
-        width: 100%;
-        font-size: 16px; /* Larger text for smaller screens */
+  
+    .users-table-format.filters {
+      grid-template-columns: 1fr 1fr; /* Adjust filter inputs for mobile */
     }
-
-    .filter-container label {
-        font-size: 16px;
+  
+    .clear-filters-btn {
+      grid-column: span 2; /* Make the clear button span all columns */
     }
-}
-
-@media (max-width: 360px) {
+  }
+  
+  @media (max-width: 360px) {
     /* For very small screens (e.g., smaller phones) */
     .users-list {
-        padding: 0.5rem;
+      padding: 0.5rem;
     }
-
+  
     .add-customer-form .form-group input,
-    .filter-container input {
-        font-size: 14px;
-        padding: 8px;
+    .users-table-format.filters input {
+      font-size: 14px;
+      padding: 8px;
     }
-
+  
     .add-customer-btn {
-        font-size: 12px;
-        padding: 6px 10px;
+      font-size: 12px;
+      padding: 6px 10px;
     }
-
+  
     .users-table-format {
-        grid-template-columns: 1fr; /* Stack all content vertically */
+      grid-template-columns: 1fr; /* Stack all content vertically */
     }
-}
+  
+    .users-table-format.filters {
+      grid-template-columns: 1fr; /* Stack filter inputs vertically */
+    }
+  
+    .clear-filters-btn {
+      grid-column: span 1; /* Make the clear button span all columns */
+    }
+  }
