@@ -17,7 +17,11 @@ const invoiceSchema = new mongoose.Schema(
     invoiceNumber: { type: Number, required: true }, // Add invoiceNumber field
     cgst : {type: Number, required: true},
     sgst : {type: Number, required: true},
-    roundOff : {type: Number, required: true}
+    roundOff : {type: Number, required: true},
+    reservedTableInfo: { // Add reserved table information
+      tableNumber: { type: Number },
+      slotTime: { type: String },
+    },
   },
   { timestamps: true }
 );

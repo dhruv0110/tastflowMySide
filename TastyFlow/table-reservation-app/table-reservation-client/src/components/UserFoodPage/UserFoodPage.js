@@ -16,6 +16,7 @@ const UserFoodPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Control modal visibility
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [addedFoods, setAddedFoods] = useState([]); // Track added food IDs
+  const [reservationId, setReservationId] = useState(null); // Track reservation ID
 
   useEffect(() => {
     // Fetch food items
@@ -36,6 +37,13 @@ const UserFoodPage = () => {
         .then((response) => response.json())
         .then((data) => {
           setUser(data);
+          // Find the latest succeeded payment and set the reservationId
+          const succeededPayment = data.payments.find(
+            (payment) => payment.status === "succeeded"
+          );
+          if (succeededPayment) {
+            setReservationId(succeededPayment.reservationId);
+          }
         })
         .catch((err) => console.error("Error fetching user data:", err));
     } else {
@@ -119,14 +127,15 @@ const UserFoodPage = () => {
       toast.error("Please click 'Save Selection' first.");
       return; // Stop the invoice generation process if the selection isn't saved
     }
-    const cgstAmount = (total * 0.025);
-    const sgstAmount = (total * 0.025);
+
+    const cgstAmount = total * 0.025;
+    const sgstAmount = total * 0.025;
 
     // Round off logic
-    const totalBeforeRoundOff =
-      total + parseFloat(cgstAmount) + parseFloat(sgstAmount);
+    const totalBeforeRoundOff = total + cgstAmount + sgstAmount;
     const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
     const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
+
     const invoiceData = {
       userId: userId,
       foods: selectedFoods.map((food) => ({
@@ -139,6 +148,7 @@ const UserFoodPage = () => {
       cgst: cgstAmount.toFixed(2),
       sgst: sgstAmount.toFixed(2),
       roundOff: roundOffAmount.toFixed(2),
+      reservationId: reservationId, // Pass the reservationId to the backend
     };
 
     fetch("http://localhost:5000/api/invoice/create", {

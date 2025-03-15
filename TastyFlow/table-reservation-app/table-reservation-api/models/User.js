@@ -59,6 +59,8 @@ const userSchema = new mongoose.Schema({
       amount: Number,
       currency: String,
       status: String,
+      reservationId: mongoose.Schema.Types.ObjectId, // Add this field
+      deducted: { type: Boolean, default: false }, // Track if ₹100 is deducted
       createdAt: { type: Date, default: Date.now },
     },
   ],

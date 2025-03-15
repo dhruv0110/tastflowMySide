@@ -4,23 +4,54 @@ const express = require("express");
 const router = express.Router();
 const Invoice = require("../models/Invoice");
 const User = require("../models/User");
+const Slot1 = require("../models/Slot1");
+const Slot2 = require("../models/Slot2");
+const Slot3 = require("../models/Slot3");
 
 // Create an invoice
 router.post("/create", async (req, res) => {
   try {
-    const { userId, foods, totalAmount, cgst, sgst, roundOff } = req.body;
-
+    const { userId, foods, totalAmount, cgst, sgst, roundOff, reservationId } = req.body;
 
     // Find the user by ID
     const user = await User.findById(userId);
-
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Find the payment corresponding to the current reservation
+    const payment = user.payments.find(
+      (p) =>
+        p.reservationId.toString() === reservationId &&
+        p.status === "succeeded" &&
+        !p.deducted // Only deduct if not already deducted
+    );
+
+    let finalTotalAmount = totalAmount;
+    let reservedTableInfo = null;
+
+    if (payment && totalAmount >= 100) {
+      finalTotalAmount -= 100; // Deduct ₹100 if payment is succeeded and totalAmount >= 100
+      payment.deducted = true; // Mark the payment as deducted
+      await user.save(); // Save the updated user document
+
+      // Find the reserved slot information
+      const slot1 = await Slot1.findOne({ _id: reservationId });
+      const slot2 = await Slot2.findOne({ _id: reservationId });
+      const slot3 = await Slot3.findOne({ _id: reservationId });
+
+      const reservedSlot = slot1 || slot2 || slot3;
+      if (reservedSlot) {
+        reservedTableInfo = {
+          tableNumber: reservedSlot.number,
+          slotTime: getSlotTime(reservedSlot.alwaysOne),
+        };
+      }
+    }
+
     // Get the last invoice number and increment it
-    const lastInvoice = await Invoice.findOne().sort({ invoiceNumber: -1 }); // Find the latest invoice
-    const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1; // Increment the last invoice number or start at 1
+    const lastInvoice = await Invoice.findOne().sort({ invoiceNumber: -1 });
+    const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1;
 
     // Prepare invoice data
     const invoice = new Invoice({
@@ -32,11 +63,12 @@ router.post("/create", async (req, res) => {
         quantity: food.quantity,
         total: food.quantity * food.price,
       })),
-      totalAmount,
-      invoiceNumber, // Set the generated invoice number
+      totalAmount: finalTotalAmount,
+      invoiceNumber,
       cgst,
       sgst,
-      roundOff
+      roundOff,
+      reservedTableInfo, // Include reserved table information
     });
 
     // Save the invoice to the database
@@ -51,6 +83,18 @@ router.post("/create", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+// Helper function to get slot time
+const getSlotTime = (slotNumber) => {
+  if (slotNumber === 1) {
+    return '5:00 PM to 7:00 PM';
+  } else if (slotNumber === 2) {
+    return '7:00 PM to 9:00 PM';
+  } else if (slotNumber === 3) {
+    return '9:00 PM to 11:00 PM';
+  }
+  return 'Unknown time range';
+};
 
 // Get all invoices
 router.get("/admin/all-invoice", async (req, res) => {
@@ -142,9 +186,5 @@ router.get("/admin/invoices/:userId", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-
-
-
 
 module.exports = router;

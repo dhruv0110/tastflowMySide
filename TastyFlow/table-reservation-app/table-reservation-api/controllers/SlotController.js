@@ -64,26 +64,18 @@ const createPaymentIntent = async (req, res) => {
 // Reserve slot
 const reserveSlot = async (req, res) => {
   try {
-    const { number, paymentIntentId } = req.body; // Table number and payment intent ID
-    const userId = req.user.id; // User ID from the token
-    const slotNumber = parseInt(req.params.slotNumber); // Slot number from URL
-
-    console.log('Reserving table:', { number, paymentIntentId, userId, slotNumber });
-
-    // Dynamically get the slot model based on slotNumber
+    const { number, paymentIntentId } = req.body;
+    const userId = req.user.id;
+    const slotNumber = parseInt(req.params.slotNumber);
     const Slot = getSlotModel(slotNumber);
-
-    // Find the slot by number
     const slot = await Slot.findOne({ number });
 
     if (!slot) {
-      console.error('Slot not found:', number);
-      return res.status(404).json({ message: 'Slot not found' });
+      return res.status(404).json({ message: "Slot not found" });
     }
 
     if (slot.reserved) {
-      console.error('Slot already reserved:', number);
-      return res.status(400).json({ message: 'Slot is already reserved' });
+      return res.status(400).json({ message: "Slot is already reserved" });
     }
 
     // Reserve the slot
@@ -91,22 +83,21 @@ const reserveSlot = async (req, res) => {
     slot.reservedBy = userId;
     await slot.save();
 
-    // Optionally, store payment data in the user
+    // Record the payment in the user's payments array
     const user = await User.findById(userId);
     if (user) {
       user.payments.push({
         paymentIntentId,
         amount: 100, // Amount in INR
-        currency: 'inr',
-        status: 'succeeded',
+        currency: "inr",
+        status: "succeeded", // Ensure the status is set to "succeeded"
+        reservationId: slot._id, // Link the payment to the reservation
       });
       await user.save();
     }
 
-    console.log('Slot reserved successfully:', slot);
-    res.status(200).json({ message: 'Slot reserved successfully', slot });
+    res.status(200).json({ message: "Slot reserved successfully", slot });
   } catch (error) {
-    console.error('Error reserving slot:', error);
     res.status(500).json({ message: error.message });
   }
 };
