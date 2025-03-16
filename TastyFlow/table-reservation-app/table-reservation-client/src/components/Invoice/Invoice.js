@@ -385,12 +385,12 @@ const Invoice = ({ invoiceId, user }) => {
 
       {/* Final Total */}
       <div className="final-total">
-        <div>Total Amount in Words:</div>
-        <div>{toWords(invoice.totalAmount)} Only</div>
-      </div>
-      <div className="final-total">
         <div><strong>Total Amount Payable (₹):</strong></div>
         <div>{invoice.totalAmount.toFixed(2)}</div>
+      </div>
+      <div className="final-total">
+        <div>Total Amount in Words:</div>
+        <div>{toWords(invoice.totalAmount)} Only</div>
       </div>
       <hr />
 

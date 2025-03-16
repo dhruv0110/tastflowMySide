@@ -64,6 +64,7 @@ router.post("/create", async (req, res) => {
           reservedTableInfo = {
             tableNumber: reservedSlot.tableNumber,
             slotTime: getSlotTime(reservedSlot.slotNumber),
+            date: new Date(),
           };
         }
       }

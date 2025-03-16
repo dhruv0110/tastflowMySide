@@ -1,68 +1,181 @@
+/* UserInvoiceList.css */
+
 .invoice-detail {
-    width: 100%;
-    max-width: 1225px;
-    color: #fff; /* White text color for better readability */
-    font-size: 14px;
-    background-color: #1B1C1F; /* Dark background for the list container */
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
-    border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
-    margin: 0 auto;
+  width: 100%;
+  max-width: 1225px;
+  color: #fff; /* White text color for better readability */
+  font-size: 14px;
+  background-color: #1b1c1f; /* Dark background for the list container */
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+  border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
+  margin: 0 auto;
 }
 
 .invoice-detail .header {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-    text-align: center;
-    color: #ff4135; /* Accent color */
-    border-bottom: 2px solid #ff4135;
-    padding-bottom: 1rem;
-  }
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #ff4135; /* Accent color */
+  border-bottom: 2px solid #ff4135;
+  padding-bottom: 1rem;
+}
 
-  .invoice-name {
-    text-align: center; /* Center user name */
-    font-size: 24px; /* Larger font size for emphasis */
-    margin-bottom: 20px; /* Space below the name */
-  }
+.invoice-detail .edit-container {
+  background-color: #2a2b2f; /* Darker background for the edit container */
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-  .invoice-detail .tax-details {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
+.invoice-detail .form-section {
+  margin-bottom: 2rem;
+}
 
-  .invoice-detail .tax-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 20%; /* Make it responsive for 4 columns */
-    margin-bottom: 1rem;
-  }
+.invoice-detail .form-section p {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ff9f00; /* Yellow accent color */
+}
 
-  .invoice-detail  .invoice-table-format {
-    display: grid;
-    grid-template-columns: 2fr 3fr 2fr 2fr 2fr;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 15px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    background-color: #333;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    cursor: pointer;
-  }
+.invoice-detail .tax-details {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
 
-  .user-invoice-form{
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 1rem;
-  }
+.invoice-detail .tax-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20%; /* Make it responsive for 4 columns */
+  margin-bottom: 1rem;
+}
 
-  .invoice-detail .form-section p {
-    font-weight: bold;
-    font-size: 16px;
-    color: #ff9f00; /* Yellow accent color */
-  }
+.invoice-detail .tax-item label {
+  font-weight: bold;
+  color: #ff9f00; /* Yellow accent color */
+  margin-bottom: 0.5rem;
+}
+
+.invoice-detail .tax-item p {
+  font-size: 16px;
+  color: #fff;
+}
+
+.invoice-detail .user-details {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background-color: #333;
+}
+
+.invoice-detail .user-details h4 {
+  font-size: 1.2rem;
+  color: #ff9f00; /* Yellow accent color */
+  margin-bottom: 1rem;
+}
+
+.invoice-detail .user-details p {
+  margin: 0.5rem 0;
+  color: #fff;
+}
+
+.invoice-detail .invoice-table-format {
+  display: grid;
+  grid-template-columns: 2fr 3fr 2fr 2fr 2fr;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background-color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.invoice-detail .invoice-table-format.title {
+  background-color: #444;
+  font-weight: bold;
+  color: #ff9f00; /* Yellow accent color */
+}
+
+.invoice-detail .invoice-table-format p {
+  margin: 0;
+  color: #fff;
+}
+
+.user-invoice-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 2rem;
+}
+
+.invoice-detail .reservation-details {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background-color: #333;
+}
+
+.reservation-details h4 {
+  font-size: 1.2rem;
+  color: #ff9f00; /* Yellow accent color */
+  margin-bottom: 1rem;
+}
+
+.reservation-details p {
+  margin: 0.5rem 0;
+  color: #fff;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.print-invoice-btn,
+.send-invoice-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.print-invoice-btn {
+  background-color: #007bff; /* Blue color for print button */
+  color: #fff;
+}
+
+.print-invoice-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: translateY(-2px);
+}
+
+.send-invoice-btn {
+  background-color: #28a745; /* Green color for send button */
+  color: #fff;
+}
+
+.send-invoice-btn:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: translateY(-2px);
+}
+
+.print-invoice-btn:disabled,
+.send-invoice-btn:disabled {
+  background-color: #6c757d; /* Gray color for disabled buttons */
+  cursor: not-allowed;
+  transform: none;
+}

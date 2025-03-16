@@ -32,7 +32,75 @@
   display: none; /* Chrome, Safari, Opera */
 }
 
+/* Dropdown Container */
+.reserved-tables select {
+  width: 100%;
+  padding: 12px 40px 12px 16px; /* More padding for better spacing */
+  margin-bottom: 20px;
+  border: 2px solid #444; /* Thicker border for a polished look */
+  border-radius: 8px;
+  background-color: #333;
+  color: white;
+  font-size: 16px;
+  font-family: 'Arial', sans-serif; /* Use a clean, modern font */
+  appearance: none; /* Remove default arrow */
+  -webkit-appearance: none; /* Remove default arrow for Safari */
+  -moz-appearance: none; /* Remove default arrow for Firefox */
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transition for all properties */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
 
+/* Dropdown Arrow */
+.reserved-tables {
+  position: relative;
+}
+
+.reserved-tables::after {
+  content: "▼";
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #FF4135;
+  font-size: 12px;
+  transition: color 0.3s ease; /* Smooth color transition */
+}
+
+/* Dropdown Hover and Focus States */
+.reserved-tables select:hover {
+  border-color: #FF4135;
+  box-shadow: 0 2px 12px rgba(255, 65, 53, 0.2); /* Enhanced shadow on hover */
+}
+
+.reserved-tables select:focus {
+  outline: none;
+  border-color: #FF4135;
+  box-shadow: 0 0 8px rgba(255, 65, 53, 0.5); /* Glow effect on focus */
+}
+
+/* Dropdown Options */
+.reserved-tables select option {
+  background-color: #333;
+  color: white;
+  padding: 12px 16px; /* More padding for better readability */
+  font-size: 16px;
+  font-family: 'Arial', sans-serif; /* Consistent font for options */
+}
+
+/* Dropdown Option Hover State */
+.reserved-tables select option:hover {
+  background-color: #FF4135;
+  color: white;
+}
+
+/* Dropdown Option Selected State */
+.reserved-tables select option:checked {
+  background-color: #FF4135;
+  color: white;
+  font-weight: bold; /* Highlight selected option */
+}
 
 
 /* Existing styles from your previous code */

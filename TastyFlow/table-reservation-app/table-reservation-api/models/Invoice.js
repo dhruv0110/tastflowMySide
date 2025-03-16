@@ -21,6 +21,7 @@ const invoiceSchema = new mongoose.Schema(
     reservedTableInfo: { // Add reserved table information
       tableNumber: { type: Number },
       slotTime: { type: String },
+      date: { type: Date },
     },
   },
   { timestamps: true }
