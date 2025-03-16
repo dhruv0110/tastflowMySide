@@ -91,6 +91,8 @@ const reserveSlot = async (req, res) => {
         amount: 100, // Amount in INR
         currency: "inr",
         status: "succeeded", // Ensure the status is set to "succeeded"
+        tableNumber : number, // Add table number to payment
+        slotTime: getSlotTime(slotNumber), // Add slot time to payment
         reservationId: slot._id, // Link the payment to the reservation
       });
       await user.save();

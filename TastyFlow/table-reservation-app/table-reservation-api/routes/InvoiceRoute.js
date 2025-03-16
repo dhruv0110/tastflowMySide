@@ -1,12 +1,10 @@
-// routes/invoice.js
-
 const express = require("express");
 const router = express.Router();
 const Invoice = require("../models/Invoice");
 const User = require("../models/User");
-const Slot1 = require("../models/Slot1");
-const Slot2 = require("../models/Slot2");
-const Slot3 = require("../models/Slot3");
+const Slot1 = require("../models/Slot1"); // Import Slot1 model
+const Slot2 = require("../models/Slot2"); // Import Slot2 model
+const Slot3 = require("../models/Slot3"); // Import Slot3 model
 
 // Create an invoice
 router.post("/create", async (req, res) => {
@@ -35,12 +33,12 @@ router.post("/create", async (req, res) => {
       payment.deducted = true; // Mark the payment as deducted
       await user.save(); // Save the updated user document
 
-      // Find the reserved slot information
+      // Dynamically find the reserved slot information from Slot1, Slot2, or Slot3
       const slot1 = await Slot1.findOne({ _id: reservationId });
       const slot2 = await Slot2.findOne({ _id: reservationId });
       const slot3 = await Slot3.findOne({ _id: reservationId });
 
-      const reservedSlot = slot1 || slot2 || slot3;
+      const reservedSlot = slot1 || slot2 || slot3; // Use the first found slot
       if (reservedSlot) {
         reservedTableInfo = {
           tableNumber: reservedSlot.number,
@@ -114,7 +112,6 @@ router.get("/admin/all-invoice", async (req, res) => {
   }
 });
 
-
 // Get an invoice by ID
 router.get("/admin/:invoiceId", async (req, res) => {
   try {
@@ -183,6 +180,38 @@ router.get("/admin/invoices/:userId", async (req, res) => {
     res.json(invoices);
   } catch (err) {
     console.error("Error fetching invoices by userId:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Backend logic to fetch user data
+router.get("/admin/getuser/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).populate("payments");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Add tableNumber and slotTime to each payment
+    const paymentsWithTableInfo = await Promise.all(
+      user.payments.map(async (payment) => {
+        // Dynamically find the reserved slot information from Slot1, Slot2, or Slot3
+        const slot1 = await Slot1.findOne({ _id: payment.reservationId });
+        const slot2 = await Slot2.findOne({ _id: payment.reservationId });
+        const slot3 = await Slot3.findOne({ _id: payment.reservationId });
+
+        const reservedSlot = slot1 || slot2 || slot3; // Use the first found slot
+        return {
+          ...payment.toObject(),
+          tableNumber: reservedSlot ? reservedSlot.number : null,
+          slotTime: reservedSlot ? getSlotTime(reservedSlot.alwaysOne) : null,
+        };
+      })
+    );
+
+    res.json({ ...user.toObject(), payments: paymentsWithTableInfo });
+  } catch (err) {
+    console.error("Error fetching user data:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });

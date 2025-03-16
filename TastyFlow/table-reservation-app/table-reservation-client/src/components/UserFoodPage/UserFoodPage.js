@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Invoice from "../Invoice/Invoice"; // Import the Invoice component
-import './UserFoodPage.css'; // Add your CSS styles
+import Invoice from "../Invoice/Invoice";
+import './UserFoodPage.css';
 import { toast } from "react-toastify";
 
 const UserFoodPage = () => {
@@ -12,11 +12,12 @@ const UserFoodPage = () => {
   const [user, setUser] = useState(null);
   const [invoiceGenerated, setInvoiceGenerated] = useState(false);
   const [invoiceId, setInvoiceId] = useState(null);
-  const [isSelectionSaved, setIsSelectionSaved] = useState(false); // Track if the selection is saved
-  const [isModalOpen, setIsModalOpen] = useState(false); // Control modal visibility
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
-  const [addedFoods, setAddedFoods] = useState([]); // Track added food IDs
-  const [reservationId, setReservationId] = useState(null); // Track reservation ID
+  const [isSelectionSaved, setIsSelectionSaved] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [addedFoods, setAddedFoods] = useState([]);
+  const [reservations, setReservations] = useState([]);
+  const [selectedReservation, setSelectedReservation] = useState(null);
 
   useEffect(() => {
     // Fetch food items
@@ -36,14 +37,23 @@ const UserFoodPage = () => {
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log("User Data:", data); // Debugging
           setUser(data);
-          // Find the latest succeeded payment and set the reservationId
-          const succeededPayment = data.payments.find(
-            (payment) => payment.status === "succeeded"
+
+          // Filter succeeded payments and set reservations
+          const succeededPayments = data.payments.filter(
+            (payment) => payment.status === "succeeded" && !payment.deducted
           );
-          if (succeededPayment) {
-            setReservationId(succeededPayment.reservationId);
-          }
+
+          // Ensure tableNumber and slotTime are included
+          const reservationsWithTableInfo = succeededPayments.map((payment) => ({
+            reservationId: payment.reservationId,
+            tableNumber: payment.tableNumber,
+            slotTime: payment.slotTime,
+          }));
+
+          console.log("Reservations:", reservationsWithTableInfo); // Debugging
+          setReservations(reservationsWithTableInfo);
         })
         .catch((err) => console.error("Error fetching user data:", err));
     } else {
@@ -56,82 +66,69 @@ const UserFoodPage = () => {
     food.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Add food to user's selection
   const addFoodToUser = (food) => {
     setSelectedFoods((prev) => {
       const existingFoodIndex = prev.findIndex((f) => f.foodId === food._id);
-
-      if (existingFoodIndex > -1) {
-        return prev; // If the food is already added, do nothing
-      }
-
+      if (existingFoodIndex > -1) return prev;
       const updatedFoods = [
         ...prev,
-        {
-          foodId: food._id,
-          category: food.category,
-          name: food.name,
-          price: food.price,
-          quantity: 1,
-        },
+        { foodId: food._id, name: food.name, price: food.price, quantity: 1 },
       ];
       updateTotal(updatedFoods);
       return updatedFoods;
     });
-
-    // Add the food ID to the addedFoods state
     setAddedFoods((prev) => [...prev, food._id]);
   };
 
+  // Update total price
   const updateTotal = (foods) => {
     const total = foods.reduce((sum, food) => sum + food.price * food.quantity, 0);
     setTotal(total);
   };
 
+  // Increase food quantity
   const increaseQuantity = (foodId) => {
     setSelectedFoods((prev) => {
-      const updatedFoods = prev.map((food) => {
-        if (food.foodId === foodId) {
-          return { ...food, quantity: food.quantity + 1 };
-        }
-        return food;
-      });
+      const updatedFoods = prev.map((food) =>
+        food.foodId === foodId ? { ...food, quantity: food.quantity + 1 } : food
+      );
       updateTotal(updatedFoods);
       return updatedFoods;
     });
   };
 
+  // Decrease food quantity
   const decreaseQuantity = (foodId) => {
     setSelectedFoods((prev) => {
       const updatedFoods = prev
-        .map((food) => {
-          if (food.foodId === foodId && food.quantity > 0) {
-            return { ...food, quantity: food.quantity - 1 };
-          }
-          return food;
-        })
-        .filter((food) => food.quantity > 0); // Remove foods with quantity 0
-
-      // If the quantity of a food item reaches 0, remove it from addedFoods
+        .map((food) =>
+          food.foodId === foodId && food.quantity > 0
+            ? { ...food, quantity: food.quantity - 1 }
+            : food
+        )
+        .filter((food) => food.quantity > 0);
       if (updatedFoods.length < prev.length) {
         setAddedFoods((prevAdded) => prevAdded.filter((id) => id !== foodId));
       }
-
       updateTotal(updatedFoods);
       return updatedFoods;
     });
   };
 
+  // Generate invoice
   const generateInvoice = () => {
-    // Check if selection has been saved before generating the invoice
     if (!isSelectionSaved) {
       toast.error("Please click 'Save Selection' first.");
-      return; // Stop the invoice generation process if the selection isn't saved
+      return;
+    }
+    if (!selectedReservation) {
+      toast.error("Please select a reservation to create an invoice.");
+      return;
     }
 
     const cgstAmount = total * 0.025;
     const sgstAmount = total * 0.025;
-
-    // Round off logic
     const totalBeforeRoundOff = total + cgstAmount + sgstAmount;
     const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
     const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
@@ -148,7 +145,7 @@ const UserFoodPage = () => {
       cgst: cgstAmount.toFixed(2),
       sgst: sgstAmount.toFixed(2),
       roundOff: roundOffAmount.toFixed(2),
-      reservationId: reservationId, // Pass the reservationId to the backend
+      reservationId: selectedReservation.reservationId,
     };
 
     fetch("http://localhost:5000/api/invoice/create", {
@@ -163,11 +160,16 @@ const UserFoodPage = () => {
       .then((data) => {
         setInvoiceGenerated(true);
         setInvoiceId(data.invoice._id);
-        setIsModalOpen(true); // Open the modal after invoice is generated
+        setIsModalOpen(true);
+        setReservations((prev) =>
+          prev.filter((res) => res.reservationId !== selectedReservation.reservationId)
+        );
+        setSelectedReservation(null);
       })
       .catch((err) => console.error("Error creating invoice:", err));
   };
 
+  // Save selection
   const saveSelection = () => {
     fetch(`http://localhost:5000/api/users/${userId}/add-food`, {
       method: "POST",
@@ -179,13 +181,14 @@ const UserFoodPage = () => {
       .then((response) => response.json())
       .then((data) => {
         toast.success(data.message);
-        setIsSelectionSaved(true); // Mark the selection as saved
+        setIsSelectionSaved(true);
       })
       .catch((err) => console.error("Error saving selection:", err));
   };
 
+  // Close modal
   const closeModal = () => {
-    setIsModalOpen(false); // Close the modal
+    setIsModalOpen(false);
   };
 
   return (
@@ -193,8 +196,6 @@ const UserFoodPage = () => {
       <div className="user-food-page">
         <div className="food-list">
           <h1 className="header">All Foods List</h1>
-
-          {/* Search Input Field */}
           <input
             type="text"
             placeholder="Search food..."
@@ -202,7 +203,6 @@ const UserFoodPage = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
-
           <ul>
             {filteredFoods.map((food) => (
               <li key={food._id} className="food-item">
@@ -213,7 +213,7 @@ const UserFoodPage = () => {
                 <span className="food-price">{food.price.toFixed(2)}</span>
                 <button
                   onClick={() => addFoodToUser(food)}
-                  disabled={addedFoods.includes(food._id)} // Disable the button if the food is already added
+                  disabled={addedFoods.includes(food._id)}
                 >
                   {addedFoods.includes(food._id) ? "Added" : "Add Food"}
                 </button>
@@ -224,16 +224,33 @@ const UserFoodPage = () => {
 
         <div className="selected-foods">
           <h1 className="header">Selected Foods for User</h1>
-
-          {/* Display User's Details */}
           {user && (
             <div className="user-details">
               <p><strong>Name:</strong> {user.name}</p>
               <p><strong>Email:</strong> {user.email}</p>
               <p><strong>Contact:</strong> {user.contact}</p>
-              {/* Add more user details as needed */}
             </div>
           )}
+
+          <div className="reserved-tables">
+            <h3>Reserved Tables</h3>
+            <select
+              value={selectedReservation ? selectedReservation.reservationId : ""}
+              onChange={(e) => {
+                const selected = reservations.find(
+                  (res) => res.reservationId === e.target.value
+                );
+                setSelectedReservation(selected);
+              }}
+            >
+              <option value="">Select a table</option>
+              {reservations.map((res) => (
+                <option key={res.reservationId} value={res.reservationId}>
+                  Table {res.tableNumber} - {res.slotTime}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <ul>
             {selectedFoods.map((food) => (
@@ -257,15 +274,14 @@ const UserFoodPage = () => {
             <button
               onClick={saveSelection}
               className="action-button"
-              disabled={total === 0} // Disable Save Selection if total is 0
+              disabled={total === 0}
             >
               Save Selection
             </button>
-
             <button
               onClick={generateInvoice}
               className="action-button"
-              disabled={total === 0} // Disable Generate Invoice if total is 0
+              disabled={total === 0 || !selectedReservation}
             >
               Generate Invoice
             </button>
@@ -273,7 +289,6 @@ const UserFoodPage = () => {
         </div>
       </div>
 
-      {/* Render Invoice in Modal when generated */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
