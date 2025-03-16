@@ -122,17 +122,14 @@ const UserFoodPage = () => {
       toast.error("Please click 'Save Selection' first.");
       return;
     }
-    if (!selectedReservation) {
-      toast.error("Please select a reservation to create an invoice.");
-      return;
-    }
-
+  
     const cgstAmount = total * 0.025;
     const sgstAmount = total * 0.025;
     const totalBeforeRoundOff = total + cgstAmount + sgstAmount;
     const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
     const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
-
+  
+    // Include reservationId only if a reservation is selected
     const invoiceData = {
       userId: userId,
       foods: selectedFoods.map((food) => ({
@@ -145,9 +142,10 @@ const UserFoodPage = () => {
       cgst: cgstAmount.toFixed(2),
       sgst: sgstAmount.toFixed(2),
       roundOff: roundOffAmount.toFixed(2),
-      reservationId: selectedReservation.reservationId,
+      // Conditionally include reservationId
+      ...(selectedReservation && { reservationId: selectedReservation.reservationId }),
     };
-
+  
     fetch("http://localhost:5000/api/invoice/create", {
       method: "POST",
       headers: {
@@ -161,10 +159,14 @@ const UserFoodPage = () => {
         setInvoiceGenerated(true);
         setInvoiceId(data.invoice._id);
         setIsModalOpen(true);
-        setReservations((prev) =>
-          prev.filter((res) => res.reservationId !== selectedReservation.reservationId)
-        );
-        setSelectedReservation(null);
+  
+        // Remove the reservation from the list only if it exists
+        if (selectedReservation) {
+          setReservations((prev) =>
+            prev.filter((res) => res.reservationId !== selectedReservation.reservationId)
+          );
+          setSelectedReservation(null);
+        }
       })
       .catch((err) => console.error("Error creating invoice:", err));
   };
@@ -279,12 +281,12 @@ const UserFoodPage = () => {
               Save Selection
             </button>
             <button
-              onClick={generateInvoice}
-              className="action-button"
-              disabled={total === 0 || !selectedReservation}
-            >
-              Generate Invoice
-            </button>
+  onClick={generateInvoice}
+  className="action-button"
+  disabled={total === 0} // Removed "|| !selectedReservation"
+>
+  Generate Invoice
+</button>
           </div>
         </div>
       </div>

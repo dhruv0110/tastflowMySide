@@ -11,47 +11,48 @@ router.post("/create", async (req, res) => {
   try {
     const { userId, foods, totalAmount, cgst, sgst, roundOff, reservationId } = req.body;
 
-    // Find the user by ID
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Find the payment corresponding to the current reservation
-    const payment = user.payments.find(
-      (p) =>
-        p.reservationId.toString() === reservationId &&
-        p.status === "succeeded" &&
-        !p.deducted // Only deduct if not already deducted
-    );
-
     let finalTotalAmount = totalAmount;
     let reservedTableInfo = null;
 
-    if (payment && totalAmount >= 100) {
-      finalTotalAmount -= 100; // Deduct ₹100 if payment is succeeded and totalAmount >= 100
-      payment.deducted = true; // Mark the payment as deducted
-      await user.save(); // Save the updated user document
+    // Only process deduction if reservationId is provided
+    if (reservationId) {
+      const payment = user.payments.find(
+        (p) =>
+          p.reservationId.toString() === reservationId &&
+          p.status === "succeeded" &&
+          !p.deducted
+      );
 
-      // Dynamically find the reserved slot information from Slot1, Slot2, or Slot3
-      const slot1 = await Slot1.findOne({ _id: reservationId });
-      const slot2 = await Slot2.findOne({ _id: reservationId });
-      const slot3 = await Slot3.findOne({ _id: reservationId });
+      if (payment && totalAmount >= 100) {
+        finalTotalAmount -= 100;
+        payment.deducted = true;
+        await user.save();
 
-      const reservedSlot = slot1 || slot2 || slot3; // Use the first found slot
-      if (reservedSlot) {
-        reservedTableInfo = {
-          tableNumber: reservedSlot.number,
-          slotTime: getSlotTime(reservedSlot.alwaysOne),
-        };
+        // Find slot info (Slot1, Slot2, or Slot3)
+        const slot1 = await Slot1.findOne({ _id: reservationId });
+        const slot2 = await Slot2.findOne({ _id: reservationId });
+        const slot3 = await Slot3.findOne({ _id: reservationId });
+        const reservedSlot = slot1 || slot2 || slot3;
+
+        if (reservedSlot) {
+          reservedTableInfo = {
+            tableNumber: reservedSlot.number,
+            slotTime: getSlotTime(reservedSlot.alwaysOne),
+          };
+        }
       }
     }
 
-    // Get the last invoice number and increment it
+    // Generate invoice number
     const lastInvoice = await Invoice.findOne().sort({ invoiceNumber: -1 });
     const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1;
 
-    // Prepare invoice data
+    // Create invoice
     const invoice = new Invoice({
       userId,
       foods: foods.map((food) => ({
@@ -66,10 +67,9 @@ router.post("/create", async (req, res) => {
       cgst,
       sgst,
       roundOff,
-      reservedTableInfo, // Include reserved table information
+      reservedTableInfo,
     });
 
-    // Save the invoice to the database
     await invoice.save();
 
     res.status(201).json({
