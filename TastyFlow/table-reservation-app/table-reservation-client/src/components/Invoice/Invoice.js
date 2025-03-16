@@ -332,7 +332,7 @@ const Invoice = ({ invoiceId, user }) => {
           <div>
             <p><strong>Name:</strong> {invoice.userId.name}</p>
             <p><strong>Email:</strong> {invoice.userId.email}</p>
-            <p><strong>Contact:</strong> {invoice.userId.contact}</p>
+            <p><strong>Contact:</strong> {invoice.userId.contact|| "N/A"}</p>
             <p><strong>Customer ID:</strong> {user}</p>
           </div>
         ) : (

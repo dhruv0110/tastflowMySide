@@ -2,14 +2,41 @@ const express = require("express");
 const router = express.Router();
 const Invoice = require("../models/Invoice");
 const User = require("../models/User");
-const Slot1 = require("../models/Slot1"); // Import Slot1 model
-const Slot2 = require("../models/Slot2"); // Import Slot2 model
-const Slot3 = require("../models/Slot3"); // Import Slot3 model
+const Slot1 = require("../models/Slot1");
+const Slot2 = require("../models/Slot2");
+const Slot3 = require("../models/Slot3");
+
+// Helper function to get slot time
+const getSlotTime = (slotNumber) => {
+  const slotTimes = {
+    1: "5:00 PM to 7:00 PM",
+    2: "7:00 PM to 9:00 PM",
+    3: "9:00 PM to 11:00 PM",
+  };
+  return slotTimes[slotNumber] || "Unknown time range";
+};
+
+// Helper function to find the correct reserved slot
+const findReservedSlot = async (reservationId) => {
+  const slot1 = await Slot1.findOne({ _id: reservationId });
+  const slot2 = await Slot2.findOne({ _id: reservationId });
+  const slot3 = await Slot3.findOne({ _id: reservationId });
+
+  if (slot1) return { slotNumber: 1, tableNumber: slot1.number };
+  if (slot2) return { slotNumber: 2, tableNumber: slot2.number };
+  if (slot3) return { slotNumber: 3, tableNumber: slot3.number };
+
+  return null;
+};
 
 // Create an invoice
 router.post("/create", async (req, res) => {
   try {
     const { userId, foods, totalAmount, cgst, sgst, roundOff, reservationId } = req.body;
+
+    if (!userId || !foods || !totalAmount) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
     const user = await User.findById(userId);
     if (!user) {
@@ -19,7 +46,6 @@ router.post("/create", async (req, res) => {
     let finalTotalAmount = totalAmount;
     let reservedTableInfo = null;
 
-    // Only process deduction if reservationId is provided
     if (reservationId) {
       const payment = user.payments.find(
         (p) =>
@@ -33,16 +59,11 @@ router.post("/create", async (req, res) => {
         payment.deducted = true;
         await user.save();
 
-        // Find slot info (Slot1, Slot2, or Slot3)
-        const slot1 = await Slot1.findOne({ _id: reservationId });
-        const slot2 = await Slot2.findOne({ _id: reservationId });
-        const slot3 = await Slot3.findOne({ _id: reservationId });
-        const reservedSlot = slot1 || slot2 || slot3;
-
+        const reservedSlot = await findReservedSlot(reservationId);
         if (reservedSlot) {
           reservedTableInfo = {
-            tableNumber: reservedSlot.number,
-            slotTime: getSlotTime(reservedSlot.alwaysOne),
+            tableNumber: reservedSlot.tableNumber,
+            slotTime: getSlotTime(reservedSlot.slotNumber),
           };
         }
       }
@@ -52,7 +73,6 @@ router.post("/create", async (req, res) => {
     const lastInvoice = await Invoice.findOne().sort({ invoiceNumber: -1 });
     const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1;
 
-    // Create invoice
     const invoice = new Invoice({
       userId,
       foods: foods.map((food) => ({
@@ -82,24 +102,12 @@ router.post("/create", async (req, res) => {
   }
 });
 
-// Helper function to get slot time
-const getSlotTime = (slotNumber) => {
-  if (slotNumber === 1) {
-    return '5:00 PM to 7:00 PM';
-  } else if (slotNumber === 2) {
-    return '7:00 PM to 9:00 PM';
-  } else if (slotNumber === 3) {
-    return '9:00 PM to 11:00 PM';
-  }
-  return 'Unknown time range';
-};
-
 // Get all invoices
 router.get("/admin/all-invoice", async (req, res) => {
   try {
     const invoices = await Invoice.find()
-      .populate("userId") // Populate the user details
-      .populate("foods.foodId"); // Populate food details
+      .populate("userId", "name email")
+      .populate("foods.foodId", "name price");
 
     if (!invoices || invoices.length === 0) {
       return res.status(404).json({ message: "No invoices found" });
@@ -116,8 +124,8 @@ router.get("/admin/all-invoice", async (req, res) => {
 router.get("/admin/:invoiceId", async (req, res) => {
   try {
     const invoice = await Invoice.findById(req.params.invoiceId)
-      .populate("userId") // Populate the user details
-      .populate("foods.foodId"); // Populate food details
+      .populate("userId", "name email contact")
+      .populate("foods.foodId", "name price");
 
     if (!invoice) {
       return res.status(404).json({ message: "Invoice not found" });
@@ -136,8 +144,11 @@ router.put("/admin/update/:invoiceId", async (req, res) => {
     const { invoiceId } = req.params;
     const { totalAmount, cgst, sgst, roundOffAmount, foods } = req.body;
 
-    // Check if any food item is missing foodId
-    const hasInvalidFood = foods.some(food => !food.foodId);
+    if (!totalAmount || !foods) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const hasInvalidFood = foods.some((food) => !food.foodId);
     if (hasInvalidFood) {
       return res.status(400).json({ message: "FoodId is missing for some food items" });
     }
@@ -147,18 +158,17 @@ router.put("/admin/update/:invoiceId", async (req, res) => {
       return res.status(404).json({ message: "Invoice not found" });
     }
 
-    // Update invoice fields
     invoice.totalAmount = totalAmount;
     invoice.cgst = cgst;
     invoice.sgst = sgst;
     invoice.roundOff = roundOffAmount;
-    invoice.foods = foods; // Assign the validated foods array
+    invoice.foods = foods;
 
     await invoice.save();
 
     res.status(200).json({ message: "Invoice updated successfully", invoice });
   } catch (error) {
-    console.error('Error updating invoice:', error);
+    console.error("Error updating invoice:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -168,10 +178,9 @@ router.get("/admin/invoices/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Find invoices by userId
     const invoices = await Invoice.find({ userId })
-      .populate("userId") // Populate the user details
-      .populate("foods.foodId"); // Populate food details
+      .populate("userId", "name email")
+      .populate("foods.foodId", "name price");
 
     if (!invoices || invoices.length === 0) {
       return res.status(404).json({ message: "No invoices found for this user" });
@@ -184,7 +193,7 @@ router.get("/admin/invoices/:userId", async (req, res) => {
   }
 });
 
-// Backend logic to fetch user data
+// Get user data with payment details
 router.get("/admin/getuser/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).populate("payments");
@@ -192,19 +201,13 @@ router.get("/admin/getuser/:userId", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Add tableNumber and slotTime to each payment
     const paymentsWithTableInfo = await Promise.all(
       user.payments.map(async (payment) => {
-        // Dynamically find the reserved slot information from Slot1, Slot2, or Slot3
-        const slot1 = await Slot1.findOne({ _id: payment.reservationId });
-        const slot2 = await Slot2.findOne({ _id: payment.reservationId });
-        const slot3 = await Slot3.findOne({ _id: payment.reservationId });
-
-        const reservedSlot = slot1 || slot2 || slot3; // Use the first found slot
+        const reservedSlot = await findReservedSlot(payment.reservationId);
         return {
           ...payment.toObject(),
-          tableNumber: reservedSlot ? reservedSlot.number : null,
-          slotTime: reservedSlot ? getSlotTime(reservedSlot.alwaysOne) : null,
+          tableNumber: reservedSlot ? reservedSlot.tableNumber : null,
+          slotTime: reservedSlot ? getSlotTime(reservedSlot.slotNumber) : null,
         };
       })
     );
