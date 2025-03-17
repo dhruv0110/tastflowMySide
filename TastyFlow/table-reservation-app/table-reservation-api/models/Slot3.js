@@ -28,6 +28,7 @@ const slot3Schema = new mongoose.Schema({
     default: 2,
     immutable: true,
   },
+  reserveDate: { type: Date, default: Date.now },
 });
 
 

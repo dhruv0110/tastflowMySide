@@ -28,6 +28,7 @@ const slot1Schema = new mongoose.Schema({
     default: 1,
     immutable: true,
   },
+  reserveDate: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model('Slot1', slot1Schema);

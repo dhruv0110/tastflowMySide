@@ -22,9 +22,9 @@ const findReservedSlot = async (reservationId) => {
   const slot2 = await Slot2.findOne({ _id: reservationId });
   const slot3 = await Slot3.findOne({ _id: reservationId });
 
-  if (slot1) return { slotNumber: 1, tableNumber: slot1.number };
-  if (slot2) return { slotNumber: 2, tableNumber: slot2.number };
-  if (slot3) return { slotNumber: 3, tableNumber: slot3.number };
+  if (slot1) return { slotNumber: 1, tableNumber: slot1.number, date:slot1.reserveDate };
+  if (slot2) return { slotNumber: 2, tableNumber: slot2.number, date:slot2.reserveDate };
+  if (slot3) return { slotNumber: 3, tableNumber: slot3.number, date:slot3.reserveDate };
 
   return null;
 };
@@ -64,7 +64,7 @@ router.post("/create", async (req, res) => {
           reservedTableInfo = {
             tableNumber: reservedSlot.tableNumber,
             slotTime: getSlotTime(reservedSlot.slotNumber),
-            date: new Date(),
+            date:reservedSlot.date
           };
         }
       }
