@@ -115,38 +115,50 @@ const unreserveSlot = async (req, res) => {
     const slot = await Slot.findOne({ number });
 
     if (!slot) {
-      return res.status(404).json({ message: 'Slot not found' });
+      return res.status(404).json({ message: "Slot not found" });
     }
 
-    if (userRole === 'admin' || (slot.reserved && String(slot.reservedBy) === String(userId))) {
+    if (userRole === "admin" || (slot.reserved && String(slot.reservedBy) === String(userId))) {
       const reservedByUser = await User.findById(slot.reservedBy);
+
+      if (reservedByUser) {
+        // Remove the payment associated with this reservation
+        reservedByUser.payments = reservedByUser.payments.filter(
+          (payment) => String(payment.reservationId) !== String(slot._id)
+        );
+
+        await reservedByUser.save();
+      }
+
+      // Unreserve the slot
       slot.reserved = false;
       slot.reservedBy = null;
       await slot.save();
 
       const slotTime = getSlotTime(slotNumber);
       const mailOptions = {
-        from: 'tastyflow01@gmail.com',
+        from: "tastyflow01@gmail.com",
         to: reservedByUser.email,
-        subject: 'Slot Unreserved',
+        subject: "Slot Unreserved",
         text: `Your reservation for Table ${slot.number} has been canceled. The slot was for ${slotTime}. Please book again if needed.`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.error(error);
-          return res.status(500).json({ message: 'Error sending email' });
+          return res.status(500).json({ message: "Error sending email" });
         } else {
-          res.status(200).json({ message: 'Slot unreserved and email sent successfully', slot });
+          res.status(200).json({ message: "Slot unreserved and email sent successfully", slot });
         }
       });
     } else {
-      res.status(400).json({ message: 'You do not have permission to unreserve this slot' });
+      res.status(400).json({ message: "You do not have permission to unreserve this slot" });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Admin unreserve slot
 const adminUnreserveSlot = async (req, res) => {
