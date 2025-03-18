@@ -15,6 +15,16 @@ const getSlotTime = (slotNumber) => {
   };
   return slotTimes[slotNumber] || "Unknown time range";
 };
+const getSlotModel = (slotNumber) => {
+  if (slotNumber === 1) {
+    return Slot1;
+  } else if (slotNumber === 2) {
+    return Slot2;
+  } else if (slotNumber === 3) {
+    return Slot3;
+  }
+  throw new Error("Invalid slot number");
+};
 
 // Helper function to find the correct reserved slot
 const findReservedSlot = async (reservationId) => {
@@ -32,14 +42,18 @@ const findReservedSlot = async (reservationId) => {
 // Create an invoice
 router.post("/create", async (req, res) => {
   try {
+    console.log("Request body:", req.body); // Debugging
+
     const { userId, foods, totalAmount, cgst, sgst, roundOff, reservationId } = req.body;
 
     if (!userId || !foods || !totalAmount) {
+      console.log("Missing required fields"); // Debugging
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const user = await User.findById(userId);
     if (!user) {
+      console.log("User not found"); // Debugging
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -47,6 +61,8 @@ router.post("/create", async (req, res) => {
     let reservedTableInfo = null;
 
     if (reservationId) {
+      console.log("Reservation ID found:", reservationId); // Debugging
+
       const payment = user.payments.find(
         (p) =>
           p.reservationId.toString() === reservationId &&
@@ -55,18 +71,42 @@ router.post("/create", async (req, res) => {
       );
 
       if (payment && totalAmount >= 100) {
+        console.log("Payment found and amount >= 100:", payment); // Debugging
+
         finalTotalAmount -= 100;
         payment.deducted = true;
         await user.save();
 
         const reservedSlot = await findReservedSlot(reservationId);
         if (reservedSlot) {
+          console.log("Reserved slot found:", reservedSlot); // Debugging
+
           reservedTableInfo = {
             tableNumber: reservedSlot.tableNumber,
             slotTime: getSlotTime(reservedSlot.slotNumber),
-            date:reservedSlot.date
+            date: reservedSlot.date,
           };
+
+          // Unreserve the table after invoice creation
+          const Slot = getSlotModel(reservedSlot.slotNumber);
+          const slot = await Slot.findOne({ number: reservedSlot.tableNumber });
+
+          if (slot) {
+            console.log("Slot found in database:", slot); // Debugging
+
+            slot.reserved = false;
+            slot.reservedBy = null;
+            await slot.save();
+
+            console.log("Table unreserved successfully:", slot); // Debugging
+          } else {
+            console.log("Slot not found in database"); // Debugging
+          }
+        } else {
+          console.log("Reserved slot not found"); // Debugging
         }
+      } else {
+        console.log("Payment not found or amount < 100"); // Debugging
       }
     }
 
@@ -93,12 +133,14 @@ router.post("/create", async (req, res) => {
 
     await invoice.save();
 
+    console.log("Invoice created successfully:", invoice); // Debugging
+
     res.status(201).json({
       message: "Invoice created successfully",
       invoice,
     });
   } catch (error) {
-    console.error("Error creating invoice:", error);
+    console.error("Error creating invoice:", error); // Debugging
     res.status(500).json({ message: "Internal Server Error" });
   }
 });

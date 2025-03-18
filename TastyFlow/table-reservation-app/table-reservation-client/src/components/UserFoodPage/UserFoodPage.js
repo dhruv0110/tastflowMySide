@@ -129,7 +129,6 @@ const UserFoodPage = () => {
     const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
     const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
   
-    // Include reservationId only if a reservation is selected
     const invoiceData = {
       userId: userId,
       foods: selectedFoods.map((food) => ({
@@ -142,9 +141,10 @@ const UserFoodPage = () => {
       cgst: cgstAmount.toFixed(2),
       sgst: sgstAmount.toFixed(2),
       roundOff: roundOffAmount.toFixed(2),
-      // Conditionally include reservationId
       ...(selectedReservation && { reservationId: selectedReservation.reservationId }),
     };
+  
+    console.log("Invoice data being sent:", invoiceData); // Debugging
   
     fetch("http://localhost:5000/api/invoice/create", {
       method: "POST",
@@ -154,21 +154,35 @@ const UserFoodPage = () => {
       },
       body: JSON.stringify(invoiceData),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
       .then((data) => {
-        setInvoiceGenerated(true);
-        setInvoiceId(data.invoice._id);
-        setIsModalOpen(true);
+        console.log("Invoice creation response:", data); // Debugging
   
-        // Remove the reservation from the list only if it exists
-        if (selectedReservation) {
-          setReservations((prev) =>
-            prev.filter((res) => res.reservationId !== selectedReservation.reservationId)
-          );
-          setSelectedReservation(null);
+        if (data.invoice && data.invoice._id) {
+          setInvoiceGenerated(true);
+          setInvoiceId(data.invoice._id);
+          setIsModalOpen(true);
+  
+          // Remove the reservation from the list only if it exists
+          if (selectedReservation) {
+            setReservations((prev) =>
+              prev.filter((res) => res.reservationId !== selectedReservation.reservationId)
+            );
+            setSelectedReservation(null);
+          }
+        } else {
+          throw new Error("Invalid response from server");
         }
       })
-      .catch((err) => console.error("Error creating invoice:", err));
+      .catch((err) => {
+        console.error("Error creating invoice:", err); // Debugging
+        toast.error("Error creating invoice. Please try again.");
+      });
   };
 
   // Save selection
