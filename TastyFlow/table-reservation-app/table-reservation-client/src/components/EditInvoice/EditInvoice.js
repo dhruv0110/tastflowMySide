@@ -220,30 +220,36 @@ const EditInvoice = () => {
       <div className="edit-invoice-detail">
         <h1 className="header">Edit Invoice</h1>
         <form onSubmit={handleSubmit}>
+        <div className="edit-container">
           <div className="form-section">
             <p>Invoice Number: {invoice.invoiceNumber}</p>
           </div>
 
           <div className="tax-details">
             <div className="tax-item">
-              <label>Total Amount (Including Taxes):</label>
+              <label>Total Amount</label>
               <p>{invoice.finalAmount ? invoice.finalAmount : invoice.totalAmount}</p>
             </div>
 
             <div className="tax-item">
-              <label>CGST:</label>
+              <label>CGST</label>
               <p>{invoice.cgst}</p>
             </div>
 
             <div className="tax-item">
-              <label>SGST:</label>
+              <label>SGST</label>
               <p>{invoice.sgst}</p>
             </div>
 
             <div className="tax-item">
-              <label>Round Off:</label>
+              <label>Round Off</label>
               <p>{invoice.roundOffAmount}</p>
             </div>
+
+            <div className="tax-item">
+                <label>Date</label>
+                <p>{new Date(invoice.invoiceDate).toLocaleDateString()}</p>
+              </div>
           </div>
 
           <h4>Food Items:</h4>
@@ -296,7 +302,10 @@ const EditInvoice = () => {
             </select>
           </div>
 
-          <button type="submit" className="submit-btn">Save Changes</button>
+          <div className="button-container">
+  <button type="submit" className="submit-btn">Save Changes</button>
+</div>
+          </div>
         </form>
       </div>
     </div>

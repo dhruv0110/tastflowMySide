@@ -4,6 +4,7 @@ import { assets } from '../../assets/assets'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import Sidebar from '../../components/Sidebar/Sidebar'
+import { Howl } from 'howler'
 
 const Add = () => {
 
@@ -14,6 +15,9 @@ const Add = () => {
         price : "",
         category : "Salad"
     })
+    const foodAdd = new Howl({
+      src: ['/sounds/success.mp3'] // Path to your reserve sound file
+    });
 
     const onChangeHandler = (event) =>{
         const name = event.target.name;
@@ -37,7 +41,8 @@ const Add = () => {
                 price : "",
                 category : "Salad"
             })
-            setImage(false)
+            setImage(false);
+            foodAdd.play();
             toast.success(response.data.message)
         }else{
             toast.error(response.data.message)

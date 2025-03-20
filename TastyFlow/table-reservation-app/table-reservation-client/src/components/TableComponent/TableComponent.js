@@ -6,8 +6,19 @@ import PaymentForm from '../../components/PaymentForm/PaymentForm'; // Import th
 import CustomSpinner from '../CustomSpinner/CustomSpinner';
 import Modal from '../Modal/Modal'; // Import the Modal component
 import './TableComponent.css';
+import { toast } from 'react-toastify';
+import { Howl } from 'howler'; // Import Howl from howler
 
 const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf'); // Replace with your Stripe Publishable Key
+
+// Define sound files
+const reserveSound = new Howl({
+  src: ['/sounds/success.mp3'] // Path to your reserve sound file
+});
+
+const unreserveSound = new Howl({
+  src: ['/sounds/success.mp3'] // Path to your unreserve sound file
+});
 
 const TableComponent = ({ showAlert }) => {
   const [tables, setTables] = useState([]);
@@ -72,7 +83,7 @@ const TableComponent = ({ showAlert }) => {
           headers: { 'auth-token': localStorage.getItem('token') } 
         }
       );
-
+      reserveSound.play(); // Play reserve sound
       showAlert('Table reserved successfully', 'success');
       fetchTables(); // Refresh the table list
     } catch (error) {
@@ -94,47 +105,53 @@ const TableComponent = ({ showAlert }) => {
       showAlert('You do not have permission to unreserve this table', 'danger');
       return;
     }
-
+  
+    setLoadingTable(number); // Show spinner on the clicked button
+  
     if (!isReserved) {
-      setSelectedTableNumber(number); // Set the selected table number
+      setSelectedTableNumber(number);
       const token = localStorage.getItem('token');
       if (!token) return;
-
+  
       try {
         const paymentIntentResponse = await axios.post(
           `http://localhost:5000/api/slot/${slotFilter}/create-payment-intent`,
-          { amount: 100 }, // 100 INR
+          { amount: 100 },
           { headers: { 'auth-token': token } }
         );
-
+  
         const { clientSecret } = paymentIntentResponse.data;
-
-        // Set payment intent and open the modal
         setPaymentIntent({ clientSecret, tableNumber: number });
         setIsModalOpen(true);
       } catch (error) {
         console.error('Error creating payment intent:', error);
         showAlert('Error creating payment intent', 'danger');
+      } finally {
+        setLoadingTable(null); // Hide spinner
       }
     } else {
       const token = localStorage.getItem('token');
       if (!token) return;
-
+  
       try {
         await axios.post(
           `http://localhost:5000/api/slot/${slotFilter}/unreserve`,
           { number },
           { headers: { 'auth-token': token } }
         );
-
+  
+        unreserveSound.play();
         showAlert('Table unreserved successfully', 'success');
         fetchTables();
       } catch (error) {
         console.error('Error unreserving table:', error);
         showAlert('Error unreserving table', 'danger');
+      } finally {
+        setLoadingTable(null);
       }
     }
   };
+  
 
   const sortedTables = [...tables].sort((a, b) => a.number - b.number);
   const filteredTables = sortedTables.filter((table) => {
@@ -196,11 +213,7 @@ const TableComponent = ({ showAlert }) => {
             <div key={table.number} className="table-button">
               <button
                 onClick={() =>
-                  toggleReservation(
-                    table.number,
-                    table.reserved,
-                    table.reservedBy?._id
-                  )
+                  toggleReservation(table.number, table.reserved, table.reservedBy?._id)
                 }
                 className={`table-button-button ${
                   table.reserved ? 'reserved' : ''
@@ -210,14 +223,9 @@ const TableComponent = ({ showAlert }) => {
                   (table.reserved && table.reservedBy?._id !== userId)
                 }
               >
-                {loadingTable === table.number ? (
-                  <div className="spinner-container">
-                    <CustomSpinner />
-                  </div>
-                ) : (
-                  `Table ${table.number}`
-                )}
+                {loadingTable === table.number ? <CustomSpinner /> : `Table ${table.number}`}
               </button>
+
               {table.reserved && (
                 <div className="table-button-reserved">Reserved</div>
               )}
@@ -227,16 +235,16 @@ const TableComponent = ({ showAlert }) => {
 
         {/* Render Modal with PaymentForm */}
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-  <Elements stripe={stripePromise}>
-    <PaymentForm
-      clientSecret={paymentIntent?.clientSecret}
-      onSuccess={handlePaymentSuccess}
-      onError={handlePaymentError}
-      tableNumber={selectedTableNumber} // Pass the selected table number
-      amount={100} // Pass the amount (e.g., 100 INR)
-    />
-  </Elements>
-</Modal>
+          <Elements stripe={stripePromise}>
+            <PaymentForm
+              clientSecret={paymentIntent?.clientSecret}
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+              tableNumber={selectedTableNumber} // Pass the selected table number
+              amount={100} // Pass the amount (e.g., 100 INR)
+            />
+          </Elements>
+        </Modal>
       </div>
     </div>
   );

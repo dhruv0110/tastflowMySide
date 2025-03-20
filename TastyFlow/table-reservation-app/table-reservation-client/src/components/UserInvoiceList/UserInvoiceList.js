@@ -277,27 +277,27 @@ const InvoiceDetail = () => {
 
             <div className="tax-details">
               <div className="tax-item">
-                <label>Total Amount:</label>
+                <label>Total Amount</label>
                 <p>{invoice.totalAmount}</p>
               </div>
 
               <div className="tax-item">
-                <label>CGST:</label>
+                <label>CGST</label>
                 <p>{invoice.cgst}</p>
               </div>
 
               <div className="tax-item">
-                <label>SGST:</label>
+                <label>SGST</label>
                 <p>{invoice.sgst}</p>
               </div>
 
               <div className="tax-item">
-                <label>Round Off:</label>
+                <label>Round Off</label>
                 <p>{invoice.roundOff}</p>
               </div>
 
               <div className="tax-item">
-                <label>Date:</label>
+                <label>Date</label>
                 <p>{new Date(invoice.invoiceDate).toLocaleDateString()}</p>
               </div>
             </div>

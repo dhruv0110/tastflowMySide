@@ -166,7 +166,12 @@
     background-color: #f1f1f1;
 }
 
-  
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
   
 /* Media query for small screens */
 @media (max-width: 600px) {

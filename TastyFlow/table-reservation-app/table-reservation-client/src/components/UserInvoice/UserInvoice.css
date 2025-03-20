@@ -63,13 +63,13 @@
 .view-button,
 .edit-button {
     padding: 8px 15px;
-    color: #5c4401;
+    color: #352701;
     background-color: #ff9f00; /* Accent color */
     border-radius: 5px;
     text-align: center;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    font-weight: 600;
+    font-weight: 700;
     display: inline-block;
     width: 50%;
 }

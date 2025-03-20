@@ -288,197 +288,213 @@ const addFoodToUser = async (req, res) => {
 
         // Create a professional email template
         const emailHTML = `
-        <html>
+       <html>
         <head>
           <title>Invoice - ${invoice.invoiceNumber}</title>
           <style>
+            /* Print-specific styles */
+            @page {
+              size: auto; /* Auto size for thermal paper */
+              margin: 0; /* No margin to maximize space */
+            }
             body {
               font-family: Arial, sans-serif;
-              color: #333;
-              background-color: #f8f9fa;
-              padding: 20px;
+              font-size: 10px; /* Smaller font size for compact layout */
+              line-height: 1.2; /* Tight line spacing */
+              margin: 0;
+              padding: 0;
+              color: #000; /* Black text for thermal printers */
+              background: #fff; /* White background */
             }
             .invoice-container {
-              max-width: 700px;
-              margin: auto;
-              background: #fff;
-              padding: 30px;
-              border-radius: 8px;
-              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              width: 100%;
+              max-width: 80mm; /* Adjust for 58mm or 80mm paper */
+              margin: 0 auto;
+              padding: 5px; /* Minimal padding */
             }
             .invoice-header {
               text-align: center;
-              border-bottom: 2px solid #007bff;
-              padding-bottom: 15px;
-              margin-bottom: 25px;
+              margin-bottom: 5px;
             }
             .invoice-header h2 {
+              font-size: 14px; /* Slightly larger for headings */
               margin: 0;
-              color: #007bff;
-              font-size: 28px;
+              color: #000;
             }
             .invoice-header p {
-              margin: 5px 0;
-              font-size: 14px;
-              color: #555;
+              font-size: 10px;
+              margin: 3px 0;
+              color: #000;
             }
             .company-info {
               text-align: center;
-              font-size: 14px;
-              margin-bottom: 25px;
-              color: #555;
+              margin-bottom: 5px;
             }
             .company-info h3 {
-              margin: 0 0 10px 0;
-              color: #007bff;
-              font-size: 20px;
+              font-size: 12px;
+              margin: 0 0 3px 0;
+              color: #000;
             }
-            .user-details, .order-summary, .tax-summary, .final-total, .reserved-table-info {
-              margin-bottom: 25px;
-              padding: 15px;
-              border: 1px solid #ddd;
-              border-radius: 5px;
-              background-color: #f9f9f9;
+            .company-info p {
+              font-size: 10px;
+              margin: 2px 0;
+              color: #000;
             }
-            h3 {
-              color: #333;
-              margin-bottom: 15px;
-              border-bottom: 1px solid #007bff;
-              padding-bottom: 8px;
-              font-size: 18px;
+            .user-details {
+              margin-bottom: 5px;
+              padding: 5px 0;
+              border-top: 1px dashed #000; /* Dashed border for separation */
+              border-bottom: 1px dashed #000;
             }
-            table {
+            .user-details h5 {
+              font-size: 12px;
+              margin: 0 0 3px 0;
+              color: #000;
+            }
+            .user-details p {
+              font-size: 10px;
+              margin: 2px 0;
+              color: #000;
+            }
+            .food-details {
+              margin-bottom: 5px;
+            }
+            .food-details h5 {
+              font-size: 12px;
+              margin: 0 0 3px 0;
+              color: #000;
+            }
+            .food-details table {
               width: 100%;
               border-collapse: collapse;
-              margin-top: 10px;
+              margin-bottom: 5px;
             }
-            th, td {
-              border: 1px solid #ddd;
-              padding: 10px;
+            .food-details th,
+            .food-details td {
+              padding: 3px;
               text-align: left;
+              border-bottom: 1px dashed #000; /* Dashed border for table rows */
             }
-            th {
-              background-color: #007bff;
-              color: white;
+            .food-details th {
               font-weight: bold;
+              background-color: #f0f0f0; /* Light gray background for headers */
+            }
+            .tax-summary {
+              margin-bottom: 5px;
             }
             .tax-summary .total {
               display: flex;
               justify-content: space-between;
-              font-size: 14px;
-              margin-bottom: 8px;
-              padding: 5px 0;
+              font-size: 10px;
+              margin-bottom: 3px;
             }
             .final-total {
-              font-size: 16px;
+              font-size: 12px;
               font-weight: bold;
-              border-top: 2px solid #007bff;
-              text-align: right;
-              padding-top: 15px;
-              margin-top: 20px;
+              display: flex;
+              justify-content: space-between;
+              margin-top: 5px;
+              padding-top: 5px;
+              border-top: 2px solid #000; /* Solid border for emphasis */
+            }
+            .reservation-details {
+              margin-bottom: 5px;
+              padding: 5px 0;
+              border-top: 1px dashed #000;
+              border-bottom: 1px dashed #000;
+            }
+            .reservation-details h5 {
+              font-size: 12px;
+              margin: 0 0 3px 0;
+              color: #000;
+            }
+            .reservation-details p {
+              font-size: 10px;
+              margin: 2px 0;
+              color: #000;
             }
             .footer {
               text-align: center;
-              font-size: 12px;
-              color: #666;
-              margin-top: 25px;
+              font-size: 10px;
+              color: #000;
+              margin-top: 5px;
             }
           </style>
         </head>
         <body>
           <div class="invoice-container">
             <div class="invoice-header">
-              <h2>Invoice</h2>
-              <p>Invoice No: <strong>${invoice.invoiceNumber}</strong></p>
-              <p>Invoice Date: <strong>${new Date(invoice.invoiceDate).toLocaleDateString()}</strong></p>
+              <h2>TastyFlow</h2>
+              <p>Invoice No: ${invoice.invoiceNumber}</p>
+              <p>Date: ${new Date(invoice.invoiceDate).toLocaleDateString()}</p>
             </div>
 
             <div class="company-info">
-              <h3>TastyFlow</h3>
+              <h3>Restaurant Details</h3>
               <p>Shlok Infinity, 1st Floor, Sundersingh Bhandari Overbridge, Opposite Vishvakarma Temple</p>
-              <p>Phone: (909) 91-49101 | Email: tastyflow@gmail.com</p>
-              <p>GSTIN: 12ABCDE1234F1GH</p>
+              <p>Phone: (909) 91-49101</p>
             </div>
 
             <div class="user-details">
-              <h3>Bill To:</h3>
+              <h5>Bill To:</h5>
               <p><strong>Name:</strong> ${user.name}</p>
-              <p><strong>Email:</strong> ${user.email}</p>
               <p><strong>Contact:</strong> ${user.contact}</p>
-              <p><strong>Customer ID:</strong> ${user._id}</p>
             </div>
 
-            <div class="order-summary">
-              <h3>Order Summary</h3>
+            <div class="food-details">
+              <h5>Items Purchased</h5>
               <table>
                 <thead>
                   <tr>
-                    <th>#</th>
                     <th>Item</th>
                     <th>Qty</th>
-                    <th>Unit Price (₹)</th>
-                    <th>Total (₹)</th>
+                    <th>Price</th>
+                    <th>Total</th>
                   </tr>
                 </thead>
                 <tbody>
-                  ${invoice.foods
-                    .map(
-                      (food, index) => `
+                  ${invoice.foods.map((food, index) => `
                     <tr>
-                      <td>${index + 1}</td>
                       <td>${food.name}</td>
                       <td>${food.quantity}</td>
                       <td>${food.price.toFixed(2)}</td>
                       <td>${(food.quantity * food.price).toFixed(2)}</td>
                     </tr>
-                  `
-                    )
-                    .join("")}
+                  `).join('')}
                 </tbody>
               </table>
             </div>
 
             <div class="tax-summary">
-              <h3>Tax Summary</h3>
-              <div class="total">
-                <div class="label">CGST (2.5%):</div>
-                <div class="value">₹${invoice.cgst.toFixed(2)}</div>
-              </div>
-              <div class="total">
-                <div class="label">SGST (2.5%):</div>
-                <div class="value">₹${invoice.sgst.toFixed(2)}</div>
-              </div>
-              <div class="total">
-                <div class="label">Round-off:</div>
-                <div class="value">₹${invoice.roundOff.toFixed(2)}</div>
-              </div>
+              <div class="total"><span>CGST (2.5%):</span> <span>₹${invoice.cgst.toFixed(2)}</span></div>
+              <div class="total"><span>SGST (2.5%):</span> <span>₹${invoice.sgst.toFixed(2)}</span></div>
+              <div class="total"><span>Round-off:</span> <span>₹${invoice.roundOff.toFixed(2)}</span></div>
             </div>
 
             <div class="final-total">
-              <p><strong>Total Payable:</strong> ₹${invoice.totalAmount.toFixed(2)}</p>
-              <p><strong>Amount in Words:</strong> ${toWords(invoice.totalAmount)} Only</p>
+              <div>Total Payable:</div>
+              <div>₹${invoice.totalAmount.toFixed(2)}</div>
             </div>
 
             ${
-              invoice.reservedTableInfo == null // Check if reservedTableInfo exists
+              invoice.reservedTableInfo
                 ? `
-              <div class="reserved-table-info">
-                <h3>Reservation Details</h3>
+              <div class="reservation-details">
+                <h5>Reservation Details</h5>
                 <p><strong>Table No:</strong> ${invoice.reservedTableInfo.tableNumber}</p>
                 <p><strong>Reservation Slot:</strong> ${invoice.reservedTableInfo.slotTime}</p>
-                <p><strong>Reservation Fee Deduction:</strong> ₹100 (included in total)</p>
+                <p><strong>Reservation Fee:</strong> ₹100 (included in total)</p>
               </div>
             `
-                : "" // If reservedTableInfo is undefined, render nothing
+                : ''
             }
 
             <div class="footer">
-              <p>Thank you for choosing TastyFlow. We appreciate your business!</p>
-              <p><strong>TastyFlow</strong> - All Rights Reserved</p>
+              <p>Thank you for dining with us!</p>
             </div>
           </div>
         </body>
-        </html>
+      </html>
       `;
 
         const mailOptions = {

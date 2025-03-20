@@ -71,16 +71,12 @@ router.post("/create", async (req, res) => {
       );
 
       if (payment && totalAmount >= 100) {
-        console.log("Payment found and amount >= 100:", payment); // Debugging
-
         finalTotalAmount -= 100;
         payment.deducted = true;
         await user.save();
 
         const reservedSlot = await findReservedSlot(reservationId);
         if (reservedSlot) {
-          console.log("Reserved slot found:", reservedSlot); // Debugging
-
           reservedTableInfo = {
             tableNumber: reservedSlot.tableNumber,
             slotTime: getSlotTime(reservedSlot.slotNumber),
@@ -97,16 +93,8 @@ router.post("/create", async (req, res) => {
             slot.reserved = false;
             slot.reservedBy = null;
             await slot.save();
-
-            console.log("Table unreserved successfully:", slot); // Debugging
-          } else {
-            console.log("Slot not found in database"); // Debugging
           }
-        } else {
-          console.log("Reserved slot not found"); // Debugging
         }
-      } else {
-        console.log("Payment not found or amount < 100"); // Debugging
       }
     }
 
