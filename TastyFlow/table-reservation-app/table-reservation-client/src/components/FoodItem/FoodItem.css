@@ -1,4 +1,3 @@
-/* Container for the whole section */
 .main-food-div .food-item {
     width: 100%;
     margin: auto;
@@ -6,7 +5,7 @@
     transition: 0.3s;
     animation: fadeIn 1s;
     overflow: hidden;
-    position: relative; /* Ensure the button is positioned relative to this container */
+    position: relative;
 }
 
 .main-food-div {
@@ -14,7 +13,7 @@
     padding: 35px 30px;
     border-radius: 30px;
     width: 100%;
-    position: relative; /* Needed for the absolute positioning of the button */
+    position: relative;
     overflow: hidden;
 }
 
@@ -36,14 +35,14 @@
 
 .food-item-info {
     padding: 10px;
-    padding-bottom: 60px; /* Ensure there is space for the button */
+    padding-bottom: 60px;
 }
 
 .food-item-name-price {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px; /* Optional: Add some space below */
+    margin-bottom: 10px;
 }
 
 .food-item-name {
@@ -63,7 +62,6 @@
     margin: 10px 0px;
 }
 
-/* Fix the button at the bottom-left side on large screens */
 .view-more {
     background-color: black;
     text-align: center;
@@ -75,28 +73,25 @@
     border-radius: 30px;
     position: absolute;
     bottom: 20px;
-    left: 40px; /* Left side positioning on large screens */
-    width: auto; /* Dynamic width */
+    left: 40px;
+    width: auto;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-/* Media query for smaller screens (up to 768px) */
 @media (max-width: 992px) {
     .view-more {
         left: 20px;
         right: 20px;
-        width: calc(100% - 40px); /* Full width minus some padding */
-        border-radius: 30px; /* Keep the button rounded */
+        width: calc(100% - 40px);
     }
 }
 
-/* Media query for very small screens (up to 480px) */
 @media (max-width: 480px) {
     .view-more {
         left: 20px;
         right: 20px;
-        width: calc(100% - 40px); /* Full width minus some padding */
-        border-radius: 30px; /* Keep the button rounded */
+        width: calc(100% - 40px);
     }
     p {
         margin-top: 0;

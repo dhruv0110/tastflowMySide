@@ -17,18 +17,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
-const mongoUrl = "mongodb://127.0.0.1:27017/register?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.1";
+const mongoUrl = "mongodb://127.0.0.1:27017/register?directConnection=true&serverSelectionTimeoutMS=5000&appName=mongosh+2.0.1";
 
-const connectToMongo = () => {
-    main()
-    .then(() => {
-      console.log("connected to mongo successfully");
-    })
-    .catch((err) => console.log(err));
-  async function main() {
+const connectToMongo = async () => {
+  try {
     await mongoose.connect(mongoUrl);
+    console.log("Connected to MongoDB successfully");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
   }
-}
+};
+
 connectToMongo();
 
 app.use('/api/slot', slotRoutes); // Use the unified route for slots

@@ -2,9 +2,7 @@ import React from 'react';
 import './FoodDisplay.css';
 import FoodItem from '../FoodItem/FoodItem';
 
-
 const FoodDisplay = ({ category, food_list }) => {
-  // Check if food_list exists and has items before mapping
   if (!food_list || food_list.length === 0) {
     return <div>No food items available.</div>;
   }
@@ -23,7 +21,7 @@ const FoodDisplay = ({ category, food_list }) => {
                 price={item.price} 
                 image={item.image}
                 date={item.date}
-                category = {item.category}
+                category={item.category}
               />
             );
           }
@@ -32,6 +30,6 @@ const FoodDisplay = ({ category, food_list }) => {
       </div>
     </div>
   );
-}
+};
 
 export default FoodDisplay;

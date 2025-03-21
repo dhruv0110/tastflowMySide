@@ -29,6 +29,7 @@ import InvoiceDetail from './components/UserInvoiceList/UserInvoiceList';
 import EditInvoice from './components/EditInvoice/EditInvoice';
 import UserInvoice from "./components/UserInvoice/UserInvoice";
 import Graph from "./components/Graph/Graph";
+import FoodDetail from "./components/FoodDetail/FoodDetail";
 
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf'); // Replace with your Stripe Publishable Key
@@ -132,6 +133,7 @@ function App() {
         <Route path="/admin/invoices/edit/:invoiceId" element={<AdminRoute element={<EditInvoice showAlert={showAlert} />} />} />
         <Route path="/admin/users/invoice/:userId" element={<PrivateRoute element={<UserInvoice />} />} />
         <Route path="/admin/graph" element={<AdminRoute element={<Graph />} />} />
+        <Route path="/food/:id" element={<FoodDetail />} />
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/About" element={<About />} />
       </Routes>
