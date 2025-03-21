@@ -91,29 +91,31 @@ const reserveSlot = async (req, res) => {
         amount: 100,
         currency: "inr",
         status: "succeeded",
-        tableNumber : number,
+        tableNumber: number,
         slotTime: getSlotTime(slotNumber),
         reservationId: slot._id,
       });
       await user.save();
     }
-// Send email confirmation to the user
-const slotTime = getSlotTime(slotNumber);
-const mailOptions = {
-  from: "tastyflow01@gmail.com",
-  to: user.email,
-  subject: "Slot Reservation Confirmation",
-  text: `Your reservation for Table ${slot.number} has been confirmed. The slot is for ${slotTime}. Thank you for choosing our service!`,
-};
 
-transporter.sendMail(mailOptions, (error, info) => {
-  if (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error sending email" });
-  } else {
-    res.status(200).json({ message: "Slot reserved successfully and email sent", slot });
-  }
-});
+    // Send email confirmation to the user asynchronously
+    const slotTime = getSlotTime(slotNumber);
+    const mailOptions = {
+      from: "tastyflow01@gmail.com",
+      to: user.email,
+      subject: "Slot Reservation Confirmation",
+      text: `Your reservation for Table ${slot.number} has been confirmed. The slot is for ${slotTime}. Thank you for choosing our service!`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+      } else {
+        console.log("Email sent:", info.response);
+      }
+    });
+
+    // Respond to the client immediately
     res.status(200).json({ message: "Slot reserved successfully", slot });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -151,6 +153,7 @@ const unreserveSlot = async (req, res) => {
       slot.reservedBy = null;
       await slot.save();
 
+      // Send email confirmation to the user asynchronously
       const slotTime = getSlotTime(slotNumber);
       const mailOptions = {
         from: "tastyflow01@gmail.com",
@@ -161,12 +164,14 @@ const unreserveSlot = async (req, res) => {
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.error(error);
-          return res.status(500).json({ message: "Error sending email" });
+          console.error("Error sending email:", error);
         } else {
-          res.status(200).json({ message: "Slot unreserved and email sent successfully", slot });
+          console.log("Email sent:", info.response);
         }
       });
+
+      // Respond to the client immediately
+      res.status(200).json({ message: "Slot unreserved successfully", slot });
     } else {
       res.status(400).json({ message: "You do not have permission to unreserve this slot" });
     }
