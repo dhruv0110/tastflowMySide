@@ -13,8 +13,8 @@ const Add = () => {
     description: '',
     price: '',
     category: 'Salad',
-    ingredients: [],
-    preparationSteps: [],
+    ingredients: '',
+    preparationSteps: '',
     nutritionalInfo: {
       calories: 0,
       protein: 0,
@@ -46,7 +46,7 @@ const Add = () => {
     const { value } = event.target;
     setData((prevData) => ({
       ...prevData,
-      [field]: value.split(',').map((item) => item.trim()), // Split by comma and trim whitespace
+      [field]: value, // Store the raw input as a string
     }));
   };
 
@@ -90,14 +90,19 @@ const Add = () => {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+
+    // Split ingredients and preparation steps into arrays
+    const ingredientsArray = data.ingredients.split(',').map((item) => item.trim());
+    const preparationStepsArray = data.preparationSteps.split(',').map((item) => item.trim());
+
     const formData = new FormData();
     formData.append('name', data.name);
     formData.append('description', data.description);
     formData.append('price', Number(data.price));
     formData.append('category', data.category);
     formData.append('image', image);
-    formData.append('ingredients', JSON.stringify(data.ingredients)); // Convert array to JSON string
-    formData.append('preparationSteps', JSON.stringify(data.preparationSteps)); // Convert array to JSON string
+    formData.append('ingredients', JSON.stringify(ingredientsArray)); // Convert array to JSON string
+    formData.append('preparationSteps', JSON.stringify(preparationStepsArray)); // Convert array to JSON string
     formData.append('nutritionalInfo', JSON.stringify(data.nutritionalInfo)); // Convert object to JSON string
     formData.append('reviews', JSON.stringify(data.reviews)); // Convert array to JSON string
     formData.append('similarDishes', JSON.stringify(data.similarDishes)); // Convert array to JSON string
@@ -110,8 +115,8 @@ const Add = () => {
           description: '',
           price: '',
           category: 'Salad',
-          ingredients: [],
-          preparationSteps: [],
+          ingredients: '',
+          preparationSteps: '',
           nutritionalInfo: {
             calories: 0,
             protein: 0,
@@ -172,7 +177,7 @@ const Add = () => {
             <p>Ingredients (comma-separated)</p>
             <input
               onChange={(e) => onArrayChangeHandler(e, 'ingredients')}
-              value={data.ingredients.join(', ')}
+              value={data.ingredients} // Use the raw string
               type="text"
               name="ingredients"
               placeholder="e.g., Fresh tomatoes, Basil leaves, Mozzarella cheese"
@@ -185,7 +190,7 @@ const Add = () => {
             <p>Preparation Steps (comma-separated)</p>
             <input
               onChange={(e) => onArrayChangeHandler(e, 'preparationSteps')}
-              value={data.preparationSteps.join(', ')}
+              value={data.preparationSteps} // Use the raw string
               type="text"
               name="preparationSteps"
               placeholder="e.g., Slice tomatoes, Layer with cheese, Bake for 20 minutes"
@@ -288,7 +293,7 @@ const Add = () => {
                 value={data.price}
                 type="number"
                 name="price"
-                placeholder="$20"
+                placeholder="20"
                 required
               />
             </div>

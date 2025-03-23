@@ -1,0 +1,87 @@
+ {/* <div className="food-detail-section"> */}
+          {/* <h2>Reviews</h2>
+          <div className="reviews-section">
+            {food.reviews.length > 0 ? (
+              food.reviews.map((review, index) => (
+                <div key={index} className="review-card">
+                  <p className="review-text">{review.text}</p>
+                  <p className="review-author">
+                    - {review.author} • <span className="review-rating">{review.rating}/5</span>
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p>No reviews yet. Be the first to review this dish!</p>
+            )}
+          </div> */}
+
+          {/* Review Input Section
+          {isLoggedIn ? (
+    <div className="review-input-section">
+        <h3>Add Your Review</h3>
+        <textarea
+            name="text"
+            value={reviewInput.text}
+            onChange={handleReviewChange}
+            placeholder="Write your review..."
+            rows="4"
+        ></textarea>
+        <input
+            type="number"
+            name="rating"
+            value={reviewInput.rating}
+            onChange={handleReviewChange}
+            placeholder="Rating (1-5)"
+            min="1"
+            max="5"
+        />
+        <button onClick={submitReview} className="submit-review-btn">
+            Submit Review
+        </button>
+    </div>
+) : (
+    <p>Please log in to submit a review.</p>
+)} */}
+        {/* </div> */}
+
+
+
+
+sample data for food
+
+const foodData = {
+  name: Gulab Jamun,
+  category: Indian Dessert,
+  description: A popular Indian sweet made from khoya (milk solids), deep-fried, and soaked in sugar syrup. Soft, juicy, and melt-in-your-mouth delicious!,
+  ingredients: [
+    Khoya (milk solids),
+    All-purpose flour,
+    Baking powder,
+    Ghee (clarified butter),
+    Milk,
+    Sugar,
+    Water,
+    Cardamom powder,
+    Saffron strands,
+    Rose water
+  ],
+  preparationSteps: [
+    In a mixing bowl combine khoya all-purpose flour baking powder and ghee,
+    Add milk gradually and knead into a soft dough,
+    Divide the dough into small portions and shape them into smooth balls,
+    Heat oil or ghee in a pan on medium heat,
+    Fry the balls until they turn golden brown,
+    In a separate pan prepare sugar syrup by boiling sugar and water Add cardamom powder saffron strands and rose water,
+    Soak the fried balls in the warm sugar syrup for at least 2 hours,
+    Serve warm or at room temperature
+  ],
+  nutritionalInfo: {
+    Calories: 150 kcal,
+    Protein: 2 g,
+    Carbohydrates: 20 g,
+    Fat: 7 g,
+    Fiber: 0.5 g,
+    Sodium: 10 mg
+  },
+  image: gulab-jamun.jpg
+};
