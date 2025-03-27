@@ -173,7 +173,7 @@ router.get("/admin/:invoiceId", async (req, res) => {
 router.put("/admin/update/:invoiceId", async (req, res) => {
   try {
     const { invoiceId } = req.params;
-    const { totalAmount, cgst, sgst, roundOffAmount, foods } = req.body;
+    const { totalAmount, cgst, sgst, roundOff, discount, foods } = req.body;
 
     if (!totalAmount || !foods) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -192,7 +192,8 @@ router.put("/admin/update/:invoiceId", async (req, res) => {
     invoice.totalAmount = totalAmount;
     invoice.cgst = cgst;
     invoice.sgst = sgst;
-    invoice.roundOff = roundOffAmount;
+    invoice.roundOff = roundOff;
+    invoice.discount = discount || 0;
     invoice.foods = foods;
 
     await invoice.save();
