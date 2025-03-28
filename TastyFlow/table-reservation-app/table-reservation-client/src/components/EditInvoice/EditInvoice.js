@@ -250,7 +250,7 @@ const EditInvoice = () => {
         <header className="invoice-header">
           <h1>Edit Invoice</h1>
           <div className="invoice-meta">
-            <span>Invoice #: {state.invoice.invoiceNumber}</span>
+            <span>Invoice: {state.invoice.invoiceNumber}</span>
             <span>Date: {state.invoice.invoiceDate ? new Date(state.invoice.invoiceDate).toLocaleDateString() : ''}</span>
           </div>
         </header>

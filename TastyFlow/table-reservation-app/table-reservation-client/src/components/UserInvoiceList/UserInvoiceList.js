@@ -1,27 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import './UserInvoiceList.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import './UserInvoiceList.css';
 
 const InvoiceDetail = () => {
   const { invoiceId } = useParams();
-  const [invoice, setInvoice] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isSending, setIsSending] = useState(false);
+  const [state, setState] = useState({
+    invoice: null,
+    loading: true,
+    error: null,
+    isSending: false
+  });
 
   useEffect(() => {
     const fetchInvoiceDetail = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/invoice/admin/${invoiceId}`);
-        setInvoice(response.data);
-        setLoading(false);
+        setState(prev => ({
+          ...prev,
+          invoice: response.data,
+          loading: false
+        }));
       } catch (error) {
         console.error('Error fetching invoice details:', error);
-        setLoading(false);
-        setError('Failed to load invoice details.');
+        setState(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load invoice details.'
+        }));
       }
     };
 
@@ -30,17 +38,17 @@ const InvoiceDetail = () => {
 
   const sendInvoice = async () => {
     try {
-      setIsSending(true);
+      setState(prev => ({ ...prev, isSending: true }));
       const response = await axios.post(
         `http://localhost:5000/api/users/send-invoice/${invoiceId}`,
-        { userId: invoice.userId._id }
+        { userId: state.invoice.userId._id }
       );
       toast.success('Invoice sent successfully!');
-      setIsSending(false);
+      setState(prev => ({ ...prev, isSending: false }));
     } catch (error) {
       toast.error('Error sending invoice');
       console.error(error);
-      setIsSending(false);
+      setState(prev => ({ ...prev, isSending: false }));
     }
   };
 
@@ -49,34 +57,34 @@ const InvoiceDetail = () => {
     const invoiceHTML = `
      <html>
         <head>
-          <title>Invoice - ${invoice.invoiceNumber}</title>
+          <title>Invoice - ${state.invoice.invoiceNumber}</title>
           <style>
             /* Print-specific styles */
             @page {
-              size: auto; /* Auto size for thermal paper */
-              margin: 0; /* No margin to maximize space */
+              size: auto;
+              margin: 0;
             }
             body {
               font-family: Arial, sans-serif;
-              font-size: 10px; /* Smaller font size for compact layout */
-              line-height: 1.2; /* Tight line spacing */
+              font-size: 10px;
+              line-height: 1.2;
               margin: 0;
               padding: 0;
-              color: #000; /* Black text for thermal printers */
-              background: #fff; /* White background */
+              color: #000;
+              background: #fff;
             }
             .invoice-container {
               width: 100%;
-              max-width: 80mm; /* Adjust for 58mm or 80mm paper */
+              max-width: 80mm;
               margin: 0 auto;
-              padding: 5px; /* Minimal padding */
+              padding: 5px;
             }
             .invoice-header {
               text-align: center;
               margin-bottom: 5px;
             }
             .invoice-header h2 {
-              font-size: 14px; /* Slightly larger for headings */
+              font-size: 14px;
               margin: 0;
               color: #000;
             }
@@ -102,7 +110,7 @@ const InvoiceDetail = () => {
             .user-details {
               margin-bottom: 5px;
               padding: 5px 0;
-              border-top: 1px dashed #000; /* Dashed border for separation */
+              border-top: 1px dashed #000;
               border-bottom: 1px dashed #000;
             }
             .user-details h5 {
@@ -132,11 +140,11 @@ const InvoiceDetail = () => {
             .food-details td {
               padding: 3px;
               text-align: left;
-              border-bottom: 1px dashed #000; /* Dashed border for table rows */
+              border-bottom: 1px dashed #000;
             }
             .food-details th {
               font-weight: bold;
-              background-color: #f0f0f0; /* Light gray background for headers */
+              background-color: #f0f0f0;
             }
             .tax-summary {
               margin-bottom: 5px;
@@ -154,7 +162,7 @@ const InvoiceDetail = () => {
               justify-content: space-between;
               margin-top: 5px;
               padding-top: 5px;
-              border-top: 2px solid #000; /* Solid border for emphasis */
+              border-top: 2px solid #000;
             }
             .reservation-details {
               margin-bottom: 5px;
@@ -184,8 +192,8 @@ const InvoiceDetail = () => {
           <div class="invoice-container">
             <div class="invoice-header">
               <h2>TastyFlow</h2>
-              <p>Invoice No: ${invoice.invoiceNumber}</p>
-              <p>Date: ${new Date(invoice.invoiceDate).toLocaleDateString()}</p>
+              <p>Invoice No: ${state.invoice.invoiceNumber}</p>
+              <p>Date: ${new Date(state.invoice.invoiceDate).toLocaleDateString()}</p>
             </div>
 
             <div class="company-info">
@@ -196,8 +204,8 @@ const InvoiceDetail = () => {
 
             <div class="user-details">
               <h5>Bill To:</h5>
-              <p><strong>Name:</strong> ${invoice.userId.name}</p>
-              <p><strong>Contact:</strong> ${invoice.userId.contact}</p>
+              <p><strong>Name:</strong> ${state.invoice.userId.name}</p>
+              <p><strong>Contact:</strong> ${state.invoice.userId.contact}</p>
             </div>
 
             <div class="food-details">
@@ -212,7 +220,7 @@ const InvoiceDetail = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  ${invoice.foods.map((food, index) => `
+                  ${state.invoice.foods.map((food, index) => `
                     <tr>
                       <td>${food.name}</td>
                       <td>${food.quantity}</td>
@@ -225,23 +233,23 @@ const InvoiceDetail = () => {
             </div>
 
             <div class="tax-summary">
-              <div class="total"><span>CGST (2.5%):</span> <span>₹${invoice.cgst.toFixed(2)}</span></div>
-              <div class="total"><span>SGST (2.5%):</span> <span>₹${invoice.sgst.toFixed(2)}</span></div>
-              <div class="total"><span>Round-off:</span> <span>₹${invoice.roundOff.toFixed(2)}</span></div>
+              <div class="total"><span>CGST (2.5%):</span> <span>₹${state.invoice.cgst.toFixed(2)}</span></div>
+              <div class="total"><span>SGST (2.5%):</span> <span>₹${state.invoice.sgst.toFixed(2)}</span></div>
+              <div class="total"><span>Round-off:</span> <span>₹${state.invoice.roundOff.toFixed(2)}</span></div>
             </div>
 
             <div class="final-total">
               <div>Total Payable:</div>
-              <div>₹${invoice.totalAmount.toFixed(2)}</div>
+              <div>₹${state.invoice.totalAmount.toFixed(2)}</div>
             </div>
 
             ${
-              invoice.reservedTableInfo
+              state.invoice.reservedTableInfo
                 ? `
               <div class="reservation-details">
                 <h5>Reservation Details</h5>
-                <p><strong>Table No:</strong> ${invoice.reservedTableInfo.tableNumber}</p>
-                <p><strong>Reservation Slot:</strong> ${invoice.reservedTableInfo.slotTime}</p>
+                <p><strong>Table No:</strong> ${state.invoice.reservedTableInfo.tableNumber}</p>
+                <p><strong>Reservation Slot:</strong> ${state.invoice.reservedTableInfo.slotTime}</p>
                 <p><strong>Reservation Fee:</strong> ₹100 (included in total)</p>
               </div>
             `
@@ -261,121 +269,159 @@ const InvoiceDetail = () => {
     printWindow.print();
   };
 
-  if (loading) return <p>Loading invoice...</p>;
-  if (error) return <p>{error}</p>;
+  if (state.loading) return <div className="invoice-detail-loading">Loading invoice...</div>;
+  if (state.error) return <div className="invoice-detail-error">{state.error}</div>;
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Sidebar />
-      <div className="invoice-detail">
-        <h1 className="header">View Invoice</h1>
-        {invoice && (
-          <div className="edit-container">
-            <div className="form-section">
-              <p>Invoice Number: {invoice.invoiceNumber}</p>
+    <div className="invoice-detail-container">
+    <Sidebar />
+    
+    <main className="invoice-detail-content">
+      <header className="invoice-detail-header">
+        <h1>Invoice Details</h1>
+        <div className="invoice-detail-meta">
+          <span>Invoice: {state.invoice.invoiceNumber}</span>
+          <span>Date: {state.invoice.invoiceDate ? new Date(state.invoice.invoiceDate).toLocaleDateString() : ''}</span>
+        </div>
+      </header>
+
+      <div className="invoice-detail-view">
+        <section className="invoice-detail-summary">
+          <div className="invoice-detail-summary-grid">
+            <div className="invoice-detail-summary-item">
+              <label>Total Amount</label>
+              <p>₹{state.invoice.totalAmount.toFixed(2)}</p>
             </div>
-
-            <div className="tax-details">
-              <div className="tax-item">
-                <label>Total Amount</label>
-                <p>{invoice.totalAmount}</p>
-              </div>
-
-              <div className="tax-item">
-                <label>CGST</label>
-                <p>{invoice.cgst}</p>
-              </div>
-
-              <div className="tax-item">
-                <label>SGST</label>
-                <p>{invoice.sgst}</p>
-              </div>
-
-              <div className="tax-item">
-                <label>Round Off</label>
-                <p>{invoice.roundOff}</p>
-              </div>
-
-              <div className="tax-item">
-                <label>Date</label>
-                <p>{new Date(invoice.invoiceDate).toLocaleDateString()}</p>
-              </div>
+            
+            <div className="invoice-detail-summary-item">
+              <label>CGST (2.5%)</label>
+              <p>₹{state.invoice.cgst.toFixed(2)}</p>
             </div>
-
-            <h4>User Details:</h4>
-            <div className="user-details">
-              <p><strong>Name:</strong> {invoice.userId.name}</p>
-              <p><strong>Email:</strong> {invoice.userId.email}</p>
-              <p><strong>Contact:</strong> {invoice.userId.contact}</p>
-              <p><strong>User ID:</strong> {invoice.userId._id}</p>
+            
+            <div className="invoice-detail-summary-item">
+              <label>SGST (2.5%)</label>
+              <p>₹{state.invoice.sgst.toFixed(2)}</p>
             </div>
-
-            <h4>Food Items:</h4>
-            <div className="user-invoice-form flex-col">
-              <div className="invoice-table-format title">
-                <b>SI Number</b>
-                <b>Name</b>
-                <b>Quantity</b>
-                <b>Amount</b>
-                <b>Total</b>
-              </div>
-              {invoice.foods.length > 0 ? (
-                invoice.foods.map((food, index) => (
-                  <div key={index} className="invoice-table-format">
-                    <p>{index + 1}</p>
-                    <p>{food.name}</p>
-                    <p>{food.quantity}</p>
-                    <p>{food.price.toFixed(2)}</p>
-                    <p>{(food.quantity * food.price).toFixed(2)}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No food items available</p>
-              )}
-            </div>
-
-            {/* Conditionally render Reservation Details */}
-            {invoice.reservedTableInfo && (
-              <div className="reservation-details">
-              <h4>Reservation Details</h4>
-              <p><strong>Table No:</strong> {invoice.reservedTableInfo.tableNumber}</p>
-              <p><strong>Reservation Slot:</strong> {invoice.reservedTableInfo.slotTime}</p>
-              <p>
-                <strong>Reservation Date & Time:</strong>{" "}
-                {new Date(invoice.reservedTableInfo.date).toLocaleString("en-US", {
-                  month: "numeric",
-                  day: "numeric",
-                  year: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                  second: "numeric",
-                  hour12: true, // Use 12-hour format (AM/PM)
-                })}
-              </p>
-              <p><strong>Reservation Fee Deduction:</strong> ₹100 (included in total)</p>
-            </div>
-            )}
-
-            <div className="button-container">
-              <button
-                className="print-invoice-btn"
-                onClick={printInvoice}
-                disabled={loading || error}
-              >
-                Print Invoice
-              </button>
-              <button
-                className="send-invoice-btn"
-                onClick={sendInvoice}
-                disabled={isSending || loading || error}
-              >
-                {isSending ? 'Sending...' : 'Send Invoice'}
-              </button>
+            
+            <div className="invoice-detail-summary-item">
+              <label>Round Off</label>
+              <p>₹{state.invoice.roundOff.toFixed(2)}</p>
             </div>
           </div>
+        </section>
+
+        <section className="invoice-detail-user-section">
+          <h2>Customer Information</h2>
+          <div className="invoice-detail-user-card">
+            <div className="invoice-detail-user-item">
+              <span className="invoice-detail-label">Name:</span>
+              <span className="invoice-detail-value">{state.invoice.userId.name}</span>
+            </div>
+            <div className="invoice-detail-user-item">
+              <span className="invoice-detail-label">Email:</span>
+              <span className="invoice-detail-value">{state.invoice.userId.email}</span>
+            </div>
+            <div className="invoice-detail-user-item">
+              <span className="invoice-detail-label">Contact:</span>
+              <span className="invoice-detail-value">{state.invoice.userId.contact}</span>
+            </div>
+            <div className="invoice-detail-user-item">
+              <span className="invoice-detail-label">User ID:</span>
+              <span className="invoice-detail-value">{state.invoice.userId._id}</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="invoice-detail-items">
+          <h2>Order Items</h2>
+          <div className="invoice-detail-items-table">
+            <div className="invoice-detail-table-header">
+              <div>#</div>
+              <div>Item</div>
+              <div>Price</div>
+              <div>Qty</div>
+              <div>Amount</div>
+            </div>
+            
+            {state.invoice.foods.length > 0 ? (
+              state.invoice.foods.map((food, index) => (
+                <div key={index} className="invoice-detail-table-row">
+                  <div>{index + 1}</div>
+                  <div>{food.name}</div>
+                  <div>₹{(food.price || 0).toFixed(2)}</div>
+                  <div>{food.quantity}</div>
+                  <div>₹{(food.quantity * food.price).toFixed(2)}</div>
+                </div>
+              ))
+            ) : (
+              <div className="invoice-detail-empty-state">No food items available</div>
+            )}
+          </div>
+        </section>
+
+        {state.invoice.reservedTableInfo && (
+          <section className="invoice-detail-reservation-section">
+            <h2>Reservation Details</h2>
+            <div className="invoice-detail-reservation-card">
+              <div className="invoice-detail-reservation-item">
+                <span className="invoice-detail-label">Table No:</span>
+                <span className="invoice-detail-value">{state.invoice.reservedTableInfo.tableNumber}</span>
+              </div>
+              <div className="invoice-detail-reservation-item">
+                <span className="invoice-detail-label">Reservation Slot:</span>
+                <span className="invoice-detail-value">{state.invoice.reservedTableInfo.slotTime}</span>
+              </div>
+              <div className="invoice-detail-reservation-item">
+                <span className="invoice-detail-label">Date & Time:</span>
+                <span className="invoice-detail-value">
+                  {new Date(state.invoice.reservedTableInfo.date).toLocaleString("en-US", {
+                    month: "numeric",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric",
+                    hour12: true,
+                  })}
+                </span>
+              </div>
+              <div className="invoice-detail-reservation-item">
+                <span className="invoice-detail-label">Reservation Fee:</span>
+                <span className="invoice-detail-value">₹100 (included in total)</span>
+              </div>
+            </div>
+          </section>
         )}
+
+        <div className="invoice-detail-actions">
+          <button
+            type="button"
+            onClick={printInvoice}
+            className="invoice-detail-action-btn invoice-detail-print-btn"
+            disabled={state.loading || state.error}
+          >
+            Print Invoice
+          </button>
+          <button
+            type="button"
+            onClick={sendInvoice}
+            className="invoice-detail-action-btn invoice-detail-send-btn"
+            disabled={state.isSending || state.loading || state.error}
+          >
+            {state.isSending ? (
+              <span className="invoice-detail-loader">
+                <span className="invoice-detail-loader-dot"></span>
+                <span className="invoice-detail-loader-dot"></span>
+                <span className="invoice-detail-loader-dot"></span>
+              </span>
+            ) : (
+              'Send Invoice'
+            )}
+          </button>
+        </div>
       </div>
-    </div>
+    </main>
+  </div>
   );
 };
 
