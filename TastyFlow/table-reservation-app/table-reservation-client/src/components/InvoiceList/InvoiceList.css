@@ -1,23 +1,126 @@
-.invoice-list {
+/* InvoiceListPage.css */
+
+/* Main Container */
+.invoice-list-page-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #1B1C1F;
+}
+
+/* Content Area */
+.invoice-list-page-content {
+    flex: 1;
     width: 100%;
     max-width: 1225px;
-    color: #fff; /* White text color for better readability */
+    color: #fff;
     font-size: 14px;
-    background-color: #1B1C1F; /* Dark background for the list container */
+    background-color: #1B1C1F;
     padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
-    border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-top: 1.5px solid #a9a9a9;
     margin: 0 auto;
 }
 
-.invoice-list .header {
+/* Header */
+.invoice-list-page-header {
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 2rem;
     text-align: center;
-    color: #ff4135; /* Accent color */
+    color: #ff4135;
     border-bottom: 2px solid #ff4135;
     padding-bottom: 1rem;
-  }
+}
 
-  
+/* Table Container */
+.invoice-list-page-table-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Table */
+.invoice-list-page-table {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Table Header */
+.invoice-list-page-table-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    padding: 12px 15px;
+    font-weight: 600;
+    color: #ff4135;
+    background-color: #333;
+    border-radius: 8px;
+}
+
+/* Table Rows */
+.invoice-list-page-table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.invoice-list-page-table-row:hover {
+    background-color: #444;
+    transform: scale(1.02);
+}
+
+/* Buttons */
+.invoice-list-page-view-btn,
+.invoice-list-page-edit-btn {
+    padding: 8px 15px;
+    color: #352701;
+    background-color: #ff9f00;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 700;
+    border: none;
+}
+
+.invoice-list-page-view-btn:hover,
+.invoice-list-page-edit-btn:hover {
+    background-color: #da8702;
+}
+
+/* Loading State */
+.invoice-list-page-loading {
+    text-align: center;
+    color: #fff;
+}
+
+/* Empty State */
+.invoice-list-page-empty {
+    text-align: center;
+    color: #fff;
+    font-style: italic;
+    padding: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .invoice-list-page-table-header,
+    .invoice-list-page-table-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .invoice-list-page-table-header span:nth-child(n+4),
+    .invoice-list-page-table-row > button {
+        grid-column: span 2;
+    }
+
+    .invoice-list-page-content {
+        padding: 1rem;
+    }
+}

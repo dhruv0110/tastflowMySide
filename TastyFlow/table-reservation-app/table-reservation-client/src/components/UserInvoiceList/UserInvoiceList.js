@@ -336,7 +336,7 @@ const InvoiceDetail = () => {
           <h2>Order Items</h2>
           <div className="invoice-detail-items-table">
             <div className="invoice-detail-table-header">
-              <div>#</div>
+              <div>SI <br/> No.</div>
               <div>Item</div>
               <div>Price</div>
               <div>Qty</div>

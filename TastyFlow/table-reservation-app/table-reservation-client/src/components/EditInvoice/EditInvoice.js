@@ -196,8 +196,16 @@ const EditInvoice = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Calculate final amount
+    const subtotal = state.invoice.foods.reduce((sum, food) => sum + (food.total || 0), 0);
+    const taxableAmount = Math.max(0, subtotal - state.invoice.discount);
+    const cgst = taxableAmount * 0.025;
+    const sgst = taxableAmount * 0.025;
+    const totalBeforeRoundOff = taxableAmount + cgst + sgst;
+    const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
+    const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
+  
     const invoiceData = {
-      ...state.invoice,
       foods: state.invoice.foods.map(food => ({
         foodId: food.foodId,
         name: food.name,
@@ -205,19 +213,21 @@ const EditInvoice = () => {
         quantity: parseInt(food.quantity) || 1,
         total: parseFloat(food.total) || 0,
       })),
-      totalAmount: parseFloat(state.invoice.subtotal) || 0,
-      cgst: parseFloat(state.invoice.cgst) || 0,
-      sgst: parseFloat(state.invoice.sgst) || 0,
-      roundOff: parseFloat(state.invoice.roundOffAmount) || 0,
-      finalAmount: parseFloat(state.invoice.finalAmount) || 0,
+      discount: parseFloat(state.invoice.discount) || 0,
+      subtotal: parseFloat(subtotal) || 0,
+      cgst: parseFloat(cgst) || 0,
+      sgst: parseFloat(sgst) || 0,
+      roundOff: parseFloat(roundOffAmount) || 0,
+      finalAmount: parseFloat(finalAmount) || 0,
+      totalAmount: parseFloat(finalAmount) || 0, // Also update totalAmount
     };
-
+  
     try {
       const response = await axios.put(
         `http://localhost:5000/api/invoice/admin/update/${invoiceId}`,
         invoiceData
       );
-
+  
       toast.success(response.data.message);
       navigate("/admin/all-invoices");
     } catch (error) {

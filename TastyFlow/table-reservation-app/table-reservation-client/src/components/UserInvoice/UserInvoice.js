@@ -8,10 +8,9 @@ const UserInvoice = () => {
     const { userId } = useParams();
     const [user, setUser] = useState('');
     const [userInvoice, setUserInvoice] = useState([]);
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    // Fetch user details
     const fetchUserDetails = async () => {
         try {
             const response = await fetch(`http://localhost:5000/api/users/admin/getuser/${userId}`, {
@@ -34,7 +33,6 @@ const UserInvoice = () => {
         }
     };
 
-    // Fetch user invoices
     const fetchUserInvoice = async () => {
         try {
             const response = await fetch(`http://localhost:5000/api/invoice/admin/invoices/${userId}`, {
@@ -49,7 +47,7 @@ const UserInvoice = () => {
 
             if (response.ok) {
                 setUserInvoice(data);
-                setLoading(false); // Set loading to false once data is fetched
+                setLoading(false);
             } else {
                 setLoading(false);
             }
@@ -64,7 +62,6 @@ const UserInvoice = () => {
         fetchUserInvoice();
     }, [userId]);
 
-    // Navigate to specific invoice detail or edit page
     const navigateToInvoiceDetail = (invoiceId) => {
         navigate(`/admin/invoices/${invoiceId}`);
     };
@@ -74,47 +71,46 @@ const UserInvoice = () => {
     };
 
     return (
-        <div style={{ display: "flex" }}>
+        <div className="user-invoice-main-container">
             <Sidebar />
-            <div className="user-invoice">
-                <h3 className="user-name">{user.name}'s Invoices</h3>
-                <div className="user-invoice-form flex-col">
-                    <div className="invoice-table">
-                        {/* Show loading message or invoices */}
+            <div className="user-invoice-content">
+                <h3 className="user-invoice-title">{user.name}'s Invoices</h3>
+                <div className="user-invoice-form-container">
+                    <div className="user-invoice-table-container">
                         {loading ? (
-                            <p>Loading invoices...</p>
+                            <p className="user-invoice-loading">Loading invoices...</p>
                         ) : userInvoice.length > 0 ? (
                             <>
-                                {/* Table Header */}
-                                <div className="invoice-table-format title">
-                                    <b>Invoice Number</b>
-                                    <b>Date</b>
-                                    <b>View</b>
-                                    <b>Edit</b>
+                                <div className="user-invoice-table-header">
+                                    <span className="user-invoice-table-heading">Invoice Number</span>
+                                    <span className="user-invoice-table-heading">Date</span>
+                                    <span className="user-invoice-table-heading">View</span>
+                                    <span className="user-invoice-table-heading">Edit</span>
                                 </div>
 
-                                {/* Invoice List */}
                                 {userInvoice.map((invoice) => (
-                                    <div key={invoice._id} className="invoice-table-format">
-                                        <p>{invoice.invoiceNumber}</p>
-                                        <p>{new Date(invoice.invoiceDate).toLocaleDateString()}</p>
-                                        <div
+                                    <div key={invoice._id} className="user-invoice-table-row">
+                                        <span className="user-invoice-table-data">{invoice.invoiceNumber}</span>
+                                        <span className="user-invoice-table-data">
+                                            {new Date(invoice.invoiceDate).toLocaleDateString()}
+                                        </span>
+                                        <button
                                             onClick={() => navigateToInvoiceDetail(invoice._id)}
-                                            className="view-button"
+                                            className="user-invoice-view-btn"
                                         >
                                             View Invoice
-                                        </div>
-                                        <div
+                                        </button>
+                                        <button
                                             onClick={() => navigateToEditInvoice(invoice._id)}
-                                            className="edit-button"
+                                            className="user-invoice-edit-btn"
                                         >
                                             Edit Invoice
-                                        </div>
+                                        </button>
                                     </div>
                                 ))}
                             </>
                         ) : (
-                            <p className="no-reviews">No invoices available for this user.</p>
+                            <p className="user-invoice-empty">No invoices available for this user.</p>
                         )}
                     </div>
                 </div>

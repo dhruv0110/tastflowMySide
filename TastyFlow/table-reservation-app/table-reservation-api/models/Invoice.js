@@ -19,6 +19,7 @@ const invoiceSchema = new mongoose.Schema(
     sgst: { type: Number, required: true },
     roundOff: { type: Number, required: true },
     discount: { type: Number, default: 0 },
+    finalAmount: { type: Number},
     reservedTableInfo: {
       tableNumber: { type: Number },
       slotTime: { type: String },
