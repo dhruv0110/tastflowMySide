@@ -41,7 +41,7 @@
     margin-bottom: 25px;
   }
   
-  .detail-item {
+  .reservation-details .detail-item {
     display: flex;
     justify-content: space-between;
     font-size: 16px;

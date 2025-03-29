@@ -4,6 +4,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import './UserInvoiceList.css';
+import { FaUser, FaCalendarAlt, FaTable, FaClock, FaMoneyBillWave, FaEnvelope, FaPhone, FaIdCard } from 'react-icons/fa';
 
 const InvoiceDetail = () => {
   const { invoiceId } = useParams();
@@ -51,6 +52,7 @@ const InvoiceDetail = () => {
       setState(prev => ({ ...prev, isSending: false }));
     }
   };
+  
 
   const printInvoice = () => {
     const printWindow = window.open('', '', 'height=800,width=1200');
@@ -164,6 +166,7 @@ const InvoiceDetail = () => {
               display: flex;
               justify-content: space-between;
               margin-top: 5px;
+              margin-bottom: 5px;
               padding-top: 5px;
               border-top: 2px solid #000;
             }
@@ -286,162 +289,213 @@ const InvoiceDetail = () => {
 
   return (
     <div className="invoice-detail-container">
-    <Sidebar />
-    
-    <main className="invoice-detail-content">
-      <header className="invoice-detail-header">
-        <h1>Invoice Details</h1>
-        <div className="invoice-detail-meta">
-          <span>Invoice: {state.invoice.invoiceNumber}</span>
-          <span>Date: {state.invoice.invoiceDate ? new Date(state.invoice.invoiceDate).toLocaleDateString() : ''}</span>
-        </div>
-      </header>
+      <Sidebar />
+      
+      <main className="invoice-detail-content">
+        <header className="invoice-detail-header">
+          <h1>Invoice Details</h1>
+          <div className="invoice-detail-meta">
+            <span>Invoice: {state.invoice.invoiceNumber}</span>
+            <span>Date: {state.invoice.invoiceDate ? new Date(state.invoice.invoiceDate).toLocaleDateString() : ''}</span>
+          </div>
+        </header>
 
-      <div className="invoice-detail-view">
-        <section className="invoice-detail-summary">
-          <div className="invoice-detail-summary-grid">
-            <div className="invoice-detail-summary-item">
-              <label>Total Amount</label>
-              <p>₹{state.invoice.totalAmount.toFixed(2)}</p>
-            </div>
-            <div className="summary-item discount">
+        <div className="invoice-detail-view">
+          <section className="invoice-detail-summary">
+            <div className="invoice-detail-summary-grid">
+            <div className="summary-item">
+                <label>Subtotal</label>
+                <p>₹{state.invoice.subtotal.toFixed(2)}</p>
+              </div>
+              
+              <div className="summary-item discount">
                 <label>Discount</label>
                 <p>-₹{state.invoice.discount.toFixed(2)}</p>
               </div>
-            
-            <div className="invoice-detail-summary-item">
-              <label>CGST (2.5%)</label>
-              <p>₹{state.invoice.cgst.toFixed(2)}</p>
-            </div>
-            
-            <div className="invoice-detail-summary-item">
-              <label>SGST (2.5%)</label>
-              <p>₹{state.invoice.sgst.toFixed(2)}</p>
-            </div>
-            
-            <div className="invoice-detail-summary-item">
-              <label>Round Off</label>
-              <p>₹{state.invoice.roundOff.toFixed(2)}</p>
-            </div>
-            <div className="summary-item total">
+              
+              <div className="summary-item">
+                <label>CGST (2.5%)</label>
+                <p>₹{state.invoice.cgst.toFixed(2)}</p>
+              </div>
+              
+              <div className="summary-item">
+                <label>SGST (2.5%)</label>
+                <p>₹{state.invoice.sgst.toFixed(2)}</p>
+              </div>
+              
+              <div className="summary-item">
+                <label>Round Off</label>
+                <p>₹{state.invoice.roundOffAmount.toFixed(2)}</p>
+              </div>
+              
+              <div className="summary-item total">
                 <label>Final Amount</label>
                 <p>₹{state.invoice.finalAmount}</p>
               </div>
-          </div>
-        </section>
+            </div>
+          </section>
 
-        <section className="invoice-detail-user-section">
-          <h2>Customer Information</h2>
-          <div className="invoice-detail-user-card">
-            <div className="invoice-detail-user-item">
-              <span className="invoice-detail-label">Name:</span>
-              <span className="invoice-detail-value">{state.invoice.userId.name}</span>
-            </div>
-            <div className="invoice-detail-user-item">
-              <span className="invoice-detail-label">Email:</span>
-              <span className="invoice-detail-value">{state.invoice.userId.email}</span>
-            </div>
-            <div className="invoice-detail-user-item">
-              <span className="invoice-detail-label">Contact:</span>
-              <span className="invoice-detail-value">{state.invoice.userId.contact}</span>
-            </div>
-            <div className="invoice-detail-user-item">
-              <span className="invoice-detail-label">User ID:</span>
-              <span className="invoice-detail-value">{state.invoice.userId._id}</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="invoice-detail-items">
-          <h2>Order Items</h2>
-          <div className="invoice-detail-items-table">
-            <div className="invoice-detail-table-header">
-              <div>SI <br/> No.</div>
-              <div>Item</div>
-              <div>Price</div>
-              <div>Qty</div>
-              <div>Amount</div>
-            </div>
-            
-            {state.invoice.foods.length > 0 ? (
-              state.invoice.foods.map((food, index) => (
-                <div key={index} className="invoice-detail-table-row">
-                  <div>{index + 1}</div>
-                  <div>{food.name}</div>
-                  <div>₹{(food.price || 0).toFixed(2)}</div>
-                  <div>{food.quantity}</div>
-                  <div>₹{(food.quantity * food.price).toFixed(2)}</div>
+          <section className="invoice-detail-user-section">
+            <h2 className="section-title">
+              Customer Information
+            </h2>
+            <div className="detail-card">
+              <div className="detail-grid">
+                <div className="detail-item">
+                  <div className="detail-icon">
+                    <FaUser />
+                  </div>
+                  <div>
+                    <div className="detail-label">Name</div>
+                    <div className="detail-value">{state.invoice.userId.name}</div>
+                  </div>
                 </div>
-              ))
-            ) : (
-              <div className="invoice-detail-empty-state">No food items available</div>
-            )}
-          </div>
-        </section>
-
-        {state.invoice.reservedTableInfo && (
-          <section className="invoice-detail-reservation-section">
-            <h2>Reservation Details</h2>
-            <div className="invoice-detail-reservation-card">
-              <div className="invoice-detail-reservation-item">
-                <span className="invoice-detail-label">Table No:</span>
-                <span className="invoice-detail-value">{state.invoice.reservedTableInfo.tableNumber}</span>
-              </div>
-              <div className="invoice-detail-reservation-item">
-                <span className="invoice-detail-label">Reservation Slot:</span>
-                <span className="invoice-detail-value">{state.invoice.reservedTableInfo.slotTime}</span>
-              </div>
-              <div className="invoice-detail-reservation-item">
-                <span className="invoice-detail-label">Date & Time:</span>
-                <span className="invoice-detail-value">
-                  {new Date(state.invoice.reservedTableInfo.date).toLocaleString("en-US", {
-                    month: "numeric",
-                    day: "numeric",
-                    year: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric",
-                    hour12: true,
-                  })}
-                </span>
-              </div>
-              <div className="invoice-detail-reservation-item">
-                <span className="invoice-detail-label">Reservation Fee:</span>
-                <span className="invoice-detail-value">₹100 (included in total)</span>
+                
+                <div className="detail-item">
+                  <div className="detail-icon">
+                    <FaEnvelope />
+                  </div>
+                  <div>
+                    <div className="detail-label">Email</div>
+                    <div className="detail-value">{state.invoice.userId.email}</div>
+                  </div>
+                </div>
+                
+                <div className="detail-item">
+                  <div className="detail-icon">
+                    <FaPhone />
+                  </div>
+                  <div>
+                    <div className="detail-label">Contact</div>
+                    <div className="detail-value">{state.invoice.userId.contact}</div>
+                  </div>
+                </div>
+                
+                <div className="detail-item">
+                  <div className="detail-icon">
+                    <FaIdCard />
+                  </div>
+                  <div>
+                    <div className="detail-label">User ID</div>
+                    <div className="detail-value user-id">{state.invoice.userId._id}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
-        )}
 
-        <div className="invoice-detail-actions">
-          <button
-            type="button"
-            onClick={printInvoice}
-            className="invoice-detail-action-btn invoice-detail-print-btn"
-            disabled={state.loading || state.error}
-          >
-            Print Invoice
-          </button>
-          <button
-            type="button"
-            onClick={sendInvoice}
-            className="invoice-detail-action-btn invoice-detail-send-btn"
-            disabled={state.isSending || state.loading || state.error}
-          >
-            {state.isSending ? (
-              <span className="invoice-detail-loader">
-                <span className="invoice-detail-loader-dot"></span>
-                <span className="invoice-detail-loader-dot"></span>
-                <span className="invoice-detail-loader-dot"></span>
-              </span>
-            ) : (
-              'Send Invoice'
-            )}
-          </button>
+          <section className="invoice-detail-items">
+            <h2>Order Items</h2>
+            <div className="invoice-detail-items-table">
+              <div className="invoice-detail-table-header">
+                <div>SI <br/> No.</div>
+                <div>Item</div>
+                <div>Price</div>
+                <div>Qty</div>
+                <div>Amount</div>
+              </div>
+              
+              {state.invoice.foods.length > 0 ? (
+                state.invoice.foods.map((food, index) => (
+                  <div key={index} className="invoice-detail-table-row">
+                    <div>{index + 1}</div>
+                    <div>{food.name}</div>
+                    <div>₹{(food.price || 0).toFixed(2)}</div>
+                    <div>{food.quantity}</div>
+                    <div>₹{(food.quantity * food.price).toFixed(2)}</div>
+                  </div>
+                ))
+              ) : (
+                <div className="invoice-detail-empty-state">No food items available</div>
+              )}
+            </div>
+          </section>
+
+          {state.invoice.reservedTableInfo && (
+            <section className="invoice-detail-reservation-section">
+              <h2>Reservation Details</h2>
+              <div className="detail-card">
+                <div className="detail-grid">
+                  <div className="detail-item">
+                    <div className="detail-icon">
+                      <FaTable />
+                    </div>
+                    <div>
+                      <div className="detail-label">Table No</div>
+                      <div className="detail-value">{state.invoice.reservedTableInfo.tableNumber}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="detail-item">
+                    <div className="detail-icon">
+                      <FaClock />
+                    </div>
+                    <div>
+                      <div className="detail-label">Time Slot</div>
+                      <div className="detail-value">{state.invoice.reservedTableInfo.slotTime}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="detail-item">
+                    <div className="detail-icon">
+                      <FaCalendarAlt />
+                    </div>
+                    <div>
+                      <div className="detail-label">Date</div>
+                      <div className="detail-value">
+                        {new Date(state.invoice.reservedTableInfo.date).toLocaleDateString("en-US", {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="detail-item">
+                    <div className="detail-icon">
+                      <FaMoneyBillWave />
+                    </div>
+                    <div>
+                      <div className="detail-label">Reservation Fee</div>
+                      <div className="detail-value">₹100 (included in total)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          <div className="invoice-detail-actions">
+            <button
+              type="button"
+              onClick={printInvoice}
+              className="invoice-detail-action-btn invoice-detail-print-btn"
+              disabled={state.loading || state.error}
+            >
+              Print Invoice
+            </button>
+            <button
+              type="button"
+              onClick={sendInvoice}
+              className="invoice-detail-action-btn invoice-detail-send-btn"
+              disabled={state.isSending || state.loading || state.error}
+            >
+              {state.isSending ? (
+                <span className="invoice-detail-loader">
+                  <span className="invoice-detail-loader-dot"></span>
+                  <span className="invoice-detail-loader-dot"></span>
+                  <span className="invoice-detail-loader-dot"></span>
+                </span>
+              ) : (
+                'Send Invoice'
+              )}
+            </button>
+          </div>
         </div>
-      </div>
-    </main>
-  </div>
+      </main>
+    </div>
   );
 };
 
