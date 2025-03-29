@@ -52,7 +52,6 @@ const InvoiceDetail = () => {
       setState(prev => ({ ...prev, isSending: false }));
     }
   };
-  
 
   const printInvoice = () => {
     const printWindow = window.open('', '', 'height=800,width=1200');
@@ -243,7 +242,7 @@ const InvoiceDetail = () => {
                ${state.invoice.discount > 0 ? `
                 <div class="total">
                   <span>Discount:</span>
-                  <span>-₹${state.invoice.discount}</span>
+                  <span>-₹${state.invoice.discount.toFixed(2)}</span>
                 </div>
               ` : ''}
               <div class="total"><span>CGST (2.5%):</span> <span>₹${state.invoice.cgst.toFixed(2)}</span></div>
@@ -303,34 +302,32 @@ const InvoiceDetail = () => {
         <div className="invoice-detail-view">
           <section className="invoice-detail-summary">
             <div className="invoice-detail-summary-grid">
-            <div className="summary-item">
-                <label>Subtotal</label>
-                <p>₹{state.invoice.subtotal.toFixed(2)}</p>
+              <div className="invoice-detail-summary-item">
+                <label>Total Amount</label>
+                <p>₹{state.invoice.totalAmount.toFixed(2)}</p>
               </div>
-              
               <div className="summary-item discount">
                 <label>Discount</label>
                 <p>-₹{state.invoice.discount.toFixed(2)}</p>
               </div>
               
-              <div className="summary-item">
+              <div className="invoice-detail-summary-item">
                 <label>CGST (2.5%)</label>
                 <p>₹{state.invoice.cgst.toFixed(2)}</p>
               </div>
               
-              <div className="summary-item">
+              <div className="invoice-detail-summary-item">
                 <label>SGST (2.5%)</label>
                 <p>₹{state.invoice.sgst.toFixed(2)}</p>
               </div>
               
-              <div className="summary-item">
+              <div className="invoice-detail-summary-item">
                 <label>Round Off</label>
-                <p>₹{state.invoice.roundOffAmount.toFixed(2)}</p>
+                <p>₹{state.invoice.roundOff.toFixed(2)}</p>
               </div>
-              
               <div className="summary-item total">
                 <label>Final Amount</label>
-                <p>₹{state.invoice.finalAmount}</p>
+                <p>₹{state.invoice.finalAmount.toFixed(2)}</p>
               </div>
             </div>
           </section>

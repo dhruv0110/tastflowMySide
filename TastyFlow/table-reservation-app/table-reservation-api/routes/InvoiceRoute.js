@@ -170,41 +170,41 @@ router.get("/admin/:invoiceId", async (req, res) => {
 });
 
 // Edit an invoice by ID
-router.put("/admin/update/:invoiceId", async (req, res) => {
-  try {
-    const { invoiceId } = req.params;
-    const { subtotal, cgst, sgst, roundOff, discount, foods, finalAmount } = req.body;
+  router.put("/admin/update/:invoiceId", async (req, res) => {
+    try {
+      const { invoiceId } = req.params;
+      const { subtotal, cgst, sgst, roundOff, discount, foods, finalAmount } = req.body;
 
-    if (!subtotal || !foods) {
-      return res.status(400).json({ message: "Missing required fields" });
+      if (!subtotal || !foods) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const hasInvalidFood = foods.some((food) => !food.foodId);
+      if (hasInvalidFood) {
+        return res.status(400).json({ message: "FoodId is missing for some food items" });
+      }
+
+      const invoice = await Invoice.findById(invoiceId);
+      if (!invoice) {
+        return res.status(404).json({ message: "Invoice not found" });
+      }
+
+      invoice.totalAmount = subtotal; // Store subtotal here
+      invoice.cgst = cgst;
+      invoice.sgst = sgst;
+      invoice.roundOff = roundOff;
+      invoice.discount = discount || 0;
+      invoice.foods = foods;
+      invoice.finalAmount = finalAmount;
+
+      await invoice.save();
+
+      res.status(200).json({ message: "Invoice updated successfully", invoice });
+    } catch (error) {
+      console.error("Error updating invoice:", error);
+      res.status(500).json({ message: "Internal Server Error" });
     }
-
-    const hasInvalidFood = foods.some((food) => !food.foodId);
-    if (hasInvalidFood) {
-      return res.status(400).json({ message: "FoodId is missing for some food items" });
-    }
-
-    const invoice = await Invoice.findById(invoiceId);
-    if (!invoice) {
-      return res.status(404).json({ message: "Invoice not found" });
-    }
-
-    invoice.totalAmount = subtotal; // Store subtotal here
-    invoice.cgst = cgst;
-    invoice.sgst = sgst;
-    invoice.roundOff = roundOff;
-    invoice.discount = discount || 0;
-    invoice.foods = foods;
-    invoice.finalAmount = finalAmount;
-
-    await invoice.save();
-
-    res.status(200).json({ message: "Invoice updated successfully", invoice });
-  } catch (error) {
-    console.error("Error updating invoice:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+  });
 
 // Get all invoices by userId
 router.get("/admin/invoices/:userId", async (req, res) => {
