@@ -138,7 +138,7 @@ const InvoiceDetail = () => {
             }
             .food-details th,
             .food-details td {
-              padding: 3px;
+              padding: 3px 0;
               text-align: left;
               border-bottom: 1px dashed #000;
             }
@@ -148,15 +148,18 @@ const InvoiceDetail = () => {
             }
             .tax-summary {
               margin-bottom: 5px;
+              margin-top: 0.5rem;
+              border-top: 1px dashed black;
+              padding-top: 0.5rem;
             }
             .tax-summary .total {
               display: flex;
               justify-content: space-between;
-              font-size: 10px;
+              font-size: 16px;
               margin-bottom: 3px;
             }
             .final-total {
-              font-size: 12px;
+              font-size: 16px;
               font-weight: bold;
               display: flex;
               justify-content: space-between;
@@ -216,7 +219,7 @@ const InvoiceDetail = () => {
                     <th>Item</th>
                     <th>Qty</th>
                     <th>Price</th>
-                    <th>Total</th>
+                    <th style="text-align: right;">Total</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -225,7 +228,7 @@ const InvoiceDetail = () => {
                       <td>${food.name}</td>
                       <td>${food.quantity}</td>
                       <td>${food.price.toFixed(2)}</td>
-                      <td>${(food.quantity * food.price).toFixed(2)}</td>
+                      <td style="text-align: right;">${(food.quantity * food.price).toFixed(2)}</td>
                     </tr>
                   `).join('')}
                 </tbody>
@@ -233,14 +236,22 @@ const InvoiceDetail = () => {
             </div>
 
             <div class="tax-summary">
+              <div class="total"><span>Total:</span> <span>₹${state.invoice.totalAmount.toFixed(2)}</span></div>
+               ${state.invoice.discount > 0 ? `
+                <div class="total">
+                  <span>Discount:</span>
+                  <span>-₹${state.invoice.discount}</span>
+                </div>
+              ` : ''}
               <div class="total"><span>CGST (2.5%):</span> <span>₹${state.invoice.cgst.toFixed(2)}</span></div>
               <div class="total"><span>SGST (2.5%):</span> <span>₹${state.invoice.sgst.toFixed(2)}</span></div>
               <div class="total"><span>Round-off:</span> <span>₹${state.invoice.roundOff.toFixed(2)}</span></div>
+
             </div>
 
             <div class="final-total">
               <div>Total Payable:</div>
-              <div>₹${state.invoice.totalAmount.toFixed(2)}</div>
+              <div>₹${state.invoice.finalAmount == null ? state.invoice.totalAmount.toFixed(2) : state.invoice.finalAmount.toFixed(2)}</div>
             </div>
 
             ${
@@ -257,8 +268,9 @@ const InvoiceDetail = () => {
             }
 
             <div class="footer">
-              <p>Thank you for dining with us!</p>
-            </div>
+          Thank you for dining with us!<br>
+          ${new Date().toLocaleString()}
+        </div>
           </div>
         </body>
       </html>
@@ -292,6 +304,10 @@ const InvoiceDetail = () => {
               <label>Total Amount</label>
               <p>₹{state.invoice.totalAmount.toFixed(2)}</p>
             </div>
+            <div className="summary-item discount">
+                <label>Discount</label>
+                <p>-₹{state.invoice.discount.toFixed(2)}</p>
+              </div>
             
             <div className="invoice-detail-summary-item">
               <label>CGST (2.5%)</label>
@@ -307,6 +323,10 @@ const InvoiceDetail = () => {
               <label>Round Off</label>
               <p>₹{state.invoice.roundOff.toFixed(2)}</p>
             </div>
+            <div className="summary-item total">
+                <label>Final Amount</label>
+                <p>₹{state.invoice.finalAmount}</p>
+              </div>
           </div>
         </section>
 

@@ -352,6 +352,10 @@
   animation-delay: -0.16s;
 }
 
+.summary-item.discount p {
+  color: var(--danger);
+}
+
 @keyframes invoice-detail-bounce {
   0%, 80%, 100% { 
     transform: scale(0);

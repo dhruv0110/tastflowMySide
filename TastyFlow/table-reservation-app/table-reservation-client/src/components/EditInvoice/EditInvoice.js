@@ -219,7 +219,7 @@ const EditInvoice = () => {
       sgst: parseFloat(sgst) || 0,
       roundOff: parseFloat(roundOffAmount) || 0,
       finalAmount: parseFloat(finalAmount) || 0,
-      totalAmount: parseFloat(finalAmount) || 0, // Also update totalAmount
+      totalAmount: parseFloat(subtotal) || 0, // Store subtotal in totalAmount
     };
   
     try {
@@ -380,7 +380,7 @@ const EditInvoice = () => {
           value={state.invoice.discount === 0 ? '' : state.invoice.discount}
           onChange={handleDiscountChange}
           min="0"
-          step="0.01"
+          step="1"
           placeholder="0.00"
           className="discount-input-field"
         />
