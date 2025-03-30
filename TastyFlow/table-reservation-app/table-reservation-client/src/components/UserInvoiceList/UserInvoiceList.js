@@ -325,9 +325,18 @@ const InvoiceDetail = () => {
                 <label>Round Off</label>
                 <p>₹{state.invoice.roundOff.toFixed(2)}</p>
               </div>
+
+              {state.invoice.reservedTableInfo && (
+                <div className="summary-item discount">
+                  <label>Table Reservation</label>
+                  <p>-₹100.00</p>
+                </div>
+              )}
               <div className="summary-item total">
                 <label>Final Amount</label>
-                <p>₹{state.invoice.finalAmount.toFixed(2)}</p>
+                <p>
+  {(state.invoice.finalAmount || state.invoice.totalAmount).toFixed(2)}
+</p>
               </div>
             </div>
           </section>

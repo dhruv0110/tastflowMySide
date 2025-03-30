@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import './EditInvoice.css';
 
 const EditInvoice = () => {
-  // State Management
   const { invoiceId } = useParams();
   const navigate = useNavigate();
   
@@ -21,6 +20,7 @@ const EditInvoice = () => {
       invoiceNumber: '',
       invoiceDate: '',
       discount: 0,
+      reservedTableInfo: null,
     },
     loading: true,
     error: null,
@@ -28,7 +28,6 @@ const EditInvoice = () => {
     selectedFood: '',
   });
 
-  // API Handlers
   const fetchInvoiceDetail = async () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/invoice/admin/${invoiceId}`);
@@ -36,7 +35,8 @@ const EditInvoice = () => {
       
       const calculated = calculateTotalAmount(
         invoiceData.foods || [],
-        invoiceData.discount || 0
+        invoiceData.discount || 0,
+        invoiceData.reservedTableInfo
       );
 
       setState(prev => ({
@@ -51,6 +51,7 @@ const EditInvoice = () => {
           invoiceNumber: invoiceData.invoiceNumber || '',
           invoiceDate: invoiceData.invoiceDate || '',
           discount: invoiceData.discount || 0,
+          reservedTableInfo: invoiceData.reservedTableInfo || null,
         },
         loading: false
       }));
@@ -80,20 +81,29 @@ const EditInvoice = () => {
     }
   };
 
-  // Calculation Logic
-  const calculateTotalAmount = (foods, discount = 0) => {
+  const calculateTotalAmount = (foods, discount = 0, reservedTableInfo = null) => {
     const subtotal = foods.reduce((sum, food) => sum + (food.total || 0), 0);
     const taxableAmount = Math.max(0, subtotal - discount);
     const cgst = taxableAmount * 0.025;
     const sgst = taxableAmount * 0.025;
     const totalBeforeRoundOff = taxableAmount + cgst + sgst;
-    const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
-    const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
+    
+    const tableReservationDiscount = reservedTableInfo ? 100 : 0;
+    const totalAfterReservationDiscount = Math.max(0, totalBeforeRoundOff - tableReservationDiscount);
+    
+    const roundOffAmount = Math.round(totalAfterReservationDiscount) - totalAfterReservationDiscount;
+    const finalAmount = (totalAfterReservationDiscount + roundOffAmount).toFixed(2);
 
-    return { subtotal, cgst, sgst, roundOffAmount, finalAmount };
+    return { 
+      subtotal, 
+      cgst, 
+      sgst, 
+      roundOffAmount, 
+      finalAmount,
+      tableReservationDiscount
+    };
   };
 
-  // Event Handlers
   const handleFoodChange = (index, e) => {
     const { name, value } = e.target;
     const numericValue = parseFloat(value) || 0;
@@ -111,7 +121,11 @@ const EditInvoice = () => {
       }
       
       updatedFoods[index] = updatedFood;
-      const calculated = calculateTotalAmount(updatedFoods, prev.invoice.discount);
+      const calculated = calculateTotalAmount(
+        updatedFoods, 
+        prev.invoice.discount,
+        prev.invoice.reservedTableInfo
+      );
       
       return {
         ...prev,
@@ -146,7 +160,11 @@ const EditInvoice = () => {
       };
 
       const updatedFoods = [...prev.invoice.foods, newFoodItem];
-      const calculated = calculateTotalAmount(updatedFoods, prev.invoice.discount);
+      const calculated = calculateTotalAmount(
+        updatedFoods, 
+        prev.invoice.discount,
+        prev.invoice.reservedTableInfo
+      );
       
       return {
         ...prev,
@@ -164,7 +182,11 @@ const EditInvoice = () => {
     setState(prev => {
       const updatedFoods = [...prev.invoice.foods];
       updatedFoods.splice(index, 1);
-      const calculated = calculateTotalAmount(updatedFoods, prev.invoice.discount);
+      const calculated = calculateTotalAmount(
+        updatedFoods, 
+        prev.invoice.discount,
+        prev.invoice.reservedTableInfo
+      );
       
       return {
         ...prev,
@@ -181,7 +203,11 @@ const EditInvoice = () => {
     const discount = parseFloat(e.target.value) || 0;
     
     setState(prev => {
-      const calculated = calculateTotalAmount(prev.invoice.foods, discount);
+      const calculated = calculateTotalAmount(
+        prev.invoice.foods, 
+        discount,
+        prev.invoice.reservedTableInfo
+      );
       return {
         ...prev,
         invoice: {
@@ -196,14 +222,17 @@ const EditInvoice = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Calculate final amount
     const subtotal = state.invoice.foods.reduce((sum, food) => sum + (food.total || 0), 0);
     const taxableAmount = Math.max(0, subtotal - state.invoice.discount);
     const cgst = taxableAmount * 0.025;
     const sgst = taxableAmount * 0.025;
     const totalBeforeRoundOff = taxableAmount + cgst + sgst;
-    const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
-    const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
+    
+    const tableReservationDiscount = state.invoice.reservedTableInfo ? 100 : 0;
+    const totalAfterReservationDiscount = Math.max(0, totalBeforeRoundOff - tableReservationDiscount);
+    
+    const roundOffAmount = Math.round(totalAfterReservationDiscount) - totalAfterReservationDiscount;
+    const finalAmount = (totalAfterReservationDiscount + roundOffAmount).toFixed(2);
   
     const invoiceData = {
       foods: state.invoice.foods.map(food => ({
@@ -215,11 +244,12 @@ const EditInvoice = () => {
       })),
       discount: parseFloat(state.invoice.discount) || 0,
       subtotal: parseFloat(subtotal) || 0,
-      cgst: parseFloat(cgst) || 0,
-      sgst: parseFloat(sgst) || 0,
-      roundOff: parseFloat(roundOffAmount) || 0,
+      cgst: parseFloat(cgst).toFixed(2) || 0,
+      sgst: parseFloat(sgst).toFixed(2) || 0,
+      roundOff: parseFloat(roundOffAmount).toFixed(2) || 0,
       finalAmount: parseFloat(finalAmount) || 0,
-      totalAmount: parseFloat(subtotal) || 0, // Store subtotal in totalAmount
+      totalAmount: parseFloat(subtotal) || 0,
+      reservedTableInfo: state.invoice.reservedTableInfo || null,
     };
   
     try {
@@ -236,7 +266,6 @@ const EditInvoice = () => {
     }
   };
 
-  // Effects
   useEffect(() => {
     fetchInvoiceDetail();
     fetchFoods();
@@ -248,7 +277,6 @@ const EditInvoice = () => {
     }
   }, [state.selectedFood]);
 
-  // Render
   if (state.loading) return <div className="loading-container">Loading invoice...</div>;
   if (state.error) return <div className="error-container">{state.error}</div>;
 
@@ -262,6 +290,12 @@ const EditInvoice = () => {
           <div className="invoice-meta">
             <span>Invoice: {state.invoice.invoiceNumber}</span>
             <span>Date: {state.invoice.invoiceDate ? new Date(state.invoice.invoiceDate).toLocaleDateString() : ''}</span>
+            {state.invoice.reservedTableInfo && (
+              <div className="table-reservation-info">
+                <span>Table {state.invoice.reservedTableInfo.tableNumber}</span> -
+                <span> [{state.invoice.reservedTableInfo.slotTime}]</span>
+              </div>
+            )}
           </div>
         </header>
 
@@ -293,10 +327,18 @@ const EditInvoice = () => {
                 <p>₹{state.invoice.roundOffAmount.toFixed(2)}</p>
               </div>
               
+              {state.invoice.reservedTableInfo && (
+                <div className="summary-item discount">
+                  <label>Table Reservation</label>
+                  <p>-₹100.00</p>
+                </div>
+              )}
+              
               <div className="summary-item total">
                 <label>Final Amount</label>
                 <p>₹{state.invoice.finalAmount}</p>
               </div>
+
             </div>
           </section>
 
@@ -367,43 +409,43 @@ const EditInvoice = () => {
           </section>
 
           <div className="actions-container">
-  <div className="discount-section">
-    <div className="discount-input-group">
-      <label htmlFor="discount-input" className="discount-label">
-        Apply Discount:
-      </label>
-      <div className="discount-input-wrapper">
-        <span className="currency-symbol">₹</span>
-        <input
-          id="discount-input"
-          type="number"
-          value={state.invoice.discount === 0 ? '' : state.invoice.discount}
-          onChange={handleDiscountChange}
-          min="0"
-          step="1"
-          placeholder="0.00"
-          className="discount-input-field"
-        />
-      </div>
-    </div>
-    
-    <button 
-      type="submit" 
-      className="save-button"
-      disabled={state.loading}
-    >
-      {state.loading ? (
-        <span className="save-button-loader">
-          <span className="loader-dot"></span>
-          <span className="loader-dot"></span>
-          <span className="loader-dot"></span>
-        </span>
-      ) : (
-        'Save Changes'
-      )}
-    </button>
-  </div>
-</div>
+            <div className="discount-section">
+              <div className="discount-input-group">
+                <label htmlFor="discount-input" className="discount-label">
+                  Apply Discount:
+                </label>
+                <div className="discount-input-wrapper">
+                  <span className="currency-symbol">₹</span>
+                  <input
+                    id="discount-input"
+                    type="number"
+                    value={state.invoice.discount === 0 ? '' : state.invoice.discount}
+                    onChange={handleDiscountChange}
+                    min="0"
+                    step="1"
+                    placeholder="0.00"
+                    className="discount-input-field"
+                  />
+                </div>
+              </div>
+              
+              <button 
+                type="submit" 
+                className="save-button"
+                disabled={state.loading}
+              >
+                {state.loading ? (
+                  <span className="save-button-loader">
+                    <span className="loader-dot"></span>
+                    <span className="loader-dot"></span>
+                    <span className="loader-dot"></span>
+                  </span>
+                ) : (
+                  'Save Changes'
+                )}
+              </button>
+            </div>
+          </div>
         </form>
       </main>
     </div>
