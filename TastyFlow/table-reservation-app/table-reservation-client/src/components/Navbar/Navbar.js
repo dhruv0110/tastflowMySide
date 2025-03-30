@@ -8,12 +8,17 @@ const Navbar = (props) => {
   let location = useLocation();
   let navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({ name: "", email: "", id: "", role: "" });
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const navbarCollapseRef = useRef(null);
+
   const fetchUserDetails = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        return null; // Return null if token is not available
+        setIsLoading(false);
+        return null;
       }
+      
       const response = await fetch("http://localhost:5000/api/users/getuser", {
         method: "POST",
         headers: {
@@ -21,84 +26,67 @@ const Navbar = (props) => {
           "auth-token": token,
         },
       });
+      
       if (response.ok) {
-        return await response.json(); // Return the fetched user's details
+        const data = await response.json();
+        localStorage.setItem("userDetails", JSON.stringify(data)); // Store in localStorage
+        return data;
       } else {
-        return null; // Return null if fetch fails
+        setIsLoading(false);
+        return null;
       }
     } catch (error) {
       console.error("Error fetching user details:", error.message);
-      return null; // Return null if an error occurs
+      setIsLoading(false);
+      return null;
     }
   };
 
   useEffect(() => {
     const getUserDetails = async () => {
       const userData = await fetchUserDetails();
-
-      // eslint-disable-next-line
+      
       if (userData) {
-        setUserDetails(userData); // Set userDetails to the fetched user's details
+        setUserDetails(userData);
       } else {
-        setUserDetails({ name: "", email: "", id: "" }); // Reset userDetails if fetch fails
+        setUserDetails({ name: "", email: "", id: "", role: "" });
       }
+      setIsLoading(false);
     };
 
-    getUserDetails();
-  }, [localStorage.getItem("token")]);
-  // Reference for the navbar collapse
-  const navbarCollapseRef = useRef(null);
+    // First check localStorage for user details
+    const storedUserDetails = JSON.parse(localStorage.getItem("userDetails"));
+    if (storedUserDetails) {
+      setUserDetails(storedUserDetails);
+      setIsLoading(false);
+    } else {
+      getUserDetails();
+    }
+  }, []);
 
   const logOut = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userDetails');
-    setUserDetails({ name: "", email: "", id: "", role: "" }); // Clear user details state
+    setUserDetails({ name: "", email: "", id: "", role: "" });
     props.showAlert("Logout Successfully", "success");
-    navigate("/login");
+    navigate("/");
   };
 
   const handleAdminClick = () => {
     props.showAlert("Come to admin panel", "success");
   };
 
-
-  const updateUserDetailsFromLocalStorage = () => {
-    const storedUserDetails = JSON.parse(localStorage.getItem("userDetails"));
-    if (storedUserDetails) {
-      setUserDetails(storedUserDetails);
-    } else {
-      setUserDetails({ name: "", email: "", id: "", role: "" });
-    }
-  };
-
-  useEffect(() => {
-    updateUserDetailsFromLocalStorage();
-  }, [localStorage.getItem("token")]); // Dependency on token to re-fetch user details
-
-  // Handle token change explicitly
-  useEffect(() => {
-    const handleTokenChange = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        updateUserDetailsFromLocalStorage();
-      } else {
-        setUserDetails({ name: "", email: "", id: "", role: "" });
-      }
-    };
-
-    handleTokenChange();
-  }, [localStorage.getItem("token")]);
-
-  // Function to close navbar with transition
   const closeNavbar = () => {
     if (navbarCollapseRef.current && window.innerWidth <= 768) {
       const collapse = window.bootstrap.Collapse.getInstance(navbarCollapseRef.current);
       if (collapse) {
-        collapse.hide();  // Collapse the navbar using Bootstrap's collapse method with transition
+        collapse.hide();
       }
     }
   };
+
   function getInitials(name) {
+    if (!name) return "";
     const nameArray = name.split(" ");
     const initials = nameArray.map(part => part[0]).join("");
     return initials.toUpperCase();
@@ -129,7 +117,7 @@ const Navbar = (props) => {
                   className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
                   aria-current="page"
                   to="/"
-                  onClick={closeNavbar} // Close the navbar on click
+                  onClick={closeNavbar}
                 >
                   Home
                 </Link>
@@ -138,7 +126,7 @@ const Navbar = (props) => {
                 <Link
                   className={`nav-link ${location.pathname === "/About" ? "active" : ""}`}
                   to="./About"
-                  onClick={closeNavbar} // Close the navbar on click
+                  onClick={closeNavbar}
                 >
                   About
                 </Link>
@@ -151,37 +139,40 @@ const Navbar = (props) => {
               </li>
             </ul>
             <div className="right-box d-flex align-items-center mt-2">
-              {/* Show "Reserve now" button only if the user is not an admin */}
-              {userDetails.role !== 'admin' && (
-                <Link to="/table-reserve">
-                  <button className="btn order-btn" type="button">Reserve now</button>
-                </Link>
-              )}
-              {localStorage.getItem("token") ? (
+              {!isLoading && (
                 <>
-                  {userDetails.role === 'admin' &&
-                    <Link
-                      className="btn admin-btn mx-2"
-                      role="button"
-                      to="/admin"
-                      onClick={() => {
-                        handleAdminClick();
-                        closeNavbar(); // Close the navbar on admin button click
-                      }}
-                    >
-                      Admin
+                  {userDetails.role !== 'admin' && (
+                    <Link to="/table-reserve">
+                      <button className="btn order-btn" type="button">Reserve now</button>
                     </Link>
-                  }
-                  <button className="btn logout-btn mx-2" onClick={logOut}>Logout</button>
-                  <Link className="nav-link user-icon" to="/info" onClick={closeNavbar}>
-                    {getInitials(userDetails.name)}
-                  </Link>
+                  )}
+                  {localStorage.getItem("token") ? (
+                    <>
+                      {userDetails.role === 'admin' && (
+                        <Link
+                          className="btn admin-btn mx-2"
+                          role="button"
+                          to="/admin"
+                          onClick={() => {
+                            handleAdminClick();
+                            closeNavbar();
+                          }}
+                        >
+                          Admin
+                        </Link>
+                      )}
+                      <button className="btn logout-btn mx-2" onClick={logOut}>Logout</button>
+                      <Link className="nav-link user-icon" to="/info" onClick={closeNavbar}>
+                        {getInitials(userDetails.name)}
+                      </Link>
+                    </>
+                  ) : (
+                    <form className="d-flex" role="search">
+                      <Link className="btn auth-btn mx-2" to="/login" role="button" onClick={closeNavbar}>Login</Link>
+                      <Link className="btn auth-btn" to="/signup" role="button" onClick={closeNavbar}>Signup</Link>
+                    </form>
+                  )}
                 </>
-              ) : (
-                <form className="d-flex" role="search">
-                  <Link className="btn auth-btn mx-2" to="/login" role="button" onClick={closeNavbar}>Login</Link>
-                  <Link className="btn auth-btn" to="/signup" role="button" onClick={closeNavbar}>Signup</Link>
-                </form>
               )}
             </div>
           </div>

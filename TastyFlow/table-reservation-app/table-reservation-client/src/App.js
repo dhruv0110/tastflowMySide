@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import UserPanel from './components/UserPanel/UserPanel';
@@ -32,7 +32,7 @@ import Graph from "./components/Graph/Graph";
 import FoodDetail from "./components/FoodDetail/FoodDetail";
 
 // Initialize Stripe with your publishable key
-const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf'); // Replace with your Stripe Publishable Key
+const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf');
 
 function PrivateRoute({ element, ...rest }) {
   const token = localStorage.getItem("token");
@@ -44,10 +44,19 @@ function AdminRoute({ element, ...rest }) {
   return userDetails?.role === 'admin' ? element : <Navigate to="/" />;
 }
 
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
+
 function App() {
   const [alert, setAlert] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   const showAlert = (message, type) => {
     setAlert({ message, type });
@@ -93,13 +102,17 @@ function App() {
     getUserDetails();
   }, []);
 
+  // Define routes where navbar should be hidden
+  const hideNavbarRoutes = ['/login', '/signup', '/forgot-password', '/reset-password'];
+  const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
+
   return (
-    <Router>
-      <Navbar showAlert={showAlert} userDetails={userDetails} />
+    <>
+      {shouldShowNavbar && <Navbar showAlert={showAlert} userDetails={userDetails} />}
       <Alert alert={alert} />
       <Routes>
-        <Route path="/" element={<UserPanel showAlert={showAlert} />} />
         <Route path="/login" element={<Login showAlert={showAlert} />} />
+        <Route path="/" element={<UserPanel showAlert={showAlert} />} />
         <Route path="/signup" element={<Signup showAlert={showAlert} />} />
         <Route path="/info" element={<PrivateRoute element={<Info showAlert={showAlert} />} />} />
         <Route path="/forgot-password" element={<ForgotPassword showAlert={showAlert} />} />
@@ -137,8 +150,8 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/About" element={<About />} />
       </Routes>
-    </Router>
+    </>
   );
 }
 
-export default App;
+export default AppWrapper;

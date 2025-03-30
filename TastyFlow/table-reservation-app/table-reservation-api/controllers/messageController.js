@@ -28,7 +28,6 @@ const storeMessage = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
-  
 
 // Get all reviews
 const getUserMessages = async (req, res) => {

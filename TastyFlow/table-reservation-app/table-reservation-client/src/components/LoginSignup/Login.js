@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
+import logo from "../../assets/logo.svg";
 
 const Login = (props) => {
   const [credentials, setCredentials] = useState({
@@ -42,21 +43,71 @@ const Login = (props) => {
   };
 
   return (
-    <div className='login-container'>
-      <div className='login-card'>
-        <h1 className='login-heading'>Login</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input type="email" id="email" name='email' className="form-input" onChange={onChange} value={email} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input type="password" id="password" name='password' className="form-input" onChange={onChange} value={password} />
-          </div>
-          <button type="submit" className="submit-btn">Login</button>
-          <a href="/forgot-password" className="forgot-password-btn">Forgot Password?</a>
-        </form>
+    <div className='lgn-page-container'>
+      {/* Left side with restaurant image */}
+      <div className='lgn-image-container'>
+        <div className='lgn-image-overlay'></div>
+        <div className='lgn-restaurant-quote'>
+          <h2>Welcome to</h2>
+          <h1>Tastyflow</h1>
+          <p>Crafting culinary excellence since 1995</p>
+        </div>
+      </div>
+      
+      {/* Right side with login form */}
+      <div className='lgn-form-container'>
+        {/* Restaurant logo */}
+        <div className='lgn-logo-container'>
+          <img src={logo} alt="TastyFlow" className='lgn-logo-image' />
+        </div>
+        
+        {/* Login form */}
+        <div className='lgn-card'>
+          <h1 className='lgn-heading'>Sign In</h1>
+          <p className='lgn-subheading'>Access your account to continue</p>
+          
+          <form onSubmit={handleSubmit} className="lgn-form">
+            <div className="lgn-form-group">
+              <label htmlFor="email" className="lgn-form-label">Email Address</label>
+              <input 
+                type="email" 
+                id="email" 
+                name='email' 
+                className="lgn-form-input" 
+                onChange={onChange} 
+                value={email} 
+                placeholder="Enter your email"
+              />
+            </div>
+            
+            <div className="lgn-form-group">
+              <label htmlFor="password" className="lgn-form-label">Password</label>
+              <input 
+                type="password" 
+                id="password" 
+                name='password' 
+                className="lgn-form-input" 
+                onChange={onChange} 
+                value={password} 
+                placeholder="••••••••"
+              />
+            </div>
+            
+            <div className="lgn-form-options">
+              <div className="lgn-remember-me">
+                <input type="checkbox" id="remember" />
+                <label htmlFor="remember">Remember me</label>
+              </div>
+              <Link to="/forgot-password" className="lgn-forgot-password">Forgot Password?</Link>
+            </div>
+            
+            <button type="submit" className="lgn-submit-btn">Sign In</button>
+            
+            <div className="lgn-signup-link">
+              Don't have an account? <Link to="/signup" className="lgn-signup-link-text">Sign up</Link>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

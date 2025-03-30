@@ -1,30 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import './ResetPassword.css'; // Add your CSS for styling
+import './ResetPassword.css';
+import logo from "../../assets/logo.svg";
 
 function ResetPassword(props) {
   const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '', '', '']); // Array to store each OTP digit
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [newPassword, setNewPassword] = useState('');
-  const [timer, setTimer] = useState(120); // Timer set to 120 seconds (2 minutes)
-  const [isTimerActive, setIsTimerActive] = useState(true); // To handle timer activation
-  const [alertShown, setAlertShown] = useState(false); // Flag to ensure alert is shown only once
+  const [timer, setTimer] = useState(120);
+  const [isTimerActive, setIsTimerActive] = useState(true);
+  const [alertShown, setAlertShown] = useState(false);
   const navigate = useNavigate();
-  const otpInputs = useRef([]); // Ref to store references to OTP input boxes
+  const otpInputs = useRef([]);
 
   useEffect(() => {
     if (isTimerActive && timer > 0) {
       const interval = setInterval(() => {
         setTimer(prev => prev - 1);
       }, 1000);
-
-      return () => clearInterval(interval); // Clear interval on component unmount or timer stop
+      return () => clearInterval(interval);
     } else if (timer === 0 && !alertShown) {
-      setIsTimerActive(false); // Stop the timer when it reaches 0
+      setIsTimerActive(false);
       props.showAlert('OTP expired. Please request a new one.', 'danger');
-      setAlertShown(true); // Set the flag to true after showing the alert
-      setOtp(['', '', '', '', '', '']); // Clear the OTP field
+      setAlertShown(true);
+      setOtp(['', '', '', '', '', '']);
     }
   }, [isTimerActive, timer, alertShown, props]);
 
@@ -33,7 +33,6 @@ function ResetPassword(props) {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Move focus to the next input box if a digit is entered
     if (value && index < 5) {
       otpInputs.current[index + 1].focus();
     }
@@ -41,10 +40,9 @@ function ResetPassword(props) {
 
   const handleOtpPaste = (e) => {
     e.preventDefault();
-    const pasteData = e.clipboardData.getData('text').trim(); // Get pasted data
-    const otpArray = pasteData.split('').slice(0, 6); // Split into array and limit to 6 digits
+    const pasteData = e.clipboardData.getData('text').trim();
+    const otpArray = pasteData.split('').slice(0, 6);
 
-    // Update the OTP state
     const newOtp = [...otp];
     otpArray.forEach((digit, index) => {
       if (index < 6) {
@@ -53,7 +51,6 @@ function ResetPassword(props) {
     });
     setOtp(newOtp);
 
-    // Move focus to the last input box
     if (otpArray.length > 0) {
       otpInputs.current[Math.min(otpArray.length - 1, 5)].focus();
     }
@@ -62,13 +59,12 @@ function ResetPassword(props) {
   const handleResetPassword = (e) => {
     e.preventDefault();
     if (!isTimerActive) {
-      // If the timer has expired, prevent resetting the password
       props.showAlert('OTP has expired. Please request a new one.', 'danger');
-      navigate('/forgot-password'); // Redirect to the page where the user can request a new OTP
+      navigate('/forgot-password');
       return;
     }
 
-    const otpString = otp.join(''); // Convert the OTP array to a string
+    const otpString = otp.join('');
     axios.post('http://localhost:5000/api/users/reset-password', { email, otp: otpString, newPassword })
       .then(res => {
         if (res.data.message === 'Password reset successfully') {
@@ -85,70 +81,91 @@ function ResetPassword(props) {
   };
 
   return (
-    <div className="reset-container">
-      <div className="reset-card">
-        <h1 className="reset-heading">Reset Password</h1>
-        <form onSubmit={handleResetPassword}>
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="form-input"
-              placeholder="Enter Email"
-              autoComplete="off"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-            />
+    <div className="rp-page-container">
+      {/* Left side with restaurant image */}
+      <div className="rp-image-container">
+        <div className="rp-image-overlay"></div>
+        <div className="rp-restaurant-quote">
+          <h2>Welcome to</h2>
+          <h1>Gourmet Haven</h1>
+          <p>Where culinary excellence meets unforgettable experiences</p>
+        </div>
+      </div>
+      
+      {/* Right side with form */}
+      <div className="rp-form-container">
+        <div className="rp-content">
+          {/* Restaurant logo */}
+          <div className="rp-logo-container">
+            <img src={logo} alt="Gourmet Haven" className="rp-logo-image" />
           </div>
-          <div className="form-group">
-            <label htmlFor="otp" className="form-label">OTP</label>
-            <div className="otp-container">
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  id={`otp-${index}`}
-                  name={`otp-${index}`}
-                  className="otp-input"
-                  placeholder=""
-                  autoComplete="off"
-                  maxLength="1"
-                  value={digit}
-                  onChange={(e) => handleOtpChange(index, e.target.value)}
-                  onPaste={handleOtpPaste} // Handle paste event
-                  ref={(el) => (otpInputs.current[index] = el)} // Store reference to each input
-                  disabled={!isTimerActive} // Disable input if OTP has expired
-                />
-              ))}
+          
+          <div className="rp-card">
+            <div className="rp-header">
+              <h1 className="rp-heading">Reset Password</h1>
+              <p className="rp-subheading">Enter your new password and OTP</p>
             </div>
+            
+            <form onSubmit={handleResetPassword} className="rp-form">
+              <div className="rp-form-group">
+                <input 
+                  type="email" 
+                  name='email' 
+                  className="rp-form-input" 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  value={email}
+                  placeholder="Email Address"
+                  required
+                />
+              </div>
+              
+              <div className="rp-form-group">
+                <div className="rp-otp-container">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      className="rp-otp-input"
+                      placeholder=""
+                      maxLength="1"
+                      value={digit}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onPaste={handleOtpPaste}
+                      ref={(el) => (otpInputs.current[index] = el)}
+                      disabled={!isTimerActive}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              <div className="rp-form-group">
+                <input 
+                  type="password" 
+                  name='newPassword' 
+                  className="rp-form-input" 
+                  onChange={(e) => setNewPassword(e.target.value)} 
+                  value={newPassword}
+                  placeholder="New Password"
+                  required
+                />
+              </div>
+              
+              <div className="rp-timer">
+                <p>Time Remaining: {Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60}</p>
+              </div>
+              
+              <button type="submit" className="rp-submit-btn" disabled={!isTimerActive}>
+                Reset Password
+              </button>
+              
+              {!isTimerActive && (
+                <div className="rp-auth-redirect">
+                  <p>OTP expired? <Link to="/forgot-password" className="rp-login-link">Request a new one</Link></p>
+                </div>
+              )}
+            </form>
           </div>
-          <div className="form-group">
-            <label htmlFor="newPassword" className="form-label">New Password</label>
-            <input
-              type="password"
-              id="newPassword"
-              name="newPassword"
-              className="form-input"
-              placeholder="Enter New Password"
-              autoComplete="off"
-              onChange={(e) => setNewPassword(e.target.value)}
-              value={newPassword}
-            />
-          </div>
-          <div className="timer">
-            <p>Time Remaining: {Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60}</p>
-          </div>
-          <button type="submit" className="submit-btn" disabled={!isTimerActive}>
-            Reset Password
-          </button>
-        </form>
-        {!isTimerActive && (
-          <div className="request-new-otp">
-            <p>OTP expired? <a href="/forgot-password">Request a new one</a></p>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

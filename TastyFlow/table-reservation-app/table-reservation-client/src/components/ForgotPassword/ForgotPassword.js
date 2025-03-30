@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './ForgotPassword.css';
+import logo from "../../assets/logo.svg";
 
 function ForgotPassword(props) {
   const [email, setEmail] = useState('');
@@ -15,61 +16,77 @@ function ForgotPassword(props) {
       return;
     }
 
-    // Show loading alert
     props.showAlert('Sending OTP...', 'info');
 
     try {
       const response = await axios.post('http://localhost:5000/api/users/forgot-password', { email });
 
       if (response.data.message === 'OTP sent successfully') {
-        // Clear the loading alert
-        props.showAlert(null, null); // Clear any existing alert
-
-        // Show success alert
+        props.showAlert(null, null);
         props.showAlert('OTP sent successfully', 'success');
-
-        // Delay navigation to ensure the success alert is visible
         setTimeout(() => {
           navigate('/reset-password');
-        }, 1500); // Adjust delay as needed
+        }, 1500);
       } else {
-        // Clear the loading alert
-        props.showAlert(null, null); // Clear any existing alert
-
-        // Show error message
+        props.showAlert(null, null);
         props.showAlert(response.data.message, 'error');
       }
     } catch (error) {
       console.error(error);
-      // Clear the loading alert
-      props.showAlert(null, null); // Clear any existing alert
-
-      // Show server error message
+      props.showAlert(null, null);
       props.showAlert('Server error', 'error');
     }
   };
 
   return (
-    <div className="forgot-password-container">
-      <div className="forgot-password-card">
-        <h4 className="forgot-password-heading">Forgot Password</h4>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              <strong>Email</strong>
-            </label>
-            <input
-              type="email"
-              placeholder="Enter Email"
-              autoComplete="off"
-              name="email"
-              className="form-input"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-            />
-            <button type="submit" className="submit-btn mt-3">Send OTP</button>
+    <div className="fp-page-container">
+      {/* Left side with restaurant image */}
+      <div className="fp-image-container">
+        <div className="fp-image-overlay"></div>
+        <div className="fp-restaurant-quote">
+          <h2>Welcome to</h2>
+          <h1>TastyFlow</h1>
+          <p>Where culinary excellence meets unforgettable experiences</p>
+        </div>
+      </div>
+      
+      {/* Right side with form */}
+      <div className="fp-form-container">
+        <div className="fp-content">
+          {/* Restaurant logo */}
+          <div className="fp-logo-container">
+            <img src={logo} alt="Gourmet Haven" className="fp-logo-image" />
           </div>
-        </form>
+          
+          <div className="fp-card">
+            <div className="fp-header">
+              <h1 className="fp-heading">Forgot Password</h1>
+              <p className="fp-subheading">Enter your email to receive a reset OTP</p>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="fp-form">
+              <div className="fp-form-group">
+                <input 
+                  type="email" 
+                  name='email' 
+                  className="fp-form-input" 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  value={email}
+                  placeholder="Email Address"
+                  required
+                />
+              </div>
+              
+              <button type="submit" className="fp-submit-btn">
+                Send OTP
+              </button>
+              
+              <div className="fp-auth-redirect">
+                <p>Remember your password? <Link to="/login" className="fp-login-link">Sign In</Link></p>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
