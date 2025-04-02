@@ -1,478 +1,549 @@
+/* UserFoodPage.css */
 
-/* Modal Overlay */
-.modal-overlay {
+:root {
+  /* Colors */
+  --ufp-primary: #FF4135;
+  --ufp-primary-dark: #D8352B;
+  --ufp-primary-light: #FF6D63;
+  --ufp-secondary: #35A2FF;
+  --ufp-success: #2ECC71;
+  --ufp-warning: #FF851B;
+  --ufp-danger: #FF4135;
+  
+  /* Backgrounds */
+  --ufp-bg-dark: #1B1C1F;
+  --ufp-bg-darker: #121316;
+  --ufp-bg-light: #2A2B2F;
+  --ufp-bg-lighter: #3A3B40;
+  
+  /* Text */
+  --ufp-text-primary: #FFFFFF;
+  --ufp-text-secondary: #E2E2E2;
+  --ufp-text-tertiary: #A0A0A0;
+  
+  /* Borders */
+  --ufp-border-dark: #373737;
+  --ufp-border-light: #4A4A4A;
+  
+  /* Shadows */
+  --ufp-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --ufp-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --ufp-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+
+/* Base Styles */
+.ufp-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--ufp-bg-dark);
+  color: var(--ufp-text-primary);
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.ufp-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.ufp-header h1 {
+  font-size: 2rem;
+  color: var(--ufp-primary);
+  margin-bottom: 0.5rem;
+}
+
+.ufp-header p {
+  color: var(--ufp-text-secondary);
+  font-size: 1rem;
+}
+
+.ufp-content-wrapper {
+  display: flex;
+  gap: 2rem;
+  height: calc(100vh - 180px);
+}
+
+/* Scrollable Left Panel */
+.ufp-food-selection {
+  flex: 1;
+  background-color: var(--ufp-bg-light);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--ufp-shadow-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ufp-search-container {
+  margin-bottom: 1.5rem;
+}
+
+.ufp-search-container input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--ufp-border-dark);
+  background-color: var(--ufp-bg-darker);
+  color: var(--ufp-text-primary);
+  font-size: 1rem;
+}
+
+.ufp-search-container input::placeholder {
+  color: var(--ufp-text-tertiary);
+}
+
+.ufp-food-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  flex-grow: 1;
+}
+
+/* Custom scrollbar */
+.ufp-food-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ufp-food-list::-webkit-scrollbar-track {
+  background: var(--ufp-bg-darker);
+  border-radius: 4px;
+}
+
+.ufp-food-list::-webkit-scrollbar-thumb {
+  background: var(--ufp-primary);
+  border-radius: 4px;
+}
+
+.ufp-food-list::-webkit-scrollbar-thumb:hover {
+  background: var(--ufp-primary-dark);
+}
+
+.ufp-food-item {
+  background-color: var(--ufp-bg-darker);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ufp-food-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ufp-shadow-md);
+}
+
+.ufp-food-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ufp-food-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ufp-food-info {
+  flex-grow: 1;
+}
+
+.ufp-food-info h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ufp-text-primary);
+}
+
+.ufp-food-info p {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--ufp-primary);
+  font-weight: 600;
+}
+
+.ufp-food-item button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--ufp-primary);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ufp-food-item button:hover {
+  background-color: var(--ufp-primary-dark);
+}
+
+.ufp-food-item button.added {
+  background-color: var(--ufp-success);
+  cursor: default;
+}
+
+.ufp-no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  color: var(--ufp-text-tertiary);
+}
+
+/* Sticky Right Panel */
+.ufp-order-summary {
+  width: 380px;
+  position: sticky;
+  top: 2rem;
+  height: calc(100vh - 180px);
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ufp-order-content {
+  background-color: var(--ufp-bg-light);
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: var(--ufp-shadow-md);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  gap: 1.25rem;
+}
+
+.ufp-user-details {
+  margin-bottom: 0;
+}
+
+.ufp-user-details h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--ufp-primary);
+  font-size: 1.2rem;
+}
+
+.ufp-detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.ufp-detail-item span:first-child {
+  color: var(--ufp-text-secondary);
+}
+
+.ufp-reservation-selector {
+  margin-bottom: 0;
+}
+
+.ufp-reservation-selector h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: var(--ufp-primary);
+  font-size: 1.2rem;
+}
+
+.ufp-reservation-selector select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--ufp-border-dark);
+  background-color: var(--ufp-bg-darker);
+  color: var(--ufp-text-primary);
+  font-size: 0.9rem;
+}
+
+/* Selected Items Section */
+.ufp-selected-items {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  overflow: hidden;
+}
+
+.ufp-selected-items h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--ufp-primary);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.ufp-selected-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ufp-selected-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  margin-bottom: 1rem;
+  max-height: 400px;
+}
+
+.ufp-selected-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--ufp-bg-darker);
+  border-radius: 6px;
+}
+
+.ufp-item-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  margin-right: 1rem;
+}
+
+.ufp-item-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ufp-item-price {
+  font-size: 0.9rem;
+  color: var(--ufp-primary);
+}
+
+.ufp-quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ufp-quantity-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--ufp-primary);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ufp-quantity-btn:hover {
+  background-color: var(--ufp-primary-dark);
+}
+
+/* Action Buttons Section */
+.ufp-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.ufp-order-total {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: var(--ufp-bg-darker);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ufp-save-btn, .ufp-invoice-btn {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.ufp-save-btn {
+  background-color: var(--ufp-secondary);
+  color: white;
+}
+
+.ufp-save-btn:hover {
+  background-color: #2a8fdd;
+}
+
+.ufp-save-btn:disabled {
+  background-color: var(--ufp-bg-lighter);
+  color: var(--ufp-text-tertiary);
+  cursor: not-allowed;
+}
+
+.ufp-invoice-btn {
+  background-color: var(--ufp-success);
+  color: white;
+}
+
+.ufp-invoice-btn:hover {
+  background-color: #25a35a;
+}
+
+.ufp-invoice-btn:disabled {
+  background-color: var(--ufp-bg-lighter);
+  color: var(--ufp-text-tertiary);
+  cursor: not-allowed;
+}
+
+.ufp-no-items {
+  text-align: center;
+  padding: 2rem;
+  color: var(--ufp-text-tertiary);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Custom scrollbar for selected items */
+.ufp-selected-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ufp-selected-list::-webkit-scrollbar-track {
+  background: var(--ufp-bg-darker);
+  border-radius: 3px;
+}
+
+.ufp-selected-list::-webkit-scrollbar-thumb {
+  background: var(--ufp-primary);
+  border-radius: 3px;
+}
+
+/* Invoice Modal */
+.ufp-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Ensure it appears above other content */
-  backdrop-filter: blur(4px); /* Apply blur effect */
-  -webkit-backdrop-filter: blur(4px); /* For Safari */
+  z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
-
-/* Modal Content */
-.modal-content {
-  background-color: transparent;
+.ufp-modal-content {
+  background-color: var(--ufp-bg-light);
   border-radius: 10px;
-  width: 80%;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto; /* Allow scrolling */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-}
-
-.modal-content::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-/* Dropdown Container */
-.reserved-tables select {
-  width: 100%;
-  padding: 12px 40px 12px 16px; /* More padding for better spacing */
-  margin-bottom: 20px;
-  border: 2px solid #444; /* Thicker border for a polished look */
-  border-radius: 8px;
-  background-color: #333;
-  color: white;
-  font-size: 16px;
-  font-family: 'Arial', sans-serif; /* Use a clean, modern font */
-  appearance: none; /* Remove default arrow */
-  -webkit-appearance: none; /* Remove default arrow for Safari */
-  -moz-appearance: none; /* Remove default arrow for Firefox */
-  cursor: pointer;
-  transition: all 0.3s ease; /* Smooth transition for all properties */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-}
-
-/* Dropdown Arrow */
-.reserved-tables {
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
   position: relative;
+  box-shadow: var(--ufp-shadow-lg);
 }
 
-.reserved-tables::after {
-  content: "▼";
+.ufp-close-modal {
   position: absolute;
-  top: 50%;
-  right: 16px;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: #FF4135;
-  font-size: 12px;
-  transition: color 0.3s ease; /* Smooth color transition */
-}
-
-/* Dropdown Hover and Focus States */
-.reserved-tables select:hover {
-  border-color: #FF4135;
-  box-shadow: 0 2px 12px rgba(255, 65, 53, 0.2); /* Enhanced shadow on hover */
-}
-
-.reserved-tables select:focus {
-  outline: none;
-  border-color: #FF4135;
-  box-shadow: 0 0 8px rgba(255, 65, 53, 0.5); /* Glow effect on focus */
-}
-
-/* Dropdown Options */
-.reserved-tables select option {
-  background-color: #333;
-  color: white;
-  padding: 12px 16px; /* More padding for better readability */
-  font-size: 16px;
-  font-family: 'Arial', sans-serif; /* Consistent font for options */
-}
-
-/* Dropdown Option Hover State */
-.reserved-tables select option:hover {
-  background-color: #FF4135;
-  color: white;
-}
-
-/* Dropdown Option Selected State */
-.reserved-tables select option:checked {
-  background-color: #FF4135;
-  color: white;
-  font-weight: bold; /* Highlight selected option */
-}
-
-
-/* Existing styles from your previous code */
-.user-food-page-wrapper {
-  display: flex;
-  justify-content: space-between;
-  padding: 2rem;
-  background-color: #121212;
-  flex-wrap: wrap; /* Allow wrapping of elements */
-}
-
-/* Food Page Layout */
-.user-food-page {
-  height: 80vh;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap; /* Allow wrapping for small screens */
-  width: 100%;
-  gap: 20px; /* Add gap between the two main sections */
-}
-
-/* Food List Styling */
-.food-list {
-  width: 48%; /* Set width to 48% on larger screens */
-  background-color: #1F1F1F;
-  padding: 20px;
-  border-radius: 10px;
-  flex: 1;
-  max-height: 77vh; /* Limit the height and make it scrollable */
-  overflow-y: auto; /* Enable vertical scrolling */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-}
-.food-list::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-/* Selected Foods Styling */
-.selected-foods {
-  width: 48%; /* Set width to 48% on larger screens */
-  background-color: #1F1F1F;
-  padding: 20px;
-  border-radius: 10px;
-  flex: 1;
-  max-height: 77vh; /* Limit the height and make it scrollable */
-  overflow-y: auto; /* Enable vertical scrolling */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-}
-.selected-foods::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-.food-list h3, .selected-foods h3 {
-  color: #FF6347;
-  margin-bottom: 20px;
-}
-
-/* Food List Styling */
-.food-list ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.user-food-page .food-item {
-  background-color: #333;
-  color: #fff;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  flex-wrap: wrap; /* Allow flex items to wrap */
-}
-
-.food-details img {
-  width: 60px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 10px;
-}
-
-.user-food-page-wrapper .food-item:hover {
-  transform: scale(1.05); /* Slight zoom-in effect */
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Shadow for depth */
-}
-
-.food-item button {
-  background-color: #FF4135;
-  color: white;
+  top: 1rem;
+  right: 1rem;
+  background: none;
   border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
+  color: var(--ufp-text-primary);
+  font-size: 1.5rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  z-index: 10;
 }
 
-.food-item button:hover {
-  background-color: #e03d2f; /* Darker shade on hover */
-}
-
-.food-item .food-details {
-  flex-grow: 1;
-}
-
-.food-item .food-price {
-  margin-right: 1rem;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.food-item .food-name {
-  margin-left: 1rem;
-  font-size: 1.1rem;
-  margin-bottom: 8px;
-}
-
-.user-food-page .header {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-  text-align: center;
-  color: #ff4135; /* Accent color */
-  border-bottom: 2px solid #ff4135;
-  padding-bottom: 1rem;
-}
-
-/* Additional Styling for Buttons and Actions */
-.actions {
+/* Loading State */
+.ufp-loading {
   display: flex;
-  justify-content: space-between;
-  gap: 15px; /* Add gap between buttons */
-  flex-wrap: wrap; /* Allow buttons to wrap */
-}
-
-/* Selected Foods List Styling */
-.selected-foods ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.selected-foods li {
-  background-color: #333;
-  padding: 20px;
-  color: white;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 10px;
-  transition: background-color 0.3s ease;
-}
-
-.selected-foods .user-details p {
-  color: white;
-  font-size: 16px;
-}
-
-.selected-foods li .food-name {
-  font-size: 1.2rem;
-  font-weight: 500;
-}
-
-.selected-foods li .food-price {
-  margin-right: 1rem;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.selected-foods li .quantity-controls {
-  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100vh;
+  color: var(--ufp-text-secondary);
 }
 
-.selected-foods li .quantity-controls button {
-  background-color: #FF4135;
-  color: white;
-  border: none;
-  padding: 0px 28px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: background-color 0.3s ease;
+.ufp-loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--ufp-primary);
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
-.selected-foods li .quantity-controls button:hover {
-  background-color: #e03d2f;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.selected-foods li .food-quantity {
-  font-size: 1.2rem;
-  margin: 0 10px;
-  width: 40px;
-  text-align: center;
-}
-
-.selected-foods li .food-name-price {
-  flex-grow: 1;
-  display: flex;
-  justify-content: space-between;
-}
-
-.total-price {
-  color: white;
-}
-
-.action-button {
-  background-color: #FF4135;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 48%;
-  text-align: center;
-}
-
-.action-button:hover {
-  background-color: #e03d2f;
-}
-
-/* Add this to your UserFoodPage.css */
-.search-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #333;
-  border-radius: 5px;
-  font-size: 16px;
-  background-color: #333;
-  color: white;
-}
-.search-input::placeholder {
-  color: #aaa;
-}
-.search-input:focus {
-  background-color: #333;
-  outline: none;
-  border-color: #333;
-}
-
-/* Make sure everything is responsive on smaller screens */
+/* Responsive Design */
 @media (max-width: 1024px) {
-  .food-list, .selected-foods {
-    width: 100%; /* Make sections full width on medium screens */
-    margin-bottom: 20px;
+  .ufp-content-wrapper {
+    flex-direction: column;
+    height: auto;
   }
-
-  .food-item {
-    flex-direction: column; /* Stack food item details vertically */
-    align-items: flex-start; /* Align the text to the start */
-  }
-
-  .food-item button {
-    width: 100%; /* Make the buttons take full width */
-    margin-top: 10px;
-  }
-
-  .food-item .food-price {
-    margin-top: 10px;
-  }
-
-  .food-item .food-name {
-    margin-bottom: 10px;
-  }
-
-  .actions {
-    flex-direction: column; /* Stack buttons vertically */
-    width: 100%; /* Make buttons full width */
-    gap: 10px;
-  }
-
-  .action-button {
-    width: 100%; /* Make action buttons take full width */
-  }
-
-  .selected-foods li {
-    flex-direction: column; /* Stack selected food items vertically */
-  }
-
-  .selected-foods .quantity-controls {
-    margin-top: 10px;
+  
+  .ufp-order-summary {
+    position: static;
+    width: 100%;
+    height: auto;
+    margin-top: 2rem;
   }
 }
 
 @media (max-width: 768px) {
-  .user-food-page {
-    height: 100vh;
-    flex-direction: column; /* Stack the user-food page sections vertically */
-    gap: 20px; /* Add gap between the sections */
+  .ufp-container {
+    padding: 1rem;
+  }
+  
+  .ufp-food-list {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 
-  .food-list, .selected-foods {
-    width: 100%; /* Ensure full width for both sections */
+  .ufp-action-buttons {
+    flex-direction: column;
   }
 
-  .food-item {
-    flex-direction: column; /* Stack the food details vertically */
-    align-items: flex-start;
-  }
-
-  .food-item .food-price {
-    margin-top: 10px;
-  }
-
-  .food-item .food-details img {
-    width: 50px; /* Adjust the image size for smaller screens */
-    height: 30px;
-  }
-
-  .food-item button {
+  .ufp-save-btn, .ufp-invoice-btn {
     width: 100%;
-    margin-top: 10px;
-  }
-
-  .selected-foods .quantity-controls {
-    justify-content: space-between;
-    width: 100%; /* Adjust quantity controls layout */
-  }
-
-  .total-price {
-    margin-top: 20px;
-  }
-
-  .selected-foods li .food-name-price {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .selected-foods .user-details {
-    margin-bottom: 1rem; /* Reduce margin */
-  }
-
-  .selected-foods li {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .selected-foods li .food-name-price {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
 
 @media (max-width: 480px) {
-  .food-item .food-details img {
-    width: 40px; /* Further reduce image size for small screens */
-    height: 30px;
+  .ufp-food-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .ufp-food-image {
+    margin-bottom: 0.5rem;
+  }
+  
+  .ufp-selected-item {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
   }
 
-  .food-item .food-price {
-    font-size: 1rem; /* Smaller font size for price */
-  }
-
-  .food-item .food-name {
-    font-size: 1rem; /* Adjust font size for smaller screens */
-  }
-
-  .action-button {
-    font-size: 14px; /* Make action buttons smaller on mobile */
-  }
-
-  .selected-foods li .food-price,
-  .selected-foods li .food-name {
-    font-size: 1rem; /* Adjust font size for smaller screens */
-  }
-
-  .selected-foods li .quantity-controls button {
-    padding: 0 20px;
+  .ufp-item-info {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
   }
 }

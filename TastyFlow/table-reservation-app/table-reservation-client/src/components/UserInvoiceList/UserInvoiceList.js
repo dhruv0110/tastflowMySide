@@ -334,7 +334,7 @@ const InvoiceDetail = () => {
               )}
               <div className="summary-item total">
                 <label>Final Amount</label>
-                <p>
+                <p>₹
   {(state.invoice.finalAmount || state.invoice.totalAmount).toFixed(2)}
 </p>
               </div>

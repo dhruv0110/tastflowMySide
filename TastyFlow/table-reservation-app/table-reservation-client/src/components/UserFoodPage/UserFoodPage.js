@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import Invoice from "../Invoice/Invoice";
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import Invoice from '../Invoice/Invoice';
+import { toast } from 'react-toastify';
 import './UserFoodPage.css';
-import { toast } from "react-toastify";
 
 const UserFoodPage = () => {
   const { userId } = useParams();
@@ -18,299 +18,331 @@ const UserFoodPage = () => {
   const [addedFoods, setAddedFoods] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [selectedReservation, setSelectedReservation] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch food items
-    fetch("http://localhost:5000/api/food/list")
-      .then((response) => response.json())
-      .then((data) => setFoods(data.data))
-      .catch((err) => console.error("Error fetching food items:", err));
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        const foodResponse = await fetch("http://localhost:5000/api/food/list");
+        const foodData = await foodResponse.json();
+        setFoods(foodData.data);
 
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      fetch(`http://localhost:5000/api/users/admin/getuser/${userId}`, {
-        method: 'GET',
-        headers: {
-          'auth-token': token,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("User Data:", data); // Debugging
-          setUser(data);
-
-          // Filter succeeded payments and set reservations
-          const succeededPayments = data.payments.filter(
-            (payment) => payment.status === "succeeded" && !payment.deducted
-          );
-
-          // Ensure tableNumber and slotTime are included
-          const reservationsWithTableInfo = succeededPayments.map((payment) => ({
+        const token = localStorage.getItem('token');
+        if (token) {
+          const userResponse = await fetch(`http://localhost:5000/api/users/admin/getuser/${userId}`, {
+            headers: { 'auth-token': token }
+          });
+          const userData = await userResponse.json();
+          
+          setUser(userData);
+          const succeededPayments = userData.payments?.filter(
+            payment => payment.status === "succeeded" && !payment.deducted
+          ) || [];
+          
+          setReservations(succeededPayments.map(payment => ({
             reservationId: payment.reservationId,
             tableNumber: payment.tableNumber,
             slotTime: payment.slotTime,
-          }));
+          })));
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        toast.error("Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-          console.log("Reservations:", reservationsWithTableInfo); // Debugging
-          setReservations(reservationsWithTableInfo);
-        })
-        .catch((err) => console.error("Error fetching user data:", err));
-    } else {
-      console.error("No token found");
-    }
+    fetchData();
   }, [userId]);
 
-  // Filter foods based on search term
-  const filteredFoods = foods.filter((food) =>
+  const filteredFoods = foods.filter(food =>
     food.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Add food to user's selection
   const addFoodToUser = (food) => {
-    setSelectedFoods((prev) => {
-      const existingFoodIndex = prev.findIndex((f) => f.foodId === food._id);
-      if (existingFoodIndex > -1) return prev;
-      const updatedFoods = [
+    setSelectedFoods(prev => {
+      const existing = prev.find(f => f.foodId === food._id);
+      if (existing) return prev;
+      
+      const updated = [
         ...prev,
-        { foodId: food._id, name: food.name, price: food.price, quantity: 1 },
+        { foodId: food._id, name: food.name, price: food.price, quantity: 1 }
       ];
-      updateTotal(updatedFoods);
-      return updatedFoods;
+      updateTotal(updated);
+      return updated;
     });
-    setAddedFoods((prev) => [...prev, food._id]);
+    setAddedFoods(prev => [...prev, food._id]);
   };
 
-  // Update total price
   const updateTotal = (foods) => {
-    const total = foods.reduce((sum, food) => sum + food.price * food.quantity, 0);
-    setTotal(total);
+    setTotal(foods.reduce((sum, food) => sum + food.price * food.quantity, 0));
   };
 
-  // Increase food quantity
   const increaseQuantity = (foodId) => {
-    setSelectedFoods((prev) => {
-      const updatedFoods = prev.map((food) =>
+    setSelectedFoods(prev => {
+      const updated = prev.map(food =>
         food.foodId === foodId ? { ...food, quantity: food.quantity + 1 } : food
       );
-      updateTotal(updatedFoods);
-      return updatedFoods;
+      updateTotal(updated);
+      return updated;
     });
   };
 
-  // Decrease food quantity
   const decreaseQuantity = (foodId) => {
-    setSelectedFoods((prev) => {
-      const updatedFoods = prev
-        .map((food) =>
-          food.foodId === foodId && food.quantity > 0
+    setSelectedFoods(prev => {
+      const updated = prev
+        .map(food => 
+          food.foodId === foodId
             ? { ...food, quantity: food.quantity - 1 }
             : food
         )
-        .filter((food) => food.quantity > 0);
-      if (updatedFoods.length < prev.length) {
-        setAddedFoods((prevAdded) => prevAdded.filter((id) => id !== foodId));
+        .filter(food => food.quantity > 0);
+      
+      if (updated.length < prev.length) {
+        setAddedFoods(prevAdded => prevAdded.filter(id => id !== foodId));
       }
-      updateTotal(updatedFoods);
-      return updatedFoods;
+      
+      updateTotal(updated);
+      return updated;
     });
   };
 
-  // Generate invoice
-  const generateInvoice = () => {
+  const saveSelection = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/users/${userId}/add-food`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ foods: selectedFoods })
+      });
+      const data = await response.json();
+      toast.success(data.message);
+      setIsSelectionSaved(true);
+    } catch (err) {
+      console.error("Error saving selection:", err);
+      toast.error("Failed to save selection");
+    }
+  };
+
+  const generateInvoice = async () => {
     if (!isSelectionSaved) {
-      toast.error("Please click 'Save Selection' first.");
+      toast.error("Please save your selection first");
       return;
     }
-  
-    const cgstAmount = total * 0.025;
-    const sgstAmount = total * 0.025;
-    const totalBeforeRoundOff = total + cgstAmount + sgstAmount;
-    const roundOffAmount = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
-    const finalAmount = (totalBeforeRoundOff + roundOffAmount).toFixed(2);
-  
-    const invoiceData = {
-      userId: userId,
-      foods: selectedFoods.map((food) => ({
-        foodId: food.foodId,
-        name: food.name,
-        price: food.price,
-        quantity: food.quantity,
-      })),
-      totalAmount: finalAmount,
-      cgst: cgstAmount.toFixed(2),
-      sgst: sgstAmount.toFixed(2),
-      roundOff: roundOffAmount.toFixed(2),
-      ...(selectedReservation && { reservationId: selectedReservation.reservationId }),
-    };
-  
-    console.log("Invoice data being sent:", invoiceData); // Debugging
-  
-    fetch("http://localhost:5000/api/invoice/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-      body: JSON.stringify(invoiceData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Invoice creation response:", data); // Debugging
-  
-        if (data.invoice && data.invoice._id) {
-          setInvoiceGenerated(true);
-          setInvoiceId(data.invoice._id);
-          setIsModalOpen(true);
-  
-          // Remove the reservation from the list only if it exists
-          if (selectedReservation) {
-            setReservations((prev) =>
-              prev.filter((res) => res.reservationId !== selectedReservation.reservationId)
-            );
-            setSelectedReservation(null);
-          }
-        } else {
-          throw new Error("Invalid response from server");
-        }
-      })
-      .catch((err) => {
-        console.error("Error creating invoice:", err); // Debugging
-        toast.error("Error creating invoice. Please try again.");
+
+    try {
+      const cgst = total * 0.025;
+      const sgst = total * 0.025;
+      const roundOff = Math.round(total + cgst + sgst) - (total + cgst + sgst);
+      const finalAmount = (total + cgst + sgst + roundOff).toFixed(2);
+
+      const response = await fetch("http://localhost:5000/api/invoice/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+          userId,
+          foods: selectedFoods.map(food => ({
+            foodId: food.foodId,
+            name: food.name,
+            price: food.price,
+            quantity: food.quantity
+          })),
+          totalAmount: finalAmount,
+          cgst: cgst.toFixed(2),
+          sgst: sgst.toFixed(2),
+          roundOff: roundOff.toFixed(2),
+          ...(selectedReservation && { reservationId: selectedReservation.reservationId })
+        })
       });
+
+      const data = await response.json();
+      if (data.invoice?._id) {
+        setInvoiceId(data.invoice._id);
+        setInvoiceGenerated(true);
+        setIsModalOpen(true);
+        
+        if (selectedReservation) {
+          setReservations(prev => 
+            prev.filter(res => res.reservationId !== selectedReservation.reservationId)
+          );
+          setSelectedReservation(null);
+        }
+      }
+    } catch (err) {
+      console.error("Error creating invoice:", err);
+      toast.error("Failed to generate invoice");
+    }
   };
 
-  // Save selection
-  const saveSelection = () => {
-    fetch(`http://localhost:5000/api/users/${userId}/add-food`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ foods: selectedFoods }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        toast.success(data.message);
-        setIsSelectionSaved(true);
-      })
-      .catch((err) => console.error("Error saving selection:", err));
-  };
+  const closeModal = () => setIsModalOpen(false);
 
-  // Close modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  if (loading) {
+    return (
+      <div className="ufp-loading">
+        <div className="ufp-loading-spinner"></div>
+        <p>Loading user data...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="user-food-page-wrapper">
-      <div className="user-food-page">
-        <div className="food-list">
-          <h1 className="header">All Foods List</h1>
-          <input
-            type="text"
-            placeholder="Search food..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          <ul>
-            {filteredFoods.map((food) => (
-              <li key={food._id} className="food-item">
-                <div className="food-details">
-                  <img src={`http://localhost:5000/uploads/${food.image}`} alt={food.name} />
-                  <span className="food-name">{food.name}</span>
-                </div>
-                <span className="food-price">{food.price.toFixed(2)}</span>
-                <button
-                  onClick={() => addFoodToUser(food)}
-                  disabled={addedFoods.includes(food._id)}
-                >
-                  {addedFoods.includes(food._id) ? "Added" : "Add Food"}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="selected-foods">
-          <h1 className="header">Selected Foods for User</h1>
-          {user && (
-            <div className="user-details">
-              <p><strong>Name:</strong> {user.name}</p>
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Contact:</strong> {user.contact}</p>
-            </div>
-          )}
-
-          <div className="reserved-tables">
-            <h3>Reserved Tables</h3>
-            <select
-              value={selectedReservation ? selectedReservation.reservationId : ""}
-              onChange={(e) => {
-                const selected = reservations.find(
-                  (res) => res.reservationId === e.target.value
-                );
-                setSelectedReservation(selected);
-              }}
-            >
-              <option value="">Select a table</option>
-              {reservations.map((res) => (
-                <option key={res.reservationId} value={res.reservationId}>
-                  Table {res.tableNumber} - {res.slotTime}
-                </option>
-              ))}
-            </select>
+    <div className="ufp-container">
+      <div className="ufp-content-wrapper">
+        {/* Left Panel - Food Selection */}
+        <div className="ufp-food-selection">
+          <div className="ufp-search-container">
+            <input
+              type="text"
+              placeholder="Search foods..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
 
-          <ul>
-            {selectedFoods.map((food) => (
-              <li key={food.foodId}>
-                <div className="food-name-price">
-                  <span className="food-name">{food.name}</span>
-                  <span className="food-price">{food.price.toFixed(2)}</span>
+          <div className="ufp-food-list">
+            {filteredFoods.length > 0 ? (
+              filteredFoods.map(food => (
+                <div key={food._id} className="ufp-food-item">
+                  <div className="ufp-food-image">
+                    <img 
+                      src={`http://localhost:5000/uploads/${food.image}`} 
+                      alt={food.name} 
+                    />
+                  </div>
+                  <div className="ufp-food-info">
+                    <h3>{food.name}</h3>
+                    <p>₹{food.price.toFixed(2)}</p>
+                  </div>
+                  <button
+                    onClick={() => addFoodToUser(food)}
+                    disabled={addedFoods.includes(food._id)}
+                    className={addedFoods.includes(food._id) ? 'added' : ''}
+                  >
+                    {addedFoods.includes(food._id) ? 'Added' : 'Add'}
+                  </button>
                 </div>
-                <div className="quantity-controls">
-                  <button onClick={() => decreaseQuantity(food.foodId)}>-</button>
-                  <span className="food-quantity">{food.quantity}</span>
-                  <button onClick={() => increaseQuantity(food.foodId)}>+</button>
+              ))
+            ) : (
+              <div className="ufp-no-results">No matching foods found</div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Panel - Order Summary */}
+        <div className="ufp-order-summary">
+          <div className="ufp-order-content">
+            <div className="ufp-user-details">
+              <h3>Customer Details</h3>
+              <div className="ufp-detail-item">
+                <span>Name:</span>
+                <span>{user?.name || 'N/A'}</span>
+              </div>
+              <div className="ufp-detail-item">
+                <span>Email:</span>
+                <span>{user?.email || 'N/A'}</span>
+              </div>
+              <div className="ufp-detail-item">
+                <span>Contact:</span>
+                <span>{user?.contact || 'N/A'}</span>
+              </div>
+            </div>
+
+            {reservations.length > 0 && (
+              <div className="ufp-reservation-selector">
+                <h3>Select Reservation</h3>
+                <select
+                  value={selectedReservation?.reservationId || ''}
+                  onChange={(e) => {
+                    const selected = reservations.find(
+                      res => res.reservationId === e.target.value
+                    );
+                    setSelectedReservation(selected || null);
+                  }}
+                >
+                  <option value="">No reservation</option>
+                  {reservations.map(res => (
+                    <option key={res.reservationId} value={res.reservationId}>
+                      Table {res.tableNumber} - {res.slotTime}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div className="ufp-selected-items">
+              <h3>Selected Items</h3>
+              {selectedFoods.length > 0 ? (
+                <div className="ufp-selected-container">
+                  <div className="ufp-selected-list">
+                    {selectedFoods.map(food => (
+                      <div key={food.foodId} className="ufp-selected-item">
+                        <div className="ufp-item-info">
+                          <span className="ufp-item-name">{food.name}</span>
+                          <span className="ufp-item-price">₹{food.price.toFixed(2)}</span>
+                        </div>
+                        <div className="ufp-quantity-controls">
+                          <button 
+                            onClick={() => decreaseQuantity(food.foodId)}
+                            className="ufp-quantity-btn"
+                          >
+                            -
+                          </button>
+                          <span>{food.quantity}</span>
+                          <button 
+                            onClick={() => increaseQuantity(food.foodId)}
+                            className="ufp-quantity-btn"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </li>
-            ))}
-          </ul>
+              ) : (
+                <div className="ufp-no-items">No items selected</div>
+              )}
+            </div>
 
-          <h4 className="total-price">Total: {total.toFixed(2)}</h4>
-
-          <div className="actions">
-            <button
-              onClick={saveSelection}
-              className="action-button"
-              disabled={total === 0}
-            >
-              Save Selection
-            </button>
-            <button
-  onClick={generateInvoice}
-  className="action-button"
-  disabled={total === 0} // Removed "|| !selectedReservation"
->
-  Generate Invoice
-</button>
+            {/* Combined Total and Action Buttons */}
+            <div className="ufp-action-buttons">
+              <div className="ufp-order-total">
+                <span>₹{total.toFixed(2)}</span>
+              </div>
+              <button
+                onClick={saveSelection}
+                disabled={selectedFoods.length === 0 || isSelectionSaved}
+                className="ufp-save-btn"
+              >
+                Save
+              </button>
+              <button
+                onClick={generateInvoice}
+                disabled={selectedFoods.length === 0 || !isSelectionSaved}
+                className="ufp-invoice-btn"
+              >
+                Generate
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Invoice Modal */}
       {isModalOpen && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            {invoiceGenerated && user && invoiceId && (
+        <div className="ufp-modal-overlay" onClick={closeModal}>
+          <div className="ufp-modal-content" onClick={(e) => e.stopPropagation()}>
+            {invoiceGenerated && invoiceId && (
               <Invoice invoiceId={invoiceId} user={userId} />
             )}
+            <button className="ufp-close-modal" onClick={closeModal}>
+              &times;
+            </button>
           </div>
         </div>
       )}
