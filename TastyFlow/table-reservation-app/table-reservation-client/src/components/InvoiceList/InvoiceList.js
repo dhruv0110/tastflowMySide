@@ -57,7 +57,7 @@ const InvoiceListPage = () => {
                 <div className="invoice-list-header-item">
                   <span>AMOUNT</span>
                 </div>
-                <div className="invoice-list-header-item">
+                <div className="invoice-list-header-item" style={{"textAlign": "center"}}>
                   <span>ACTIONS</span>
                 </div>
               </div>

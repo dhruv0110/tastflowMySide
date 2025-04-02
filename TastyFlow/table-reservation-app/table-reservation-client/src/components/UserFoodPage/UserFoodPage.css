@@ -438,25 +438,28 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
+  z-index: 9999; /* Ensure it appears above other content */
+  backdrop-filter: blur(4px); /* Apply blur effect */
+  -webkit-backdrop-filter: blur(4px); /* For Safari */
 }
 
 .ufp-modal-content {
-  background-color: var(--ufp-bg-light);
+  background-color: transparent;
   border-radius: 10px;
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: var(--ufp-shadow-lg);
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto; /* Allow scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
 }
-
+.ufp-modal-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
 .ufp-close-modal {
   position: absolute;
   top: 1rem;

@@ -316,7 +316,7 @@ const UserFoodPage = () => {
               </div>
               <button
                 onClick={saveSelection}
-                disabled={selectedFoods.length === 0 || isSelectionSaved}
+                // disabled={selectedFoods.length === 0 || isSelectionSaved}
                 className="ufp-save-btn"
               >
                 Save
