@@ -192,7 +192,7 @@ const UserFoodPage = () => {
 
   return (
     <div className="ufp-container">
-      <div className="ufp-content-wrapper">
+      <div className="container ufp-content-wrapper">
         {/* Left Panel - Food Selection */}
         <div className="ufp-food-selection">
           <div className="ufp-search-container">
