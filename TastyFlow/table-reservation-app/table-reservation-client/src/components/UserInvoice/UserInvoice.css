@@ -1,143 +1,87 @@
-/* UserInvoice.css */
-
-/* Main Container */
-.user-invoice-main-container {
-    display: flex;
-    min-height: 100vh;
-    background-color: #f5f5f5;
-}
-
-/* Content Area */
-.user-invoice-content {
-    flex: 1;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+.user-invoice {
     width: 100%;
-}
-
-/* Title */
-.user-invoice-title {
-    text-align: center;
-    font-size: 1.8rem;
-    color: #2c3e50;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #eaeaea;
-}
-
-/* Form Container */
-.user-invoice-form-container {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    max-width: 1225px;
+    color: #fff; /* White text color for better readability */
+    font-size: 14px;
+    background-color: #1B1C1F; /* Dark background for the list container */
     padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+    border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
+    margin: 0 auto;
 }
 
-/* Table Container */
-.user-invoice-table-container {
+.user-invoice .header {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #ff4135; /* Accent color */
+    border-bottom: 2px solid #ff4135;
+    padding-bottom: 1rem;
+  }
+
+  .user-invoice .user-name {
+    text-align: center; /* Center user name */
+    font-size: 24px; /* Larger font size for emphasis */
+    margin-bottom: 20px; /* Space below the name */
+  }
+
+  .invoice-table {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 15px;
 }
 
-/* Table Header */
-.user-invoice-table-header {
+.invoice-table-format{
     display: grid;
-    grid-template-columns: 2fr 2fr 1fr 1fr;
-    padding: 1rem;
-    background-color: #f1f3f5;
-    border-radius: 6px;
-    font-weight: 600;
-    color: #495057;
-}
-
-.user-invoice-table-heading {
-    text-align: left;
-}
-
-/* Table Rows */
-.user-invoice-table-row {
-    display: grid;
-    grid-template-columns: 2fr 2fr 1fr 1fr;
+    grid-template-columns: 2fr 2fr 2fr 2fr;
     align-items: center;
-    padding: 1rem;
-    border: 1px solid #eaeaea;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.user-invoice-table-row:hover {
-    background-color: #f8f9fa;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.user-invoice-table-data {
-    color: #333;
-}
-
-/* Buttons */
-.user-invoice-view-btn,
-.user-invoice-edit-btn {
-    padding: 0.6rem 1rem;
-    border: none;
-    border-radius: 4px;
-    font-weight: 500;
+    gap: 10px;
+    padding: 12px 15px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
     cursor: pointer;
-    transition: all 0.2s ease;
-    width: fit-content;
 }
 
-.user-invoice-view-btn {
-    background-color: #e3f2fd;
-    color: #1976d2;
+.invoice-table-format:hover {
+    background-color: #444;
+    transform: scale(1.02);
 }
 
-.user-invoice-edit-btn {
-    background-color: #e8f5e9;
-    color: #388e3c;
+.invoice-table-format b {
+    font-weight: 600;
+    color: #ff4135;
 }
 
-.user-invoice-view-btn:hover {
-    background-color: #bbdefb;
+.invoice-table-format p {
+    margin: 0;
+    color: #fff;
 }
-
-.user-invoice-edit-btn:hover {
-    background-color: #c8e6c9;
-}
-
-/* Loading State */
-.user-invoice-loading {
+.view-button,
+.edit-button {
+    padding: 8px 15px;
+    color: #5c4401b6;
+    background-color: #ff9f00; /* Accent color */
+    border-radius: 5px;
     text-align: center;
-    color: #6c757d;
-    padding: 2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 600;
+    display: inline-block;
+    width: 50%;
 }
 
-/* Empty State */
-.user-invoice-empty {
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
-    padding: 2rem;
+.view-button:hover,
+.edit-button:hover {
+    background-color: #da8702; /* Darker shade for hover effect */
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .user-invoice-content {
-        padding: 1rem;
-    }
-    
-    .user-invoice-table-header,
-    .user-invoice-table-row {
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
-    }
-    
-    .user-invoice-table-heading:nth-child(3),
-    .user-invoice-table-heading:nth-child(4),
-    .user-invoice-table-row > button {
-        grid-column: span 2;
-        justify-self: center;
-    }
-}
+
+  /* No Reviews Message Styling */
+ .user-invoice .no-reviews {
+    text-align: center; /* Center text */
+    font-style: italic; /* Italicize message */
+  }

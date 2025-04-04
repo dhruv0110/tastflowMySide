@@ -2,22 +2,20 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import PaymentForm from '../../components/PaymentForm/PaymentForm'; // Import the PaymentForm component
+import PaymentForm from '../../components/PaymentForm/PaymentForm';
 import CustomSpinner from '../CustomSpinner/CustomSpinner';
-import Modal from '../Modal/Modal'; // Import the Modal component
 import './TableComponent.css';
 import { toast } from 'react-toastify';
-import { Howl } from 'howler'; // Import Howl from howler
+import { Howl } from 'howler';
 
-const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf'); // Replace with your Stripe Publishable Key
+const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf');
 
-// Define sound files
 const reserveSound = new Howl({
-  src: ['/sounds/success.mp3'] // Path to your reserve sound file
+  src: ['/sounds/success.mp3']
 });
 
 const unreserveSound = new Howl({
-  src: ['/sounds/success.mp3'] // Path to your unreserve sound file
+  src: ['/sounds/success.mp3']
 });
 
 const TableComponent = ({ showAlert }) => {
@@ -28,7 +26,8 @@ const TableComponent = ({ showAlert }) => {
   const [slotFilter, setSlotFilter] = useState('1');
   const [paymentIntent, setPaymentIntent] = useState(null);
   const [selectedTableNumber, setSelectedTableNumber] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   useEffect(() => {
     fetchUserDetails();
@@ -68,24 +67,23 @@ const TableComponent = ({ showAlert }) => {
   const handlePaymentSuccess = async (paymentIntent) => {
     showAlert('Payment successful!', 'success');
     setPaymentIntent(paymentIntent);
-    setIsModalOpen(false); // Close the modal on success
+    setShowPaymentForm(false);
 
-    // Reserve the table after successful payment
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `http://localhost:5000/api/slot/${slotFilter}/reserve`,
+        `http://localhost:5000/api/slot/${selectedSlot}/reserve`,
         { 
-          number: selectedTableNumber, // Use the correct table number
+          number: selectedTableNumber,
           paymentIntentId: paymentIntent.id,
         },
         { 
           headers: { 'auth-token': localStorage.getItem('token') } 
         }
       );
-      reserveSound.play(); // Play reserve sound
+      reserveSound.play();
       showAlert('Table reserved successfully', 'success');
-      fetchTables(); // Refresh the table list
+      fetchTables();
     } catch (error) {
       console.error('Error reserving table:', error);
       if (error.response) {
@@ -97,7 +95,7 @@ const TableComponent = ({ showAlert }) => {
 
   const handlePaymentError = (error) => {
     showAlert(`Payment failed: ${error}`, 'danger');
-    setIsModalOpen(false); // Close the modal on error
+    setShowPaymentForm(false);
   };
 
   const toggleReservation = async (number, isReserved, reservedBy) => {
@@ -106,7 +104,8 @@ const TableComponent = ({ showAlert }) => {
       return;
     }
   
-    setLoadingTable(number); // Show spinner on the clicked button
+    setLoadingTable(number);
+    setSelectedSlot(slotFilter);
   
     if (!isReserved) {
       setSelectedTableNumber(number);
@@ -122,12 +121,12 @@ const TableComponent = ({ showAlert }) => {
   
         const { clientSecret } = paymentIntentResponse.data;
         setPaymentIntent({ clientSecret, tableNumber: number });
-        setIsModalOpen(true);
+        setShowPaymentForm(true);
       } catch (error) {
         console.error('Error creating payment intent:', error);
         showAlert('Error creating payment intent', 'danger');
       } finally {
-        setLoadingTable(null); // Hide spinner
+        setLoadingTable(null);
       }
     } else {
       const token = localStorage.getItem('token');
@@ -151,7 +150,6 @@ const TableComponent = ({ showAlert }) => {
       }
     }
   };
-  
 
   const sortedTables = [...tables].sort((a, b) => a.number - b.number);
   const filteredTables = sortedTables.filter((table) => {
@@ -233,18 +231,19 @@ const TableComponent = ({ showAlert }) => {
           ))}
         </div>
 
-        {/* Render Modal with PaymentForm */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        {showPaymentForm && (
           <Elements stripe={stripePromise}>
             <PaymentForm
               clientSecret={paymentIntent?.clientSecret}
               onSuccess={handlePaymentSuccess}
               onError={handlePaymentError}
-              tableNumber={selectedTableNumber} // Pass the selected table number
-              amount={100} // Pass the amount (e.g., 100 INR)
+              tableNumber={selectedTableNumber}
+              slot={selectedSlot}
+              amount={100}
+              onClose={() => setShowPaymentForm(false)}
             />
           </Elements>
-        </Modal>
+        )}
       </div>
     </div>
   );

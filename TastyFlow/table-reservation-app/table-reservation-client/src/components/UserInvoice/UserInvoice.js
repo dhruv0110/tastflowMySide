@@ -8,9 +8,10 @@ const UserInvoice = () => {
     const { userId } = useParams();
     const [user, setUser] = useState('');
     const [userInvoice, setUserInvoice] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // Add loading state
     const navigate = useNavigate();
 
+    // Fetch user details
     const fetchUserDetails = async () => {
         try {
             const response = await fetch(`http://localhost:5000/api/users/admin/getuser/${userId}`, {
@@ -33,6 +34,7 @@ const UserInvoice = () => {
         }
     };
 
+    // Fetch user invoices
     const fetchUserInvoice = async () => {
         try {
             const response = await fetch(`http://localhost:5000/api/invoice/admin/invoices/${userId}`, {
@@ -47,7 +49,7 @@ const UserInvoice = () => {
 
             if (response.ok) {
                 setUserInvoice(data);
-                setLoading(false);
+                setLoading(false); // Set loading to false once data is fetched
             } else {
                 setLoading(false);
             }
@@ -62,6 +64,7 @@ const UserInvoice = () => {
         fetchUserInvoice();
     }, [userId]);
 
+    // Navigate to specific invoice detail or edit page
     const navigateToInvoiceDetail = (invoiceId) => {
         navigate(`/admin/invoices/${invoiceId}`);
     };
@@ -71,46 +74,47 @@ const UserInvoice = () => {
     };
 
     return (
-        <div className="user-invoice-main-container">
+        <div style={{ display: "flex" }}>
             <Sidebar />
-            <div className="user-invoice-content">
-                <h3 className="user-invoice-title">{user.name}'s Invoices</h3>
-                <div className="user-invoice-form-container">
-                    <div className="user-invoice-table-container">
+            <div className="user-invoice">
+                <h3 className="user-name">{user.name}'s Invoices</h3>
+                <div className="user-invoice-form flex-col">
+                    <div className="invoice-table">
+                        {/* Show loading message or invoices */}
                         {loading ? (
-                            <p className="user-invoice-loading">Loading invoices...</p>
+                            <p>Loading invoices...</p>
                         ) : userInvoice.length > 0 ? (
                             <>
-                                <div className="user-invoice-table-header">
-                                    <span className="user-invoice-table-heading">Invoice Number</span>
-                                    <span className="user-invoice-table-heading">Date</span>
-                                    <span className="user-invoice-table-heading">View</span>
-                                    <span className="user-invoice-table-heading">Edit</span>
+                                {/* Table Header */}
+                                <div className="invoice-table-format title">
+                                    <b>Invoice Number</b>
+                                    <b>Date</b>
+                                    <b>View</b>
+                                    <b>Edit</b>
                                 </div>
 
+                                {/* Invoice List */}
                                 {userInvoice.map((invoice) => (
-                                    <div key={invoice._id} className="user-invoice-table-row">
-                                        <span className="user-invoice-table-data">{invoice.invoiceNumber}</span>
-                                        <span className="user-invoice-table-data">
-                                            {new Date(invoice.invoiceDate).toLocaleDateString()}
-                                        </span>
-                                        <button
+                                    <div key={invoice._id} className="invoice-table-format">
+                                        <p>{invoice.invoiceNumber}</p>
+                                        <p>{new Date(invoice.invoiceDate).toLocaleDateString()}</p>
+                                        <div
                                             onClick={() => navigateToInvoiceDetail(invoice._id)}
-                                            className="user-invoice-view-btn"
+                                            className="view-button"
                                         >
                                             View Invoice
-                                        </button>
-                                        <button
+                                        </div>
+                                        <div
                                             onClick={() => navigateToEditInvoice(invoice._id)}
-                                            className="user-invoice-edit-btn"
+                                            className="edit-button"
                                         >
                                             Edit Invoice
-                                        </button>
+                                        </div>
                                     </div>
                                 ))}
                             </>
                         ) : (
-                            <p className="user-invoice-empty">No invoices available for this user.</p>
+                            <p className="no-reviews">No invoices available for this user.</p>
                         )}
                     </div>
                 </div>

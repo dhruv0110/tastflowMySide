@@ -160,7 +160,7 @@ const UsersList = () => {
 
             {/* Add User Form */}
             <div className={`users-list-form ${showForm ? 'show' : ''}`}>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} style={{margin:"0.5rem"}}>
                 <div className="form-row">
                   <div className="form-group">
                     <label>Name</label>
