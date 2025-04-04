@@ -49,89 +49,89 @@ const Invoice = ({ invoiceId, user }) => {
               color: #000; /* Black text for thermal printers */
               background: #fff; /* White background */
             }
-            .invoice-container {
+            .tf-invoice-print-container {
               width: 100%;
               max-width: 80mm; /* Adjust for 58mm or 80mm paper */
               margin: 0 auto;
               padding: 5px; /* Minimal padding */
             }
-            .invoice-header {
+            .tf-invoice-print-header {
               text-align: center;
               margin-bottom: 5px;
             }
-            .invoice-header h2 {
+            .tf-invoice-print-header h2 {
               font-size: 14px; /* Slightly larger for headings */
               margin: 0;
               color: #000;
             }
-            .invoice-header p {
+            .tf-invoice-print-header p {
               font-size: 10px;
               margin: 3px 0;
               color: #000;
             }
-            .company-info {
+            .tf-invoice-print-company {
               text-align: center;
               margin-bottom: 5px;
             }
-            .company-info h3 {
+            .tf-invoice-print-company h3 {
               font-size: 12px;
               margin: 0 0 3px 0;
               color: #000;
             }
-            .company-info p {
+            .tf-invoice-print-company p {
               font-size: 10px;
               margin: 2px 0;
               color: #000;
             }
-            .user-details {
+            .tf-invoice-print-user {
               margin-bottom: 5px;
               padding: 5px 0;
               border-top: 1px dashed #000; /* Dashed border for separation */
               border-bottom: 1px dashed #000;
             }
-            .user-details h5 {
+            .tf-invoice-print-user h5 {
               font-size: 12px;
               margin: 0 0 3px 0;
               color: #000;
             }
-            .user-details p {
+            .tf-invoice-print-user p {
               font-size: 10px;
               margin: 2px 0;
               color: #000;
             }
-            .food-details {
+            .tf-invoice-print-food {
               margin-bottom: 5px;
             }
-            .food-details h5 {
+            .tf-invoice-print-food h5 {
               font-size: 12px;
               margin: 0 0 3px 0;
               color: #000;
             }
-            .food-details table {
+            .tf-invoice-print-food table {
               width: 100%;
               border-collapse: collapse;
               margin-bottom: 5px;
             }
-            .food-details th,
-            .food-details td {
+            .tf-invoice-print-food th,
+            .tf-invoice-print-food td {
               padding: 3px;
               text-align: left;
               border-bottom: 1px dashed #000; /* Dashed border for table rows */
             }
-            .food-details th {
+            .tf-invoice-print-food th {
               font-weight: bold;
               background-color: #f0f0f0; /* Light gray background for headers */
             }
-            .tax-summary {
+            .tf-invoice-print-tax {
               margin-bottom: 5px;
             }
-            .tax-summary .total {
+            .tf-invoice-print-tax .tf-invoice-print-total {
               display: flex;
               justify-content: space-between;
               font-size: 10px;
               margin-bottom: 3px;
             }
-            .final-total {
+            .tf-invoice-print-final {
               font-size: 12px;
               font-weight: bold;
               display: flex;
@@ -140,23 +140,23 @@ const Invoice = ({ invoiceId, user }) => {
               padding-top: 5px;
               border-top: 2px solid #000; /* Solid border for emphasis */
             }
-            .reservation-details {
+            .tf-invoice-print-reservation {
               margin-bottom: 5px;
               padding: 5px 0;
               border-top: 1px dashed #000;
               border-bottom: 1px dashed #000;
             }
-            .reservation-details h5 {
+            .tf-invoice-print-reservation h5 {
               font-size: 12px;
               margin: 0 0 3px 0;
               color: #000;
             }
-            .reservation-details p {
+            .tf-invoice-print-reservation p {
               font-size: 10px;
               margin: 2px 0;
               color: #000;
             }
-            .footer {
+            .tf-invoice-print-footer {
               text-align: center;
               font-size: 10px;
               color: #000;
@@ -165,26 +165,26 @@ const Invoice = ({ invoiceId, user }) => {
           </style>
         </head>
         <body>
-          <div class="invoice-container">
-            <div class="invoice-header">
+          <div class="tf-invoice-print-container">
+            <div class="tf-invoice-print-header">
               <h2>TastyFlow</h2>
               <p>Invoice No: ${invoice.invoiceNumber}</p>
               <p>Date: ${new Date(invoice.invoiceDate).toLocaleDateString()}</p>
             </div>
 
-            <div class="company-info">
+            <div class="tf-invoice-print-company">
               <h3>Restaurant Details</h3>
               <p>Shlok Infinity, 1st Floor, Sundersingh Bhandari Overbridge, Opposite Vishvakarma Temple</p>
               <p>Phone: (909) 91-49101</p>
             </div>
 
-            <div class="user-details">
+            <div class="tf-invoice-print-user">
               <h5>Bill To:</h5>
               <p><strong>Name:</strong> ${invoice.userId.name}</p>
               <p><strong>Contact:</strong> ${invoice.userId.contact}</p>
             </div>
 
-            <div class="food-details">
+            <div class="tf-invoice-print-food">
               <h5>Items Purchased</h5>
               <table>
                 <thead>
@@ -208,13 +208,13 @@ const Invoice = ({ invoiceId, user }) => {
               </table>
             </div>
 
-            <div class="tax-summary">
-              <div class="total"><span>CGST (2.5%):</span> <span>₹${invoice.cgst.toFixed(2)}</span></div>
-              <div class="total"><span>SGST (2.5%):</span> <span>₹${invoice.sgst.toFixed(2)}</span></div>
-              <div class="total"><span>Round-off:</span> <span>₹${invoice.roundOff.toFixed(2)}</span></div>
+            <div class="tf-invoice-print-tax">
+              <div class="tf-invoice-print-total"><span>CGST (2.5%):</span> <span>₹${invoice.cgst.toFixed(2)}</span></div>
+              <div class="tf-invoice-print-total"><span>SGST (2.5%):</span> <span>₹${invoice.sgst.toFixed(2)}</span></div>
+              <div class="tf-invoice-print-total"><span>Round-off:</span> <span>₹${invoice.roundOff.toFixed(2)}</span></div>
             </div>
 
-            <div class="final-total">
+            <div class="tf-invoice-print-final">
               <div>Total Payable:</div>
               <div>₹${invoice.totalAmount.toFixed(2)}</div>
             </div>
@@ -222,7 +222,7 @@ const Invoice = ({ invoiceId, user }) => {
             ${
               invoice.reservedTableInfo
                 ? `
-              <div class="reservation-details">
+              <div class="tf-invoice-print-reservation">
                 <h5>Reservation Details</h5>
                 <p><strong>Table No:</strong> ${invoice.reservedTableInfo.tableNumber}</p>
                 <p><strong>Reservation Slot:</strong> ${invoice.reservedTableInfo.slotTime}</p>
@@ -232,7 +232,7 @@ const Invoice = ({ invoiceId, user }) => {
                 : ''
             }
 
-            <div class="footer">
+            <div class="tf-invoice-print-footer">
               <p>Thank you for dining with us!</p>
             </div>
           </div>
@@ -265,15 +265,15 @@ const Invoice = ({ invoiceId, user }) => {
   };
 
   return (
-    <div className="invoice-container">
+    <div className="tf-invoice-container">
       {/* Header */}
-      <div className="invoice-header">
-        <div className="invoice-info">
+      <div className="tf-invoice-header">
+        <div className="tf-invoice-info">
           <h4>Invoice No. {invoice.invoiceNumber}</h4>
           <p><strong>Invoice Date:</strong> {new Date(invoice.invoiceDate).toLocaleDateString()}</p>
           <p><strong>Invoice ID:</strong> {invoice._id}</p>
         </div>
-        <div className="company-info">
+        <div className="tf-invoice-company">
           <h3>TastyFlow</h3>
           <p>Shlok Infinity, 1st Floor, Sundersingh Bhandari Overbridge, Opposite Vishvakarma Temple</p>
           <p>Phone: (909) 91-49101 | Email: tastyflow@gmail.com</p>
@@ -282,7 +282,7 @@ const Invoice = ({ invoiceId, user }) => {
       </div>
 
       {/* User Details */}
-      <div className="user-details">
+      <div className="tf-invoice-user">
         <h5>Bill To:</h5>
         {user ? (
           <div>
@@ -297,7 +297,7 @@ const Invoice = ({ invoiceId, user }) => {
       </div>
 
       {/* Food Details */}
-      <div className="food-details">
+      <div className="tf-invoice-food">
         <h5>Order Summary</h5>
         <table>
           <thead>
@@ -324,27 +324,27 @@ const Invoice = ({ invoiceId, user }) => {
       </div>
 
       {/* Tax Summary */}
-      <div className="tax-summary">
-        <div className="total">
+      <div className="tf-invoice-tax">
+        <div className="tf-invoice-total">
           <div>CGST (2.5%)</div>
           <div>{invoice.cgst.toFixed(2)}</div>
         </div>
-        <div className="total">
+        <div className="tf-invoice-total">
           <div>SGST (2.5%)</div>
           <div>{invoice.sgst.toFixed(2)}</div>
         </div>
-        <div className="total">
+        <div className="tf-invoice-total">
           <div>Round-off:</div>
           <div>{invoice.roundOff.toFixed(2)}</div>
         </div>
       </div>
 
       {/* Final Total */}
-      <div className="final-total">
+      <div className="tf-invoice-final">
         <div><strong>Total Amount Payable (₹):</strong></div>
         <div>{invoice.totalAmount.toFixed(2)}</div>
       </div>
-      <div className="final-total">
+      <div className="tf-invoice-final">
         <div>Total Amount in Words:</div>
         <div>{toWords(invoice.totalAmount)} Only</div>
       </div>
@@ -352,7 +352,7 @@ const Invoice = ({ invoiceId, user }) => {
 
       {/* Reservation Details */}
       {invoice.reservedTableInfo && (
-        <div className="reserved-table-info">
+        <div className="tf-invoice-reservation">
           <h5>Reservation Details</h5>
           <p><strong>Table Reserved:</strong> Table {invoice.reservedTableInfo.tableNumber}</p>
           <p><strong>Reservation Slot:</strong> {invoice.reservedTableInfo.slotTime}</p>
@@ -364,12 +364,12 @@ const Invoice = ({ invoiceId, user }) => {
       )}
 
       {/* Buttons */}
-      <div className="button-container">
-        <button className="print-invoice-btn" onClick={printInvoice}>
+      <div className="tf-invoice-buttons">
+        <button className="tf-invoice-print-btn" onClick={printInvoice}>
           Print Invoice
         </button>
         <button
-          className="send-invoice-btn"
+          className="tf-invoice-send-btn"
           onClick={sendInvoice}
           disabled={isSending}
         >
@@ -378,7 +378,7 @@ const Invoice = ({ invoiceId, user }) => {
       </div>
 
       {/* Footer */}
-      <div className="invoice-footer">
+      <div className="tf-invoice-footer">
         <p>Thank you for dining with us! We look forward to serving you again.</p>
         <p><strong>TastyFlow</strong> - All Rights Reserved</p>
         <p style={{ fontSize: "0.8rem", color: "#666" }}>

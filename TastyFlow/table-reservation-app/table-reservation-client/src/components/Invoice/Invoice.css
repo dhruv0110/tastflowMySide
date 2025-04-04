@@ -1,5 +1,5 @@
 /* General Styles */
-.invoice-container {
+.tf-invoice-container {
   max-width: 800px;
   margin: 20px auto;
   padding: 30px;
@@ -12,7 +12,7 @@
 }
 
 /* Header Section */
-.invoice-header {
+.tf-invoice-header {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -21,38 +21,38 @@
   border-bottom: 2px solid #007bff;
 }
 
-.invoice-info, .company-info {
+.tf-invoice-info, .tf-invoice-company {
   flex: 1;
   min-width: 250px;
   margin-bottom: 20px;
 }
 
-.invoice-info h4 {
+.tf-invoice-info h4 {
   margin: 0 0 10px 0;
   font-size: 1.8rem;
   color: #007bff;
   font-weight: 600;
 }
 
-.invoice-info p, .company-info p {
+.tf-invoice-info p, .tf-invoice-company p {
   margin: 5px 0;
   font-size: 0.95rem;
   color: #555;
 }
 
-.company-info h3 {
+.tf-invoice-company h3 {
   margin: 0 0 10px 0;
   font-size: 1.5rem;
   color: #333;
   font-weight: 600;
 }
 
-.company-info p {
+.tf-invoice-company p {
   line-height: 1.6;
 }
 
 /* User Details Section */
-.invoice-container .user-details {
+.tf-invoice-user {
   margin: 25px 0;
   padding: 20px;
   background-color: #f9f9f9;
@@ -60,60 +60,60 @@
   border: 1px solid #e0e0e0;
 }
 
-.user-details h5 {
+.tf-invoice-user h5 {
   margin: 0 0 15px 0;
   font-size: 1.2rem;
   color: #333;
   font-weight: 600;
 }
 
-.user-details p {
+.tf-invoice-user p {
   margin: 8px 0;
   font-size: 0.95rem;
   color: #555;
 }
 
 /* Food Details Section */
-.food-details {
+.tf-invoice-food {
   margin: 25px 0;
 }
 
-.food-details h5 {
+.tf-invoice-food h5 {
   margin: 0 0 15px 0;
   font-size: 1.2rem;
   color: #333;
   font-weight: 600;
 }
 
-.food-details table {
+.tf-invoice-food table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
-.food-details th, .food-details td {
+.tf-invoice-food th, .tf-invoice-food td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #e0e0e0;
 }
 
-.food-details th {
+.tf-invoice-food th {
   background-color: #007bff;
   color: #fff;
   font-weight: 600;
 }
 
-.food-details td {
+.tf-invoice-food td {
   color: #555;
 }
 
-.food-details tr:hover {
+.tf-invoice-food tr:hover {
   background-color: #f5f5f5;
   transition: background-color 0.3s ease;
 }
 
 /* Total Summary Section */
-.total-summary {
+.tf-invoice-tax {
   margin: 25px 0;
   padding: 20px;
   background-color: #f9f9f9;
@@ -121,7 +121,7 @@
   border: 1px solid #e0e0e0;
 }
 
-.total {
+.tf-invoice-total {
   display: flex;
   justify-content: space-between;
   margin-bottom: 12px;
@@ -129,7 +129,7 @@
   color: #555;
 }
 
-.final-total {
+.tf-invoice-final {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
@@ -141,7 +141,7 @@
 }
 
 /* Reserved Table Info Section */
-.reserved-table-info {
+.tf-invoice-reservation {
   margin: 25px 0;
   padding: 20px;
   background-color: #f9f9f9;
@@ -149,33 +149,33 @@
   border: 1px solid #e0e0e0;
 }
 
-.reserved-table-info h5 {
+.tf-invoice-reservation h5 {
   margin: 0 0 15px 0;
   font-size: 1.2rem;
   color: #333;
   font-weight: 600;
 }
 
-.reserved-table-info p {
+.tf-invoice-reservation p {
   margin: 8px 0;
   font-size: 0.95rem;
   color: #555;
 }
 
-.reserved-table-info p:last-child {
+.tf-invoice-reservation p:last-child {
   font-style: italic;
   color: #666;
 }
 
 /* Button Container */
-.button-container {
+.tf-invoice-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 15px;
   margin-top: 25px;
 }
 
-.print-invoice-btn, .send-invoice-btn {
+.tf-invoice-print-btn, .tf-invoice-send-btn {
   padding: 12px 25px;
   font-size: 0.95rem;
   color: #fff;
@@ -186,19 +186,19 @@
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.print-invoice-btn:hover, .send-invoice-btn:hover {
+.tf-invoice-print-btn:hover, .tf-invoice-send-btn:hover {
   background-color: #0056b3;
   transform: translateY(-2px);
 }
 
-.send-invoice-btn:disabled {
+.tf-invoice-send-btn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
   transform: none;
 }
 
 /* Footer Section */
-.invoice-footer {
+.tf-invoice-footer {
   margin-top: 30px;
   padding-top: 20px;
   border-top: 2px solid #007bff;
@@ -207,46 +207,46 @@
   color: #555;
 }
 
-.invoice-footer p {
+.tf-invoice-footer p {
   margin: 5px 0;
 }
 
-.invoice-footer p:last-child {
+.tf-invoice-footer p:last-child {
   font-size: 0.8rem;
   color: #666;
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-  .invoice-header {
+  .tf-invoice-header {
     flex-direction: column;
   }
 
-  .invoice-info, .company-info {
+  .tf-invoice-info, .tf-invoice-company {
     min-width: 100%;
   }
 
-  .button-container {
+  .tf-invoice-buttons {
     flex-direction: column;
     gap: 10px;
   }
 
-  .print-invoice-btn, .send-invoice-btn {
+  .tf-invoice-print-btn, .tf-invoice-send-btn {
     width: 100%;
   }
 }
 
 @media (max-width: 480px) {
-  .invoice-container {
+  .tf-invoice-container {
     padding: 20px;
   }
 
-  .food-details th, .food-details td {
+  .tf-invoice-food th, .tf-invoice-food td {
     padding: 10px;
     font-size: 0.85rem;
   }
 
-  .final-total {
+  .tf-invoice-final {
     font-size: 1rem;
   }
 }

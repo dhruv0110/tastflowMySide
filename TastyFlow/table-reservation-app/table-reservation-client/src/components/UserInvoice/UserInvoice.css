@@ -1,87 +1,257 @@
-.user-invoice {
-    width: 100%;
-    max-width: 1225px;
-    color: #fff; /* White text color for better readability */
-    font-size: 14px;
-    background-color: #1B1C1F; /* Dark background for the list container */
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
-    border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
-    margin: 0 auto;
+/* UserInvoice.css */
+
+/* Base Styles (same as InvoiceList.css) */
+:root {
+    --bg-dark: #1B1C1F;
+    --bg-darker: #121316;
+    --bg-light: #2A2B2F;
+    --bg-lighter: #3A3B40;
+    --primary: #FF4135;
+    --primary-dark: #D8352B;
+    --primary-light: #FF6D63;
+    --secondary: #35A2FF;
+    --accent: #FFC635;
+    --success: #2ECC71;
+    --warning: #FF851B;
+    --text-primary: #FFFFFF;
+    --text-secondary: #E2E2E2;
+    --text-tertiary: #A0A0A0;
+    --border-dark: #373737;
+    --border-light: #4A4A4A;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
-.user-invoice .header {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-    text-align: center;
-    color: #ff4135; /* Accent color */
-    border-bottom: 2px solid #ff4135;
-    padding-bottom: 1rem;
-  }
-
-  .user-invoice .user-name {
-    text-align: center; /* Center user name */
-    font-size: 24px; /* Larger font size for emphasis */
-    margin-bottom: 20px; /* Space below the name */
-  }
-
-  .invoice-table {
+/* Main Container */
+.ui-container {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.invoice-table-format{
-    display: grid;
-    grid-template-columns: 2fr 2fr 2fr 2fr;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 15px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    background-color: #333;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    cursor: pointer;
+/* Content Area */
+.ui-content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    border-top: 1px solid #a9a9a9;
 }
 
-.invoice-table-format:hover {
-    background-color: #444;
-    transform: scale(1.02);
+/* Header */
+.ui-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-dark);
 }
 
-.invoice-table-format b {
+.ui-title {
+    font-size: 1.8rem;
     font-weight: 600;
-    color: #ff4135;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
 }
 
-.invoice-table-format p {
+.ui-subtitle {
+    color: var(--text-tertiary);
+    font-size: 0.95rem;
     margin: 0;
-    color: #fff;
 }
-.view-button,
-.edit-button {
-    padding: 8px 15px;
-    color: #5c4401b6;
-    background-color: #ff9f00; /* Accent color */
-    border-radius: 5px;
-    text-align: center;
+
+/* Loading State */
+.ui-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+/* Table Container */
+.ui-view {
+    background: var(--bg-light);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    padding: 1.5rem;
+    border: 1px solid var(--border-dark);
+}
+
+.ui-table-container {
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* Table Header */
+.ui-table-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1.5fr;
+    align-items: center;
+    padding: 1rem;
+    background: var(--bg-darker);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-dark);
+}
+
+.ui-header-item {
+    padding: 0.5rem;
+}
+
+/* Table Rows */
+.ui-table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1.5fr;
+    align-items: center;
+    padding: 1rem;
+    background: var(--bg-light);
+    border-bottom: 1px solid var(--border-dark);
+    transition: background 0.2s;
+    font-size: 0.95rem;
+}
+
+.ui-table-row:last-child {
+    border-bottom: none;
+}
+
+.ui-table-row:hover {
+    background: var(--bg-lighter);
+}
+
+.ui-row-item {
+    padding: 0.5rem;
+}
+
+.ui-invoice-number {
+    font-weight: 500;
+    color: var(--primary-light);
+}
+
+.ui-amount {
+    font-weight: 500;
+}
+
+.ui-actions {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 0.75rem;
+}
+
+/* Buttons */
+.ui-view-btn,
+.ui-edit-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.85rem;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    font-weight: 600;
-    display: inline-block;
-    width: 50%;
+    transition: all 0.2s;
+    border: none;
+    min-width: 80px;
 }
 
-.view-button:hover,
-.edit-button:hover {
-    background-color: #da8702; /* Darker shade for hover effect */
+.ui-view-btn {
+    background: var(--bg-darker);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-dark);
 }
 
+.ui-view-btn:hover {
+    background: var(--bg-lighter);
+}
 
-  /* No Reviews Message Styling */
- .user-invoice .no-reviews {
-    text-align: center; /* Center text */
-    font-style: italic; /* Italicize message */
-  }
+.ui-edit-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.ui-edit-btn:hover {
+    background: var(--primary-dark);
+}
+
+/* Empty State */
+.ui-empty-state {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-style: italic;
+    background: var(--bg-darker);
+    grid-column: 1 / -1;
+    border-radius: 0 0 6px 6px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .ui-content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .ui-table-header,
+    .ui-table-row {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .ui-header-item:nth-child(4),
+    .ui-row-item.ui-actions {
+        grid-column: span 2;
+        margin-top: 0.5rem;
+    }
+    
+    .ui-view {
+        padding: 1rem;
+    }
+
+    .ui-actions {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 576px) {
+    .ui-title {
+        font-size: 1.5rem;
+    }
+    
+    .ui-table-header,
+    .ui-table-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .ui-header-item,
+    .ui-row-item {
+        grid-column: span 1;
+        padding: 0.5rem 0;
+    }
+
+    .ui-row-item.ui-actions {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed var(--border-dark);
+    }
+    
+    .ui-view {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .ui-content {
+        padding: 1rem;
+    }
+    
+    .ui-view-btn,
+    .ui-edit-btn {
+        min-width: auto;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
