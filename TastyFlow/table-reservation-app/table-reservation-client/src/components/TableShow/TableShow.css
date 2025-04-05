@@ -4,138 +4,208 @@
 .table-show {
   width: 100%;
   max-width: 1225px;
-  color: #fff; /* Set text color to white */
+  color: #fff;
   font-size: 14px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background-color: #1B1C1F; /* Dark background for the container */
+  background-color: #1B1C1F;
   padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-top: 1.5px solid #a9a9a9;
 }
 
-.table-show h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  color: #ff4135; /* Consistent accent color */
-}
 .table-show .header {
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 2rem;
   text-align: center;
-  color: #ff4135; /* Accent color */
+  color: #ff4135;
   border-bottom: 2px solid #ff4135;
   padding-bottom: 1rem;
 }
 
+/* Input Container */
 .table-input-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+  background: #252629;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.input-group {
+  display: flex;
   gap: 10px;
 }
 
 .table-input-container input {
-  padding: 12px;
-  font-size: 16px;
+  padding: 12px 15px;
   border: 1px solid #333;
-  border-radius: 8px;
-  width: 200px;
-  background-color: #333; /* Dark input background */
-  color: #fff; /* White text color */
-}
-
-.table-input-container button {
-  padding: 12px 20px;
+  border-radius: 4px;
+  flex: 1;
   font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  background-color: #ff4135; /* Accent color background */
+  background-color: #333;
+  color: #fff;
+}
+
+.add-button {
+  padding: 12px 15px;
+  background-color: #ff4135;
   color: white;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 16px;
+  transition: all 0.3s ease;
 }
 
-.table-input-container button:hover {
+.add-button:hover {
   background-color: #ff6f61;
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
+.add-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Table List */
 .table-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
 }
 
+/* Table Item - Base Style */
 .table-item {
+  background: #252629;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 120px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* Reserved Table Style */
+.table-item.reserved {
+  border-left: 4px solid #ff4135;
+  min-height: 180px;
+}
+
+/* Table Info */
+.table-main-info {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.553);
-  padding: 20px;
-  border-radius: 8px;
-  background-color: #333;
-  width: 200px;
-  color: #fff; /* Text color */
-}
-
-.table-item button {
-  padding: 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
   margin-bottom: 10px;
-  width: 100%;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #333;
 }
 
-/* Reserve button styles */
-.table-item .reserve-button {
-  background-color: #6a2d3189; /* Dark green for reserved tables */
-  color: #fff; /* White text color */
+.table-number {
+  font-weight: bold;
+  font-size: 18px;
+  color: #fff;
 }
 
-.table-item .reserve-button:hover {
-  background-color: #6a2d31c1; /* Lighter green on hover */
-}
-
-/* Unreserve button styles */
-.table-item .unreserve-button {
-  background-color: #c52222; /* Dark red for unreserve button */
-  color: #fff; /* White text color */
-}
-
-.table-item .unreserve-button:hover {
-  background-color: #a32e2e; /* Lighter red on hover */
-}
-
-/* Delete button styles */
-.table-item .delete-button {
-  margin-top: 8px;
-  background-color: #292828; /* Dark red for delete button */
-  color: #fff; /* White text color */
-}
-
-.table-item .delete-button:hover {
-  background-color: #1c1b1b97; /* Lighter red on hover */
-}
-
-/* Reserved info styling */
-.table-item .reserved-info {
+.table-capacity {
+  background: #ff4135;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 12px;
   font-size: 14px;
-  color: #d3d3d3; /* Light gray for reserved info */
-  text-align: center;
+}
+
+/* Reservation Info - Hidden by default */
+.reserved-info {
+  background: #2e2c2c;
+  padding: 0;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #d3d3d3;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Show reservation info when reserved */
+.table-item.reserved .reserved-info {
+  padding: 10px;
+  margin-bottom: 10px;
+  max-height: 100px;
+  opacity: 1;
+}
+
+.reserved-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #ff4135;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+
+.unreserve-button {
+  padding: 8px 12px;
+  background-color: #ff4135;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.unreserve-button:hover {
+  background-color: #ff6f61;
+}
+
+.unreserve-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.delete-button {
+  padding: 8px 12px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #1c1b1b;
+}
+
+/* Loading Spinner */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 /* Responsive Styles */
 @media (max-width: 1200px) {
   .table-show {
-    padding: 1.5rem; /* Adjust padding for medium screens */
+    padding: 1.5rem;
   }
 }
 
@@ -147,43 +217,60 @@
 
   .table-input-container input,
   .table-input-container button {
-    width: 100%; /* Full width on medium screens */
-    font-size: 14px; /* Adjust font size */
-    padding: 10px; /* Adjust padding */
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
   }
 
-  .table-show h2 {
-    font-size: 1.25rem; /* Adjust heading size */
+  .table-show .header {
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
-  .table-item {
-    width: 100%; /* Full width on small screens */
-    max-width: none; /* Remove max-width constraint */
-  }
-
   .table-list {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust column size */
-    gap: 10px; /* Adjust gap */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
   }
 
-  .table-input-container input,
-  .table-input-container button {
-    font-size: 14px; /* Consistent font size */
-    padding: 8px; /* Adjust padding */
+  .table-item {
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
-  .table-item {
-    font-size: 12px; /* Smaller font size */
-    padding: 10px; /* Adjust padding */
+  .table-show {
+    padding: 1rem;
+  }
+
+  .table-show .header {
+    font-size: 1.3rem;
+  }
+
+  .table-list {
+    grid-template-columns: 1fr;
   }
 
   .table-input-container input,
   .table-input-container button {
-    font-size: 12px; /* Adjust font size */
-    padding: 8px; /* Adjust padding */
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .table-number {
+    font-size: 16px;
+  }
+
+  .table-capacity {
+    font-size: 12px;
+  }
+
+  /* Adjust heights for mobile */
+  .table-item {
+    min-height: 100px;
+  }
+  
+  .table-item.reserved {
+    min-height: 160px;
   }
 }

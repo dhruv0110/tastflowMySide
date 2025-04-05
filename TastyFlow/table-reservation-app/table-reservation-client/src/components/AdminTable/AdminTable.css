@@ -1,91 +1,169 @@
-.admin-page-section {
+/* AdminTable.css - Professional Admin Dashboard */
+
+:root {
+  /* Reusing the same color variables */
+  --bg-dark: #1B1C1F;
+  --bg-darker: #121316;
+  --bg-light: #2A2B2F;
+  --bg-lighter: #3A3B40;
+  --primary: #FF4135;
+  --primary-dark: #D8352B;
+  --primary-light: #FF6D63;
+  --secondary: #35A2FF;
+  --accent: #FFC635;
+  --text-primary: #FFFFFF;
+  --text-secondary: #E2E2E2;
+  --text-tertiary: #A0A0A0;
+  --border-dark: #373737;
+  --border-light: #4A4A4A;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --transition: all 0.3s ease;
+}
+
+/* Main Container */
+.at-container {
   display: flex;
-  width: 100%;
   min-height: 100vh;
-  background-color: #1b1c1f; /* Dark background */
-  color: #fff; /* White text for better readability */
-  box-sizing: border-box;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.admin-page-section .admin-page {
-  width: 100%;
-  max-width: 1225px; /* Keep max-width for central alignment */
-  color: #fff; /* White text color for better readability */
-  font-size: 14px;
-  background-color: #1B1C1F; /* Dark background for the list container */
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
-  border-top: 1.5px solid #a9a9a9; /* Border to match Add.css */
-  margin: 0 auto;
-  overflow: auto; /* Allow scrolling if content overflows */
-}
-
-.slot-btn {
-  width: 100%;
-  flex-wrap: wrap;
-  justify-content: space-between; /* Align buttons in the center for smaller screens */
-  width: 100%;
-  border-radius: 2px;
-}
-
-.slot-btn .btn {
+/* Content Area */
+.at-content {
   flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  border: 1px solid #a9a9a9;
+  margin: 0 auto;
   width: 100%;
-  padding: 1rem;
-  margin-top: 1rem;
-  background-color: #333;
-  border: none;
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  text-align: center;
 }
 
-.slot-btn .btn:active {
-  color: white;
-}
-
-.slot-btn .btn:hover {
-  background-color: #555;
-}
-
-.admin-page-section .header {
-  font-size: 1.8rem;
-  font-weight: 700;
+/* Header */
+.at-header {
   margin-bottom: 2rem;
-  text-align: center;
-  color: #ff4135; /* Accent color */
-  border-bottom: 2px solid #ff4135;
-  padding-bottom: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-dark);
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
- 
+.at-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
 
-  .slot-btn .btn {
-    flex: 1;
-    min-width: 200px; /* Reduce button size for smaller screens */
-    font-size: 14px; /* Adjust button text size */
+.at-title-icon {
+  color: var(--primary);
+}
+
+.at-subtitle {
+  color: var(--text-tertiary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Slots Grid */
+.at-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.at-slot-card {
+  background-color: var(--bg-light);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  position: relative;
+  border: 1px solid var(--border-dark);
+  text-decoration: none;
+  color: inherit;
+}
+
+.at-slot-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.at-slot-card:hover .at-slot-hover {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.at-slot-content {
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.at-slot-icon {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.at-slot-content h3 {
+  margin: 0.5rem 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.at-slot-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+}
+
+.at-slot-hover {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--primary);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: var(--transition);
+  z-index: 3;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .at-content {
+    padding: 1.5rem;
   }
 
-  .admin-page-section .header {
+  .at-slots-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .at-title {
     font-size: 1.6rem;
   }
 }
 
 @media (max-width: 480px) {
-  
-
-  .slot-btn .btn {
-    min-width: 100%; /* Buttons take full width on small screens */
-    font-size: 14px;
-    padding: 0.8rem;
+  .at-content {
+    padding: 1rem;
   }
 
-  .admin-page-section .header {
+  .at-title {
     font-size: 1.4rem;
-    margin-bottom: 1.5rem;
+  }
+
+  .at-slot-content {
+    padding: 1.5rem;
   }
 }

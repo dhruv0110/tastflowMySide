@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import './List.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import CrossIcon from '../CrossIcon/CrossIcon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt, faFilter, faTimes } from '@fortawesome/free-solid-svg-icons';
 import Pagination from '../Pagination/Pagination';
+import './List.css';
 
 const List = () => {
-  const [list, setList] = useState([]); // State for the full list of food items
-  const [nameFilter, setNameFilter] = useState(''); // Filter for Name
-  const [categoryFilter, setCategoryFilter] = useState(''); // Filter for Category
-  const [priceFilter, setPriceFilter] = useState(''); // Filter for Price
+  const [list, setList] = useState([]);
+  const [filters, setFilters] = useState({
+    name: '',
+    category: '',
+    price: ''
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1); // Current page number
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Items per page
-
-  // Fetch the list of food items from the backend
   const fetchList = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get("http://localhost:5000/api/food/list");
       if (response.data.success) {
@@ -27,14 +29,15 @@ const List = () => {
       }
     } catch (error) {
       toast.error("An error occurred while fetching the food list");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Remove a food item
   const removeFood = async (foodId) => {
     try {
       const response = await axios.post("http://localhost:5000/api/food/admin/remove", { id: foodId });
-      await fetchList(); // Refresh the list after removal
+      await fetchList();
       if (response.data.success) {
         toast.success(response.data.message);
       } else {
@@ -45,128 +48,176 @@ const List = () => {
     }
   };
 
-  // Clear all filters
-  const clearFilters = () => {
-    setNameFilter('');
-    setCategoryFilter('');
-    setPriceFilter('');
-    setCurrentPage(1); // Reset to the first page when clearing filters
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setCurrentPage(1);
   };
 
-  // Fetch the list when the component mounts
+  const clearFilters = () => {
+    setFilters({
+      name: '',
+      category: '',
+      price: ''
+    });
+    setCurrentPage(1);
+  };
+
   useEffect(() => {
     fetchList();
   }, []);
 
-  // Filter the list based on all filter criteria
   const filteredList = list.filter((item) => {
-    const matchesName = item.name.toLowerCase().includes(nameFilter.toLowerCase());
-    const matchesCategory = item.category.toLowerCase().includes(categoryFilter.toLowerCase());
-    const matchesPrice = item.price.toString().includes(priceFilter);
+    const matchesName = item.name.toLowerCase().includes(filters.name.toLowerCase());
+    const matchesCategory = item.category.toLowerCase().includes(filters.category.toLowerCase());
+    const matchesPrice = item.price.toString().includes(filters.price);
     return matchesName && matchesCategory && matchesPrice;
   });
 
-  // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredList.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Handle items per page change
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to the first page
+    setCurrentPage(1);
   };
 
   return (
-    <div style={{ display: "flex" }}>
-    <Sidebar />
-    <div className="list">
-      <form className="list-form flex-col">
-        <h1 className="header">All Foods List</h1>
-        <div className="list-table">
-          <div className="list-table-format title">
-            <b>Image</b>
-            <b>Name</b>
-            <b>Category</b>
-            <b>Price</b>
-            <b>Action</b>
-          </div>
-          {/* Filter Inputs Row */}
-          <div className="list-table-format filter-row">
-            <div></div> {/* Placeholder for Image column */}
-            <input
-              type="text"
-              placeholder="Filter by Name"
-              value={nameFilter}
-              onChange={(e) => setNameFilter(e.target.value)}
-              className="filter-input"
-            />
-            <input
-              type="text"
-              placeholder="Filter by Category"
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="filter-input"
-            />
-            <input
-              type="text"
-              placeholder="Filter by Price"
-              value={priceFilter}
-              onChange={(e) => setPriceFilter(e.target.value)}
-              className="filter-input"
-            />
-            <button
-              type="button" // Add this line
+    <div className="admin-container">
+      <Sidebar />
+      <main className="list-content">
+        <header className="list-header">
+          <h1 className="list-title">
+            Food Items Management
+          </h1>
+          <p className="list-subtitle">View and manage all food items in the system</p>
+        </header>
+
+        <div className="list-controls">
+          <div className="filter-container">
+            <div className="filter-group">
+              <label>Name:</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Filter by name"
+                value={filters.name}
+                onChange={handleFilterChange}
+              />
+            </div>
+            <div className="filter-group">
+              <label>Category:</label>
+              <input
+                type="text"
+                name="category"
+                placeholder="Filter by category"
+                value={filters.category}
+                onChange={handleFilterChange}
+              />
+            </div>
+            <div className="filter-group">
+              <label>Price:</label>
+              <input
+                type="text"
+                name="price"
+                placeholder="Filter by price"
+                value={filters.price}
+                onChange={handleFilterChange}
+              />
+            </div>
+            <button 
               onClick={clearFilters}
-              className="clear-filter-button"
+              className="clear-filters-btn"
+              disabled={!filters.name && !filters.category && !filters.price}
             >
-              Clear
+              <FontAwesomeIcon icon={faTimes} />
+              Clear Filters
             </button>
           </div>
-          {/* Display Filtered List */}
-          {currentItems.length === 0 ? (
-            <div className="no-data-message">No matching food items found.</div>
-          ) : (
-            currentItems.map((item, index) => (
-              <div key={index} className="list-table-format">
-                <img src={`http://localhost:5000/uploads/${item.image}`} alt={item.name} />
-                <p>{item.name}</p>
-                <p>{item.category}</p>
-                <p>${item.price}</p>
-                <CrossIcon onClick={() => removeFood(item._id)} />
-              </div>
-            ))
-          )}
-        </div>
-      </form>
 
-      {/* Pagination and Items Per Page Dropdown (Outside the form) */}
-      <div className="pagination-container">
-        <Pagination
+          <div className="items-per-page">
+            <label>Items per page:</label>
+            <select
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+            >
+              {[5, 10, 20, 50].map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="loading-state">
+            <div className="spinner"></div>
+            <p>Loading food items...</p>
+          </div>
+        ) : (
+          <div className="list-table-container">
+            {currentItems.length === 0 ? (
+              <div className="empty-state">
+                <p>{Object.values(filters).some(Boolean) ? 
+                  'No matching food items found' : 
+                  'No food items available'}
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="list-table-header">
+                  <div className="header-cell image-cell">Image</div>
+                  <div className="header-cell">Name</div>
+                  <div className="header-cell">Category</div>
+                  <div className="header-cell">Price</div>
+                  <div className="header-cell">Actions</div>
+                </div>
+
+                <div className="list-table-body">
+                  {currentItems.map((item) => (
+                    <div key={item._id} className="list-table-row">
+                      <div className="table-cell image-cell">
+                        <img 
+                          src={`http://localhost:5000/uploads/${item.image}`} 
+                          alt={item.name} 
+                          className="food-image"
+                        />
+                      </div>
+                      <div className="table-cell">{item.name}</div>
+                      <div className="table-cell">{item.category}</div>
+                      <div className="table-cell">${item.price.toFixed(2)}</div>
+                      <div className="table-cell actions-cell">
+                        <button 
+                          onClick={() => removeFood(item._id)}
+                          className="delete-btn"
+                          title="Delete item"
+                        >
+                          <FontAwesomeIcon icon={faTrashAlt} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+            <Pagination
           totalItems={filteredList.length}
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}
           paginate={paginate}
         />
-        {/* <div className="items-per-page">
-          <label htmlFor="itemsPerPage">Items per page:</label>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={handleItemsPerPageChange}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
-        </div> */}
-      </div>
+          </div>
+          
+        )}
+
+        
+      </main>
     </div>
-  </div>
   );
 };
 

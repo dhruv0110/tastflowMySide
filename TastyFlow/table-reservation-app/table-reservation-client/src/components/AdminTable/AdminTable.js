@@ -1,35 +1,44 @@
 import React from "react";
 import Sidebar from "../Sidebar/Sidebar";
-import "./AdminTable.css";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt, faTable } from '@fortawesome/free-solid-svg-icons';
+import "./AdminTable.css";
 
 const AdminTable = () => {
   return (
-    <div className="admin-page-section">
+    <div className="at-container">
       <Sidebar />
-      <div className="admin-page">
-        <h1 className="header">Admin Table</h1>
-        <div className="slot-btn">
-          {/* Dynamically link to different slots */}
-          <Link to="/admin/slot/1">
-            <button className="btn order-btn" type="button">
-              Slot 1
-            </button>
-          </Link>
-          <Link to="/admin/slot/2">
-            <button className="btn order-btn" type="button">
-              Slot 2
-            </button>
-          </Link>
-          <Link to="/admin/slot/3">
-            <button className="btn order-btn" type="button">
-              Slot 3
-            </button>
-          </Link>
+      <main className="at-content">
+        <header className="at-header">
+          <h1 className="at-title">
+            <FontAwesomeIcon icon={faTable} className="at-title-icon" />
+            Table Management
+          </h1>
+          <p className="at-subtitle">Manage restaurant tables by time slots</p>
+        </header>
+
+        <div className="at-slots-grid">
+          {[1, 2, 3].map(slot => (
+            <Link 
+              to={`/admin/slot/${slot}`} 
+              key={slot}
+              className="at-slot-card"
+            >
+              <div className="at-slot-content">
+                <FontAwesomeIcon icon={faCalendarAlt} className="at-slot-icon" />
+                <h3>Slot {slot}</h3>
+                <p>Manage tables for this time period</p>
+              </div>
+              <div className="at-slot-hover">
+                View Tables
+              </div>
+            </Link>
+          ))}
         </div>
-      </div>
+      </main>
     </div>
   );
 };
 
-export default AdminTable;
+export default AdminTable;

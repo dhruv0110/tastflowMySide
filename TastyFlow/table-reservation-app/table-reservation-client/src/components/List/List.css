@@ -1,184 +1,350 @@
-/* src/components/List/List.css */
+/* List.css - Professional Admin Dashboard */
 
-.list {
-    width: 100%;
-    max-width: 1225px;
-    color: #fff;
-    font-size: 14px;
-    background-color: #1b1c1f;
+:root {
+    --primary: #FF4135;
+    --primary-dark: #D8352B;
+    --primary-light: #FF6D63;
+    --secondary: #2A3F54;
+    --success: #26B99A;
+    --warning: #F39C12;
+    --info: #3498DB;
+    --bg-dark: #1B1C1F;
+    --bg-darker: #121316;
+    --bg-light: #252629;
+    --bg-lighter: #3A3B40;
+    --text-primary: #FFFFFF;
+    --text-secondary: #E2E2E2;
+    --text-tertiary: #A0A0A0;
+    --border-dark: #333333;
+    --border-light: #4A4A4A;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+    --transition: all 0.3s ease;
+  }
+  
+  /* Main Container */
+  .admin-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  .list-content {
+    flex: 1;
     padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-top: 1.5px solid #a9a9a9;
+    max-width: 1400px;
     margin: 0 auto;
-    position: relative;
-    min-height: 80vh;
+    width: 100%;
+    border: 1px solid #a9a9a9;
+  }
+  
+  /* Header */
+  .list-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-dark);
+  }
+  
+  .list-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+  }
+  
+  .list-subtitle {
+    color: var(--text-tertiary);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  
+  /* Controls */
+  .list-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  
+  .filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    flex: 1;
+  }
+  
+  .filter-group {
     display: flex;
     flex-direction: column;
-}
-.list .pagination {
+    gap: 0.5rem;
+  }
+  
+  .filter-group label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  
+  .filter-group input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    min-width: 180px;
+    transition: var(--transition);
+  }
+  
+  .filter-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(255, 65, 53, 0.2);
+  }
+  
+  .clear-filters-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--bg-light);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .clear-filters-btn:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  .clear-filters-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--bg-light);
+    color: var(--text-tertiary);
+  }
+  
+  .items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .items-per-page label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  
+  .items-per-page select {
+    padding: 0.5rem;
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    color: var(--text-primary);
+  }
+  
+  /* Table Container */
+  .list-table-container {
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+  }
+  
+  .list-table-header {
+    display: grid;
+    grid-template-columns: 100px 2fr 1.5fr 1fr 80px;
+    padding: 1rem;
+    background-color: var(--bg-darker);
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-dark);
+  }
+  
+  .header-cell {
+    padding: 0.5rem;
+  }
+  
+  .list-table-body {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .list-table-row {
+    display: grid;
+    grid-template-columns: 100px 2fr 1.5fr 1fr 80px;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-dark);
+    transition: var(--transition);
+    align-items: center;
+  }
+  
+  .list-table-row:last-child {
+    border-bottom: none;
+  }
+  
+  .list-table-row:hover {
+    background-color: var(--bg-lighter);
+  }
+  
+  .table-cell {
+    padding: 0.5rem;
+    word-break: break-word;
+  }
+  
+  .image-cell {
     display: flex;
     justify-content: center;
+  }
+  
+  .food-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  
+  .actions-cell {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .delete-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: auto; /* Push pagination to the bottom */
-    padding: 20px 0; /* Add some padding */
-    position: sticky; /* Make pagination sticky */
-    bottom: 0; /* Stick to the bottom */
-    background-color: #1b1c1f; /* Match the background color */
-    z-index: 1; /* Ensure it stays above other content */
+    justify-content: center;
+    transition: var(--transition);
   }
-
-.list .header {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
+  
+  .delete-btn:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  /* Empty State */
+  .empty-state {
+    padding: 2rem;
     text-align: center;
-    color: #ff4135; /* Accent color */
-    border-bottom: 2px solid #ff4135;
-    padding-bottom: 1rem;
+    color: var(--text-tertiary);
   }
-
-.list-table {
+  
+  /* Loading State */
+  .loading-state {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-}
-
-.list-table-format {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1.5fr 1fr 0.5fr; /* Adjusted column widths */
     align-items: center;
-    gap: 10px;
-    padding: 8px 15px;
-    border: 1px solid #333; /* Darker border for better contrast */
-    border-radius: 8px; /* Rounded corners */
-    background-color: #333; /* Dark background for list rows */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effect */
-    cursor: pointer; /* Indicate clickable rows */
-}
-
-.list-table-format:hover {
-    background-color: #444; /* Slightly lighter background on hover */
-    transform: scale(1.02); /* Slight zoom on hover for better feedback */
-}
-
-.list-table-format img {
-    width: 45px;
-    height: 35px;
-    object-fit: cover;
-    border-radius: 4px; /* Rounded corners for images */
-}
-
-.list-table-format b {
-    font-weight: 600; /* Make headings bolder */
-    color: #ff4135; /* Accent color for headings */
-}
-
-.list-table-format.title {
-    background-color: #444; /* Different background for headers */
-    font-weight: 700; /* Make header text bold */
-}
-
-.list-table-format p {
-    margin: 0;
-    color: #fff; /* White text color */
-}
-
-.list-table-format .cursor {
-    color: #ff4135; /* Accent color for delete action */
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.list-table-format .cursor:hover {
-    color: #ff6f61; /* Lighter color on hover */
-}
-
-.no-data-message {
-    text-align: center;
-    color: #888;
-    font-size: 1.2rem;
-    padding: 2rem;
-}
-
-/* Add this to your List.css */
-.filter-row {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1.5fr 1fr 0.5fr; /* Match the column widths of the table */
-    align-items: center;
-    gap: 10px;
-    padding: 6px 9px;
-    border: 1px solid #444; /* Darker border for better contrast */
-    border-radius: 8px; /* Rounded corners */
-    background-color: #444; /* Dark background for filter row */
+    justify-content: center;
+    padding: 3rem;
+    color: var(--text-tertiary);
   }
   
-  .filter-input {
-    width: 100%;
-    padding: 4px;
-    border: 1px solid #333;
-    border-radius: 5px;
-    font-size: 14px;
-    background-color: #333;
-    color: #fff;
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--primary);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
   }
   
-  .filter-input::placeholder {
-    color: #aaa;
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
   
-  .filter-input:focus {
-    background-color: #333;
-    border-color: #333;
-    outline: none;
-  }
-
-  /* Add this to your List.css */
-.clear-filter-button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    background-color: #ff4135; /* Accent color */
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+  /* Responsive Styles */
+  @media (max-width: 1024px) {
+    .list-table-header,
+    .list-table-row {
+      grid-template-columns: 80px 2fr 1fr 1fr 60px;
+    }
   }
   
-  .clear-filter-button:hover {
-    background-color: #e0332a; /* Darker shade on hover */
+  @media (max-width: 768px) {
+    .list-content {
+      padding: 1.5rem;
+    }
+  
+    .list-controls {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.5rem;
+    }
+  
+    .filter-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .filter-group input {
+      width: 100%;
+    }
+  
+    .list-table-header {
+      display: none;
+    }
+  
+    .list-table-row {
+      grid-template-columns: 1fr;
+      padding: 1.5rem;
+      gap: 1rem;
+      position: relative;
+    }
+  
+    .table-cell {
+      display: flex;
+      justify-content: space-between;
+    }
+  
+    .table-cell::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-right: 1rem;
+    }
+  
+    .image-cell {
+      justify-content: flex-start;
+    }
+  
+    .image-cell::before {
+      content: none;
+    }
+  
+    .food-image {
+      width: 100%;
+      height: auto;
+      max-height: 200px;
+    }
+  
+    .actions-cell {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
   }
-
-/* Media queries for responsiveness */
-@media (max-width: 768px) {
-    .list-table-format {
-        grid-template-columns: 1fr 2fr 1fr 1fr; /* Adjust columns for smaller screens */
-        gap: 8px;
+  
+  @media (max-width: 480px) {
+    .list-content {
+      padding: 1rem;
     }
-    .list-table-format.title {
-        display: none; /* Hide headers on very small screens */
+  
+    .list-title {
+      font-size: 1.5rem;
     }
-    .list{
-        padding: 1.5rem;
-    }
-}
-
-@media (max-width: 600px) {
-    .list-table-format {
-        grid-template-columns: 1fr 2fr; /* Further adjust for very small screens */
-        gap: 6px;
-        padding: 10px 12px;
-    }
-    .list-table-format img {
-        width: 60px;
-        height: 45px;
-    }
-    .list-table-format.title {
-        display: none; /* Hide headers on very small screens */
-    }
-    .header {
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
-    }
-}
+  }
