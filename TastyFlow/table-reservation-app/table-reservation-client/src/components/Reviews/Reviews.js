@@ -7,7 +7,9 @@ import {
   faCalendarAlt, 
   faExclamationCircle, 
   faSearch,
-  faPaperPlane
+  faPaperPlane,
+  faHistory,
+  faUser
 } from '@fortawesome/free-solid-svg-icons';
 
 const Reviews = () => {
@@ -17,8 +19,9 @@ const Reviews = () => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyContent, setReplyContent] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -51,6 +54,11 @@ const Reviews = () => {
     setReplyContent('');
   };
 
+  const handleViewHistory = (message) => {
+    setSelectedMessage(message);
+    setShowHistory(true);
+  };
+
   const handleSendReply = async (messageId, userEmail) => {
     if (!replyContent.trim()) {
       setErrorMessage('Reply content cannot be empty');
@@ -59,7 +67,6 @@ const Reviews = () => {
 
     setIsSending(true);
     setErrorMessage('');
-    setSuccessMessage('');
 
     try {
       const token = localStorage.getItem('token');
@@ -82,7 +89,17 @@ const Reviews = () => {
         throw new Error(data.message || 'Failed to send reply');
       }
 
-      setSuccessMessage('Reply sent successfully!');
+      // Refresh messages after sending reply
+      const updatedResponse = await fetch('http://localhost:5000/api/message/admin/all-reviews', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': token
+        },
+      });
+      const updatedData = await updatedResponse.json();
+      setMessages(updatedData);
+
       setReplyingTo(null);
       setReplyContent('');
     } catch (error) {
@@ -121,11 +138,7 @@ const Reviews = () => {
           </div>
         </div>
 
-        {successMessage && (
-          <div className="alert alert-success">
-            {successMessage}
-          </div>
-        )}
+
         {errorMessage && (
           <div className="alert alert-error">
             {errorMessage}
@@ -166,10 +179,11 @@ const Reviews = () => {
         ) : (
           <div className="reviews-list-container">
             <div className="reviews-list-header">
-              <span className="user-col"> User</span>
+              <span className="user-col">User</span>
               <span className="email-col">Email</span>
               <span className="date-col">Date</span>
               <span className="message-col">Message</span>
+              <span className="action-col">Actions</span>
             </div>
             
             <div className="reviews-list">
@@ -196,6 +210,14 @@ const Reviews = () => {
                     <div className="message-content">
                       {message.message}
                     </div>
+                  </div>
+                  <div className="action-buttons">
+                    <button 
+                      className="history-btn"
+                      onClick={() => handleViewHistory(message)}
+                    >
+                      <FontAwesomeIcon icon={faHistory} /> History
+                    </button>
                     {replyingTo === message._id ? (
                       <div className="reply-section">
                         <textarea
@@ -230,12 +252,56 @@ const Reviews = () => {
                         className="reply-btn"
                         onClick={() => handleReplyClick(message._id)}
                       >
-                        Reply
+                        <FontAwesomeIcon icon={faPaperPlane} /> Reply
                       </button>
                     )}
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* History Modal */}
+        {showHistory && selectedMessage && (
+          <div className="modal-overlay">
+            <div className="modal-container">
+              <div className="modal-header">
+                <h3>Reply History for {selectedMessage.firstName} {selectedMessage.lastName}</h3>
+                <button 
+                  className="close-modal" 
+                  onClick={() => setShowHistory(false)}
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="modal-content">
+                {selectedMessage.replies && selectedMessage.replies.length > 0 ? (
+                  <div className="history-list">
+                    {selectedMessage.replies.map((reply, index) => (
+                      <div key={index} className="history-item">
+                        <div className="history-meta">
+                          <span className="history-date">
+                            {new Date(reply.date).toLocaleString()}
+                          </span>
+                          {reply.adminName && (
+                            <span className="history-admin">
+                              <FontAwesomeIcon icon={faUser} /> {reply.adminName}
+                            </span>
+                          )}
+                        </div>
+                        <div className="history-content">
+                          {reply.content}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="no-history">
+                    <p>No reply history found for this message.</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

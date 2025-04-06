@@ -11,15 +11,37 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendReply = async (req, res) => {
-  const { messageId, userEmail, replyContent } = req.body;
+  const { messageId, replyContent } = req.body;
+  const adminId = req.user.id; // Assuming you have authentication middleware
 
   try {
-    const originalMessage = await Message.findById(messageId);
-    if (!originalMessage) {
-      return res.status(404).json({ message: 'Original message not found' });
+    // 1. Validate inputs
+    if (!messageId || !replyContent) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Missing required fields: messageId or replyContent' 
+      });
     }
 
-    // Format the date nicely
+    // 2. Find the original message
+    const originalMessage = await Message.findById(messageId);
+    if (!originalMessage) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Original message not found' 
+      });
+    }
+
+    // 3. Get admin details
+    const adminUser = await User.findById(adminId);
+    if (!adminUser) {
+      return res.status(403).json({ 
+        success: false,
+        message: 'Unauthorized access' 
+      });
+    }
+
+    // 4. Format date for email
     const formattedDate = new Date(originalMessage.date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -28,134 +50,176 @@ const sendReply = async (req, res) => {
       minute: '2-digit'
     });
 
+    // 5. Prepare email (using your existing template)
     const mailOptions = {
-      from: '"Customer Support" <tastyflow01@gmail.com>',
-      to: userEmail,
+      from: '"TastyFlow" <tastyflow01@gmail.com>',
+      to: originalMessage.email,
       subject: `Re: Your Message (Ref: ${messageId.slice(-6)})`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Response to Your Message</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .header {
-            border-bottom: 1px solid #eaeaea;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
-        }
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .logo img {
-            max-height: 50px;
-        }
-        .content-block {
-            background-color: #f9f9f9;
-            border-left: 4px solid #4a90e2;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 0 4px 4px 0;
-        }
-        .response-block {
-            background-color: #f0f7ff;
-            border-left: 4px solid #4a90e2;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 0 4px 4px 0;
-        }
-        .meta {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eaeaea;
-            font-size: 0.8em;
-            color: #999;
-            text-align: center;
-        }
-        .signature {
-            margin-top: 20px;
-            color: #555;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #4a90e2;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            margin-top: 15px;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="logo">
-            <!-- Replace with your logo or company name -->
-            <h2 style="color: #4a90e2; margin: 0;">TastyFlow</h2>
-        </div>
-        <h1 style="margin: 0; font-size: 1.5em;">Response to Your Message</h1>
-    </div>
-
-    <p>Dear ${originalMessage.firstName} ${originalMessage.lastName},</p>
-
-    <p>Thank you for contacting us. We appreciate you taking the time to share your feedback with us.</p>
-
-    <div class="content-block">
-        <div class="meta">
-            <strong>Your message:</strong>
-            <span style="float: right;">${formattedDate}</span>
-        </div>
-        <p>${originalMessage.message}</p>
-    </div>
-
-    <div class="response-block">
-        <div class="meta">
-            <strong>Our response:</strong>
-        </div>
-        <p>${replyContent}</p>
-    </div>
-
-    <p>If you have any further questions or need additional assistance, please don't hesitate to reply to this email.</p>
-
-    <div class="signature">
-        <p>Best regards,</p>
-        <p><strong>Customer Support Team</strong></p>
-        <p>TastyFlow</p>
-    </div>
-
-    <div class="footer">
-        <p>Reference ID: ${messageId}</p>
-        <p>© ${new Date().getFullYear()} Your Company. All rights reserved.</p>
-        <p>
-            <a href="https://yourcompany.com" style="color: #4a90e2; text-decoration: none;">Website</a> | 
-            <a href="https://yourcompany.com/contact" style="color: #4a90e2; text-decoration: none;">Contact Us</a>
-        </p>
-    </div>
-</body>
-</html>
-      `
+      html:  `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Response to Your Message</title>
+          <style>
+              body {
+                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                  line-height: 1.6;
+                  color: #333;
+                  max-width: 600px;
+                  margin: 0 auto;
+                  padding: 20px;
+              }
+              .header {
+                  border-bottom: 1px solid #eaeaea;
+                  padding-bottom: 20px;
+                  margin-bottom: 20px;
+              }
+              .logo {
+                  text-align: center;
+                  margin-bottom: 20px;
+              }
+              .logo img {
+                  max-height: 50px;
+              }
+              .content-block {
+                  background-color: #f9f9f9;
+                  border-left: 4px solid #4a90e2;
+                  padding: 15px;
+                  margin: 20px 0;
+                  border-radius: 0 4px 4px 0;
+              }
+              .response-block {
+                  background-color: #f0f7ff;
+                  border-left: 4px solid #4a90e2;
+                  padding: 15px;
+                  margin: 20px 0;
+                  border-radius: 0 4px 4px 0;
+              }
+              .meta {
+                  font-size: 0.9em;
+                  color: #666;
+                  margin-bottom: 5px;
+              }
+              .footer {
+                  margin-top: 30px;
+                  padding-top: 20px;
+                  border-top: 1px solid #eaeaea;
+                  font-size: 0.8em;
+                  color: #999;
+                  text-align: center;
+              }
+              .signature {
+                  margin-top: 20px;
+                  color: #555;
+              }
+              .button {
+                  display: inline-block;
+                  padding: 10px 20px;
+                  background-color: #4a90e2;
+                  color: white;
+                  text-decoration: none;
+                  border-radius: 4px;
+                  margin-top: 15px;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="header">
+              <div class="logo">
+                  <!-- Replace with your logo or company name -->
+                  <h2 style="color: #4a90e2; margin: 0;">Tastyflow</h2>
+              </div>
+              <h1 style="margin: 0; font-size: 1.5em;">Response to Your Message</h1>
+          </div>
+      
+          <p>Dear ${originalMessage.firstName} ${originalMessage.lastName},</p>
+      
+          <p>Thank you for contacting us. We appreciate you taking the time to share your feedback with us.</p>
+      
+          <div class="content-block">
+              <div class="meta">
+                  <strong>Your message:</strong>
+                  <span style="float: right;">${formattedDate}</span>
+              </div>
+              <p>${originalMessage.message}</p>
+          </div>
+      
+          <div class="response-block">
+              <div class="meta">
+                  <strong>Our response:</strong>
+              </div>
+              <p>${replyContent}</p>
+          </div>
+      
+          <p>If you have any further questions or need additional assistance, please don't hesitate to reply to this email.</p>
+      
+          <div class="signature">
+              <p>Best regards,</p>
+              <p><strong>Customer Support Team of Tastyflow</strong></p>
+              <p>Tastyflow</p>
+          </div>
+      
+          <div class="footer">
+              <p>Reference ID: ${messageId}</p>
+              <p>© ${new Date().getFullYear()} Your Company. All rights reserved.</p>
+              <p>
+                  <a href="https://yourcompany.com" style="color: #4a90e2; text-decoration: none;">Website</a> | 
+                  <a href="https://yourcompany.com/contact" style="color: #4a90e2; text-decoration: none;">Contact Us</a>
+              </p>
+          </div>
+      </body>
+      </html>
+            `
     };
 
+    // 6. Create reply object for database
+    const newReply = {
+      content: replyContent,
+      adminId: adminId,
+      adminName: `${adminUser.firstName} ${adminUser.lastName}`,
+      date: new Date(),
+      emailDetails: {
+        sent: true,
+        to: originalMessage.email,
+        subject: mailOptions.subject
+      }
+    };
+
+    // 7. Send email and update database
     await transporter.sendMail(mailOptions);
-    res.json({ message: 'Reply sent successfully' });
+    
+    const updatedMessage = await Message.findByIdAndUpdate(
+      messageId,
+      {
+        $push: { replies: newReply },
+        $set: { 
+          status: 'replied',
+          updatedAt: new Date()
+        }
+      },
+      { new: true }
+    );
+
+    // 8. Return success response
+    return res.status(200).json({
+      success: true,
+      message: 'Reply sent and stored successfully',
+      data: {
+        messageId: updatedMessage._id,
+        replyId: newReply._id,
+        status: updatedMessage.status
+      }
+    });
+
   } catch (err) {
     console.error('Error sending reply:', err);
-    res.status(500).json({ message: 'Failed to send reply', error: err.message });
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to send reply',
+      error: err.message
+    });
   }
 };
 
