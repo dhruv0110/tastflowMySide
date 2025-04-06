@@ -277,21 +277,21 @@ const EditInvoice = () => {
     }
   }, [state.selectedFood]);
 
-  if (state.loading) return <div className="loading-container">Loading invoice...</div>;
-  if (state.error) return <div className="error-container">{state.error}</div>;
+  if (state.loading) return <div className="ei-loading-container">Loading invoice...</div>;
+  if (state.error) return <div className="ei-error-container">{state.error}</div>;
 
   return (
-    <div className="edit-invoice-container">
+    <div className="ei-container">
       <Sidebar />
       
-      <main className="invoice-content">
-        <header className="invoice-header">
+      <main className="ei-content">
+        <header className="ei-header">
           <h1>Edit Invoice</h1>
-          <div className="invoice-meta">
+          <div className="ei-meta">
             <span>Invoice: {state.invoice.invoiceNumber}</span>
             <span>Date: {state.invoice.invoiceDate ? new Date(state.invoice.invoiceDate).toLocaleDateString() : ''}</span>
             {state.invoice.reservedTableInfo && (
-              <div className="table-reservation-info">
+              <div className="ei-table-reservation">
                 <span>Table {state.invoice.reservedTableInfo.tableNumber}</span> -
                 <span> [{state.invoice.reservedTableInfo.slotTime}]</span>
               </div>
@@ -299,53 +299,52 @@ const EditInvoice = () => {
           </div>
         </header>
 
-        <form onSubmit={handleSubmit} className="invoice-form">
-          <section className="invoice-summary">
-            <div className="summary-grid">
-              <div className="summary-item">
+        <form onSubmit={handleSubmit} className="ei-form">
+          <section className="ei-summary">
+            <div className="ei-summary-grid">
+              <div className="ei-summary-item">
                 <label>Subtotal</label>
                 <p>₹{state.invoice.subtotal.toFixed(2)}</p>
               </div>
               
-              <div className="summary-item discount">
+              <div className="ei-summary-item ei-discount">
                 <label>Discount</label>
                 <p>-₹{state.invoice.discount.toFixed(2)}</p>
               </div>
               
-              <div className="summary-item">
+              <div className="ei-summary-item">
                 <label>CGST (2.5%)</label>
                 <p>₹{state.invoice.cgst.toFixed(2)}</p>
               </div>
               
-              <div className="summary-item">
+              <div className="ei-summary-item">
                 <label>SGST (2.5%)</label>
                 <p>₹{state.invoice.sgst.toFixed(2)}</p>
               </div>
               
-              <div className="summary-item">
+              <div className="ei-summary-item">
                 <label>Round Off</label>
                 <p>₹{state.invoice.roundOffAmount.toFixed(2)}</p>
               </div>
               
               {state.invoice.reservedTableInfo && (
-                <div className="summary-item discount">
+                <div className="ei-summary-item ei-discount">
                   <label>Table Reservation</label>
                   <p>-₹100.00</p>
                 </div>
               )}
               
-              <div className="summary-item total">
+              <div className="ei-summary-item ei-total">
                 <label>Final Amount</label>
                 <p>₹{state.invoice.finalAmount}</p>
               </div>
-
             </div>
           </section>
 
-          <section className="invoice-items">
+          <section className="ei-items">
             <h2>Food Items</h2>
-            <div className="items-table">
-              <div className="table-header">
+            <div className="ei-items-table">
+              <div className="ei-table-header">
                 <div>#</div>
                 <div>Item</div>
                 <div>Price</div>
@@ -356,7 +355,7 @@ const EditInvoice = () => {
               
               {state.invoice.foods.length > 0 ? (
                 state.invoice.foods.map((food, index) => (
-                  <div key={`${food.foodId}-${index}`} className="table-row">
+                  <div key={`${food.foodId}-${index}`} className="ei-table-row">
                     <div>{index + 1}</div>
                     <div>{food.name}</div>
                     <div>₹{(food.price || 0).toFixed(2)}</div>
@@ -367,7 +366,7 @@ const EditInvoice = () => {
                         value={food.quantity || 1}
                         onChange={(e) => handleFoodChange(index, e)}
                         min="1"
-                        className="quantity-input"
+                        className="ei-quantity-input"
                       />
                     </div>
                     <div>₹{(food.total || 0).toFixed(2)}</div>
@@ -375,7 +374,7 @@ const EditInvoice = () => {
                       <button
                         type="button"
                         onClick={() => handleRemoveFoodItem(index)}
-                        className="remove-btn"
+                        className="ei-remove-btn"
                         aria-label="Remove item"
                       >
                         ×
@@ -384,18 +383,18 @@ const EditInvoice = () => {
                   </div>
                 ))
               ) : (
-                <div className="empty-state">No food items added</div>
+                <div className="ei-empty-state">No food items added</div>
               )}
             </div>
 
-            <div className="item-add-controls">
-              <div className="food-selector">
-                <label htmlFor="food-select">Add Item:</label>
+            <div className="ei-add-controls">
+              <div className="ei-food-selector">
+                <label htmlFor="ei-food-select">Add Item:</label>
                 <select
-                  id="food-select"
+                  id="ei-food-select"
                   value={state.selectedFood}
                   onChange={(e) => setState(prev => ({...prev, selectedFood: e.target.value}))}
-                  className="food-dropdown"
+                  className="ei-food-dropdown"
                 >
                   <option value="">Select a food item</option>
                   {state.foodsList.map((food) => (
@@ -408,37 +407,37 @@ const EditInvoice = () => {
             </div>
           </section>
 
-          <div className="actions-container">
-            <div className="discount-section">
-              <div className="discount-input-group">
-                <label htmlFor="discount-input" className="discount-label">
+          <div className="ei-actions">
+            <div className="ei-discount-section">
+              <div className="ei-discount-input">
+                <label htmlFor="ei-discount-input" className="ei-discount-label">
                   Apply Discount:
                 </label>
-                <div className="discount-input-wrapper">
-                  <span className="currency-symbol">₹</span>
+                <div className="ei-discount-wrapper">
+                  <span className="ei-currency">₹</span>
                   <input
-                    id="discount-input"
+                    id="ei-discount-input"
                     type="number"
                     value={state.invoice.discount === 0 ? '' : state.invoice.discount}
                     onChange={handleDiscountChange}
                     min="0"
                     step="1"
                     placeholder="0.00"
-                    className="discount-input-field"
+                    className="ei-discount-field"
                   />
                 </div>
               </div>
               
               <button 
                 type="submit" 
-                className="save-button"
+                className="ei-save-btn"
                 disabled={state.loading}
               >
                 {state.loading ? (
-                  <span className="save-button-loader">
-                    <span className="loader-dot"></span>
-                    <span className="loader-dot"></span>
-                    <span className="loader-dot"></span>
+                  <span className="ei-loader">
+                    <span className="ei-loader-dot"></span>
+                    <span className="ei-loader-dot"></span>
+                    <span className="ei-loader-dot"></span>
                   </span>
                 ) : (
                   'Save Changes'
