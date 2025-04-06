@@ -7,15 +7,18 @@ import {
   faCalendarAlt, 
   faExclamationCircle, 
   faSearch,
-  faUser,
-  faEnvelope,
-  faComment
+  faPaperPlane
 } from '@fortawesome/free-solid-svg-icons';
 
 const Reviews = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyContent, setReplyContent] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -42,6 +45,53 @@ const Reviews = () => {
 
     fetchMessages();
   }, []);
+
+  const handleReplyClick = (messageId) => {
+    setReplyingTo(replyingTo === messageId ? null : messageId);
+    setReplyContent('');
+  };
+
+  const handleSendReply = async (messageId, userEmail) => {
+    if (!replyContent.trim()) {
+      setErrorMessage('Reply content cannot be empty');
+      return;
+    }
+
+    setIsSending(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/message/send-reply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': token
+        },
+        body: JSON.stringify({
+          messageId,
+          userEmail,
+          replyContent
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send reply');
+      }
+
+      setSuccessMessage('Reply sent successfully!');
+      setReplyingTo(null);
+      setReplyContent('');
+    } catch (error) {
+      console.error('Error sending reply:', error);
+      setErrorMessage(error.message || 'Failed to send reply');
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   const filteredMessages = messages.filter(message => 
     message.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -70,6 +120,17 @@ const Reviews = () => {
             />
           </div>
         </div>
+
+        {successMessage && (
+          <div className="alert alert-success">
+            {successMessage}
+          </div>
+        )}
+        {errorMessage && (
+          <div className="alert alert-error">
+            {errorMessage}
+          </div>
+        )}
 
         <div className="reviews-stats">
           <div className="stat-card">
@@ -135,7 +196,43 @@ const Reviews = () => {
                     <div className="message-content">
                       {message.message}
                     </div>
-                    <button className="reply-btn">Reply</button>
+                    {replyingTo === message._id ? (
+                      <div className="reply-section">
+                        <textarea
+                          value={replyContent}
+                          onChange={(e) => setReplyContent(e.target.value)}
+                          placeholder="Type your reply here..."
+                          rows="3"
+                        />
+                        <div className="reply-actions">
+                          <button 
+                            className="cancel-btn"
+                            onClick={() => setReplyingTo(null)}
+                            disabled={isSending}
+                          >
+                            Cancel
+                          </button>
+                          <button 
+                            className="send-reply-btn"
+                            onClick={() => handleSendReply(message._id, message.email)}
+                            disabled={isSending}
+                          >
+                            {isSending ? 'Sending...' : (
+                              <>
+                                <FontAwesomeIcon icon={faPaperPlane} /> Send
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button 
+                        className="reply-btn"
+                        onClick={() => handleReplyClick(message._id)}
+                      >
+                        Reply
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
