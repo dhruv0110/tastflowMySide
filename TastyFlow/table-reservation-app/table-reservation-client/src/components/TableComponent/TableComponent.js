@@ -47,7 +47,7 @@ const TableComponent = ({ showAlert }) => {
           return {
             ...table,
             reserved: data.action === 'reserved',
-            reservedBy: data.action === 'reserved' ? { _id: data.reservedBy } : null
+            reservedBy: data.reservedBy || null
           };
         }
         return table;

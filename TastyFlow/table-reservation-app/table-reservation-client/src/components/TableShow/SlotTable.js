@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Sidebar from '../Sidebar/Sidebar';
 import CustomSpinner from '../CustomSpinner/CustomSpinner';
-import { useParams } from 'react-router-dom'; 
+import { useParams } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
 import './TableShow.css';
 
 function SlotTable(props) {
-  const { slotNumber } = useParams(); 
+  const { slotNumber } = useParams();
   const [tables, setTables] = useState([]);
   const [tableNumber, setTableNumber] = useState('');
   const [tableCapacity, setTableCapacity] = useState('');
@@ -40,16 +40,26 @@ function SlotTable(props) {
 
   const handleSlotUpdate = (data) => {
     if (data.slotNumber.toString() === slotNumber) {
-      setTables(prevTables => prevTables.map(table => {
-        if (table.number === data.tableNumber) {
-          return {
-            ...table,
-            reserved: data.action === 'reserved',
-            reservedBy: data.action === 'reserved' ? { _id: data.reservedBy } : null
-          };
+      setTables(prevTables => {
+        // If we have the full slot data from the reservation
+        if (data.slot) {
+          return prevTables.map(table => 
+            table._id === data.slot._id ? data.slot : table
+          );
         }
-        return table;
-      }));
+        
+        // Fallback to manual update
+        return prevTables.map(table => {
+          if (table.number === data.tableNumber) {
+            return {
+              ...table,
+              reserved: data.action === 'reserved',
+              reservedBy: data.reservedBy || null
+            };
+          }
+          return table;
+        });
+      });
     }
   };
 
@@ -151,8 +161,8 @@ function SlotTable(props) {
                 {table.reserved && (
                   <div className='reserved-info'>
                     <div className='reserved-label'>Reserved by:</div>
-                    <div>{table.reservedBy?.name || 'Unknown'}</div>
-                    <div>{table.reservedBy?.contact || 'Unknown'}</div>
+                    <div>{table.reservedBy?.name || 'Loading...'}</div>
+                    <div>{table.reservedBy?.contact || 'Loading...'}</div>
                   </div>
                 )}
                 
