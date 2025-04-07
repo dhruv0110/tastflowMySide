@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { useSocket } from '../../context/SocketContext';
 import PaymentForm from '../../components/PaymentForm/PaymentForm';
 import CustomSpinner from '../CustomSpinner/CustomSpinner';
 import './TableComponent.css';
@@ -10,13 +11,8 @@ import { Howl } from 'howler';
 
 const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf');
 
-const reserveSound = new Howl({
-  src: ['/sounds/success.mp3']
-});
-
-const unreserveSound = new Howl({
-  src: ['/sounds/success.mp3']
-});
+const reserveSound = new Howl({ src: ['/sounds/success.mp3'] });
+const unreserveSound = new Howl({ src: ['/sounds/success.mp3'] });
 
 const TableComponent = ({ showAlert }) => {
   const [tables, setTables] = useState([]);
@@ -28,11 +24,36 @@ const TableComponent = ({ showAlert }) => {
   const [selectedTableNumber, setSelectedTableNumber] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const socket = useSocket();
 
   useEffect(() => {
     fetchUserDetails();
     fetchTables();
-  }, [slotFilter]);
+    
+    if (socket) {
+      socket.emit('joinRoom', slotFilter);
+      socket.on('slotUpdated', handleSlotUpdate);
+      
+      return () => {
+        socket.off('slotUpdated', handleSlotUpdate);
+      };
+    }
+  }, [socket, slotFilter]);
+
+  const handleSlotUpdate = (data) => {
+    if (data.slotNumber.toString() === slotFilter) {
+      setTables(prevTables => prevTables.map(table => {
+        if (table.number === data.tableNumber) {
+          return {
+            ...table,
+            reserved: data.action === 'reserved',
+            reservedBy: data.action === 'reserved' ? { _id: data.reservedBy } : null
+          };
+        }
+        return table;
+      }));
+    }
+  };
 
   const fetchUserDetails = async () => {
     try {
@@ -42,9 +63,7 @@ const TableComponent = ({ showAlert }) => {
       const response = await axios.post(
         'http://localhost:5000/api/users/getuser',
         {},
-        {
-          headers: { 'auth-token': token },
-        }
+        { headers: { 'auth-token': token } }
       );
       setUserId(response.data._id);
     } catch (error) {
@@ -55,8 +74,7 @@ const TableComponent = ({ showAlert }) => {
 
   const fetchTables = async () => {
     try {
-      const endpoint = `http://localhost:5000/api/slot/${slotFilter}`;
-      const response = await axios.get(endpoint);
+      const response = await axios.get(`http://localhost:5000/api/slot/${slotFilter}`);
       setTables(response.data);
     } catch (error) {
       console.error('Error fetching tables:', error);
@@ -70,25 +88,18 @@ const TableComponent = ({ showAlert }) => {
     setShowPaymentForm(false);
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
+      await axios.post(
         `http://localhost:5000/api/slot/${selectedSlot}/reserve`,
         { 
           number: selectedTableNumber,
           paymentIntentId: paymentIntent.id,
         },
-        { 
-          headers: { 'auth-token': localStorage.getItem('token') } 
-        }
+        { headers: { 'auth-token': localStorage.getItem('token') } }
       );
       reserveSound.play();
       showAlert('Table reserved successfully', 'success');
-      fetchTables();
     } catch (error) {
       console.error('Error reserving table:', error);
-      if (error.response) {
-        console.error('Backend Error:', error.response.data);
-      }
       showAlert('Error reserving table', 'danger');
     }
   };
@@ -113,14 +124,12 @@ const TableComponent = ({ showAlert }) => {
       if (!token) return;
   
       try {
-        const paymentIntentResponse = await axios.post(
+        const { data } = await axios.post(
           `http://localhost:5000/api/slot/${slotFilter}/create-payment-intent`,
           { amount: 100 },
           { headers: { 'auth-token': token } }
         );
-  
-        const { clientSecret } = paymentIntentResponse.data;
-        setPaymentIntent({ clientSecret, tableNumber: number });
+        setPaymentIntent({ clientSecret: data.clientSecret, tableNumber: number });
         setShowPaymentForm(true);
       } catch (error) {
         console.error('Error creating payment intent:', error);
@@ -129,19 +138,14 @@ const TableComponent = ({ showAlert }) => {
         setLoadingTable(null);
       }
     } else {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-  
       try {
         await axios.post(
           `http://localhost:5000/api/slot/${slotFilter}/unreserve`,
           { number },
-          { headers: { 'auth-token': token } }
+          { headers: { 'auth-token': localStorage.getItem('token') } }
         );
-  
         unreserveSound.play();
         showAlert('Table unreserved successfully', 'success');
-        fetchTables();
       } catch (error) {
         console.error('Error unreserving table:', error);
         showAlert('Error unreserving table', 'danger');
@@ -152,12 +156,9 @@ const TableComponent = ({ showAlert }) => {
   };
 
   const sortedTables = [...tables].sort((a, b) => a.number - b.number);
-  const filteredTables = sortedTables.filter((table) => {
-    const matchesCapacity = capacityFilter
-      ? table.capacity === parseInt(capacityFilter)
-      : true;
-    return matchesCapacity;
-  });
+  const filteredTables = sortedTables.filter(table => 
+    !capacityFilter || table.capacity === parseInt(capacityFilter)
+  );
 
   return (
     <div className="table-container">
@@ -210,9 +211,7 @@ const TableComponent = ({ showAlert }) => {
           {filteredTables.map((table) => (
             <div key={table.number} className="table-button">
               <button
-                onClick={() =>
-                  toggleReservation(table.number, table.reserved, table.reservedBy?._id)
-                }
+                onClick={() => toggleReservation(table.number, table.reserved, table.reservedBy?._id)}
                 className={`table-button-button ${
                   table.reserved ? 'reserved' : ''
                 } ${loadingTable === table.number ? 'loading' : ''}`}

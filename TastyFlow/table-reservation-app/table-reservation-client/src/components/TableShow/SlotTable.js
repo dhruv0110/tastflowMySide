@@ -3,6 +3,7 @@ import axios from 'axios';
 import Sidebar from '../Sidebar/Sidebar';
 import CustomSpinner from '../CustomSpinner/CustomSpinner';
 import { useParams } from 'react-router-dom'; 
+import { useSocket } from '../../context/SocketContext';
 import './TableShow.css';
 
 function SlotTable(props) {
@@ -12,6 +13,7 @@ function SlotTable(props) {
   const [tableCapacity, setTableCapacity] = useState('');
   const [loadingTable, setLoadingTable] = useState(null);
   const [addingTable, setAddingTable] = useState(false);
+  const socket = useSocket();
 
   const fetchTables = useCallback(async () => {
     try {
@@ -19,12 +21,37 @@ function SlotTable(props) {
       setTables(response.data);
     } catch (error) {
       console.error('Error fetching tables:', error);
+      props.showAlert('Error fetching tables', 'error');
     }
-  }, [slotNumber]); 
+  }, [slotNumber, props]);
 
   useEffect(() => {
     fetchTables();
-  }, [fetchTables]); 
+    
+    if (socket) {
+      socket.emit('joinRoom', slotNumber);
+      socket.on('slotUpdated', handleSlotUpdate);
+      
+      return () => {
+        socket.off('slotUpdated', handleSlotUpdate);
+      };
+    }
+  }, [socket, slotNumber, fetchTables]);
+
+  const handleSlotUpdate = (data) => {
+    if (data.slotNumber.toString() === slotNumber) {
+      setTables(prevTables => prevTables.map(table => {
+        if (table.number === data.tableNumber) {
+          return {
+            ...table,
+            reserved: data.action === 'reserved',
+            reservedBy: data.action === 'reserved' ? { _id: data.reservedBy } : null
+          };
+        }
+        return table;
+      }));
+    }
+  };
 
   const addTable = async () => {
     if (!tableNumber || !tableCapacity) {
@@ -66,20 +93,12 @@ function SlotTable(props) {
   const unreserveTable = async (number) => {
     try {
       setLoadingTable(number);
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.error('No token found');
-        return;
-      }
-
-      await axios.post(`http://localhost:5000/api/slot/${slotNumber}/admin/unreserve`, 
+      await axios.post(
+        `http://localhost:5000/api/slot/${slotNumber}/admin/unreserve`, 
         { number }, 
-        {
-          headers: { 'auth-token': token },
-        }
+        { headers: { 'auth-token': localStorage.getItem('token') } }
       );
       props.showAlert('Table unreserved', 'success');
-      fetchTables();
     } catch (error) {
       console.error('Error unreserving table:', error);
       props.showAlert('Error unreserving table', 'error');

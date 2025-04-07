@@ -61,7 +61,6 @@ const createPaymentIntent = async (req, res) => {
   }
 };
 
-// Reserve slot
 const reserveSlot = async (req, res) => {
   try {
     const { number, paymentIntentId } = req.body;
@@ -115,14 +114,21 @@ const reserveSlot = async (req, res) => {
       }
     });
 
-    // Respond to the client immediately
+    // Emit socket event
+    const io = req.app.get('io');
+    io.to(`slot_${slotNumber}`).emit('slotUpdated', { 
+      action: 'reserved', 
+      slotNumber, 
+      tableNumber: number,
+      reservedBy: userId 
+    });
+
     res.status(200).json({ message: "Slot reserved successfully", slot });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Unreserve slot
 const unreserveSlot = async (req, res) => {
   try {
     const { number } = req.body;
@@ -140,20 +146,16 @@ const unreserveSlot = async (req, res) => {
       const reservedByUser = await User.findById(slot.reservedBy);
 
       if (reservedByUser) {
-        // Remove the payment associated with this reservation
         reservedByUser.payments = reservedByUser.payments.filter(
           (payment) => String(payment.reservationId) !== String(slot._id)
         );
-
         await reservedByUser.save();
       }
 
-      // Unreserve the slot
       slot.reserved = false;
       slot.reservedBy = null;
       await slot.save();
 
-      // Send email confirmation to the user asynchronously
       const slotTime = getSlotTime(slotNumber);
       const mailOptions = {
         from: "tastyflow01@gmail.com",
@@ -170,7 +172,14 @@ const unreserveSlot = async (req, res) => {
         }
       });
 
-      // Respond to the client immediately
+      // Emit socket event
+      const io = req.app.get('io');
+      io.to(`slot_${slotNumber}`).emit('slotUpdated', { 
+        action: 'unreserved', 
+        slotNumber, 
+        tableNumber: number 
+      });
+
       res.status(200).json({ message: "Slot unreserved successfully", slot });
     } else {
       res.status(400).json({ message: "You do not have permission to unreserve this slot" });
@@ -180,8 +189,6 @@ const unreserveSlot = async (req, res) => {
   }
 };
 
-
-// Admin unreserve slot
 const adminUnreserveSlot = async (req, res) => {
   try {
     const { number } = req.body;
@@ -216,6 +223,14 @@ const adminUnreserveSlot = async (req, res) => {
         console.error(error);
         return res.status(500).json({ message: 'Error sending email' });
       } else {
+        // Emit socket event
+        const io = req.app.get('io');
+        io.to(`slot_${slotNumber}`).emit('slotUpdated', { 
+          action: 'adminUnreserved', 
+          slotNumber, 
+          tableNumber: number 
+        });
+
         res.status(200).json({ message: 'Slot unreserved by admin and email sent successfully', slot });
       }
     });

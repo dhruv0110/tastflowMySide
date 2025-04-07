@@ -30,8 +30,8 @@ import EditInvoice from './components/EditInvoice/EditInvoice';
 import UserInvoice from "./components/UserInvoice/UserInvoice";
 import Graph from "./components/Graph/Graph";
 import FoodDetail from "./components/FoodDetail/FoodDetail";
+import { SocketProvider } from './context/SocketContext';
 
-// Initialize Stripe with your publishable key
 const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf');
 
 function PrivateRoute({ element, ...rest }) {
@@ -102,12 +102,11 @@ function App() {
     getUserDetails();
   }, []);
 
-  // Define routes where navbar should be hidden
   const hideNavbarRoutes = ['/login', '/signup', '/forgot-password', '/reset-password'];
   const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
 
   return (
-    <>
+    <SocketProvider>
       {shouldShowNavbar && <Navbar showAlert={showAlert} userDetails={userDetails} />}
       <Alert alert={alert} />
       <Routes>
@@ -120,13 +119,11 @@ function App() {
         <Route
           path="/table-reserve"
           element={
-            localStorage.getItem("token") ? (
+            <PrivateRoute element={
               <Elements stripe={stripePromise}>
                 <TableComponent showAlert={showAlert} />
               </Elements>
-            ) : (
-              <Navigate to="/login" />
-            )
+            } />
           }
         />
         <Route path="/admin" element={<AdminRoute element={<Admin showAlert={showAlert} />} />} />
@@ -150,7 +147,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/About" element={<About />} />
       </Routes>
-    </>
+    </SocketProvider>
   );
 }
 

@@ -9,11 +9,13 @@ const invoiceRoutes = require("./routes/InvoiceRoute");
 require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
+const http = require('http');
+const socketIo = require('socket.io');
 
 app.use(cors({
-  origin: 'http://localhost:3000', // Replace with your frontend's origin
+  origin: 'http://localhost:3000',
   credentials: true,
-  methods: ['GET', 'POST', 'DELETE', 'PUT'] // Make sure DELETE is allowed
+  methods: ['GET', 'POST', 'DELETE', 'PUT']
 }));
 app.use(express.json());
 
@@ -30,11 +32,34 @@ const connectToMongo = async () => {
 
 connectToMongo();
 
-app.use('/api/slot', slotRoutes); // Use the unified route for slots
+app.use('/api/slot', slotRoutes);
 app.use('/api/users', userRoutes);
 app.use("/api/food", foodRoute);
 app.use('/api/message', messageRoutes);
 app.use("/api/invoice", invoiceRoutes);
 app.use("/uploads", express.static('uploads'));
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('New client connected:', socket.id);
+
+  socket.on('joinRoom', (slotNumber) => {
+    socket.join(`slot_${slotNumber}`);
+    console.log(`Socket ${socket.id} joined room slot_${slotNumber}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+app.set('io', io);
+
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
