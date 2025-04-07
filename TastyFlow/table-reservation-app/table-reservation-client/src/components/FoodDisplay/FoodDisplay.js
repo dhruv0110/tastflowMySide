@@ -1,16 +1,23 @@
 import React from 'react';
 import './FoodDisplay.css';
 import FoodItem from '../FoodItem/FoodItem';
+import { useFood } from '../../context/FoodContext';
 
-const FoodDisplay = ({ category, food_list }) => {
-  if (!food_list || food_list.length === 0) {
+const FoodDisplay = ({ category }) => {
+  const { foodList, loading } = useFood();
+
+  if (loading) {
+    return <div>Loading food items...</div>;
+  }
+
+  if (!foodList || foodList.length === 0) {
     return <div>No food items available.</div>;
   }
 
   return (
     <div className='food-display' id='food-display'>
       <div className="food-display-list">
-        {food_list.map((item, index) => {
+        {foodList.map((item, index) => {
           if (category === "All" || category === item.category) {
             return (
               <FoodItem 

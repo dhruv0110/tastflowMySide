@@ -54,7 +54,10 @@ io.on('connection', (socket) => {
     socket.join(`slot_${slotNumber}`);
     console.log(`Socket ${socket.id} joined room slot_${slotNumber}`);
   });
-
+  socket.on('joinFoodRoom', () => {
+    socket.join('foodUpdates');
+    console.log(`Socket ${socket.id} joined foodUpdates room`);
+  });
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });

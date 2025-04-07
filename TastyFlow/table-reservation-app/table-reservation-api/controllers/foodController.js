@@ -1,18 +1,15 @@
-const Food = require('../models/FoodModel'); // Ensure this is the correct path
+const Food = require('../models/FoodModel');
 const fs = require('fs');
 
-// Add food item
 const addFood = async (req, res) => {
     let image_filename = `${req.file.filename}`;
 
-    // Parse JSON strings from the request body
     const ingredients = JSON.parse(req.body.ingredients);
     const preparationSteps = JSON.parse(req.body.preparationSteps);
     const nutritionalInfo = JSON.parse(req.body.nutritionalInfo);
     const reviews = JSON.parse(req.body.reviews);
     const similarDishes = JSON.parse(req.body.similarDishes);
 
-    // Create a new food item
     const food = new Food({
         name: req.body.name,
         description: req.body.description,
@@ -27,7 +24,11 @@ const addFood = async (req, res) => {
     });
 
     try {
-        await food.save(); // Save the food item to the database
+        await food.save();
+        
+        const io = req.app.get('io');
+        io.to('foodUpdates').emit('foodAdded', food);
+        
         res.json({ success: true, message: "Food Added" });
     } catch (error) {
         console.log(error);
@@ -35,7 +36,6 @@ const addFood = async (req, res) => {
     }
 };
 
-// All food list
 const listfood = async (req, res) => {
     try {
         const foods = await Food.find({});
@@ -46,13 +46,16 @@ const listfood = async (req, res) => {
     }
 };
 
-// Remove food item
 const removeFood = async (req, res) => {
     try {
         const food = await Food.findById(req.body.id);
         fs.unlink(`uploads/${food.image}`, () => {});
 
         await Food.findByIdAndDelete(req.body.id);
+        
+        const io = req.app.get('io');
+        io.to('foodUpdates').emit('foodRemoved', req.body.id);
+        
         res.json({ success: true, message: "Food Removed" });
     } catch (error) {
         console.log(error);
@@ -71,8 +74,6 @@ const getFoodById = async (req, res) => {
       console.error(error);
       res.status(500).json({ success: false, message: "Error fetching food" });
     }
-  };
-
+};
 
 module.exports = { addFood, listfood, removeFood, getFoodById };
-

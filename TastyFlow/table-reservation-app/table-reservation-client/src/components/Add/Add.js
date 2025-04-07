@@ -5,6 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { Howl } from 'howler';
+import { useFood } from '../../context/FoodContext';
 
 const Add = () => {
   const [image, setImage] = useState(false);
@@ -23,7 +24,7 @@ const Add = () => {
       fiber: 0,
       sugar: 0,
     },
-    reviews: [], // Reviews array
+    reviews: [],
     similarDishes: [],
   });
 
@@ -34,8 +35,10 @@ const Add = () => {
   });
 
   const foodAdd = new Howl({
-    src: ['/sounds/success.mp3'], // Path to your success sound file
+    src: ['/sounds/success.mp3'],
   });
+
+  const { fetchFoodList } = useFood();
 
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
@@ -46,7 +49,7 @@ const Add = () => {
     const { value } = event.target;
     setData((prevData) => ({
       ...prevData,
-      [field]: value, // Store the raw input as a string
+      [field]: value,
     }));
   };
 
@@ -81,7 +84,7 @@ const Add = () => {
         ...prevData,
         reviews: [...prevData.reviews, newReview],
       }));
-      setReviewInput({ text: '', author: '', rating: 0 }); // Reset review input fields
+      setReviewInput({ text: '', author: '', rating: 0 });
       toast.success('Review added successfully!');
     } else {
       toast.error('Please fill all review fields and provide a valid rating.');
@@ -91,7 +94,6 @@ const Add = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
-    // Split ingredients and preparation steps into arrays
     const ingredientsArray = data.ingredients.split(',').map((item) => item.trim());
     const preparationStepsArray = data.preparationSteps.split(',').map((item) => item.trim());
 
@@ -101,11 +103,11 @@ const Add = () => {
     formData.append('price', Number(data.price));
     formData.append('category', data.category);
     formData.append('image', image);
-    formData.append('ingredients', JSON.stringify(ingredientsArray)); // Convert array to JSON string
-    formData.append('preparationSteps', JSON.stringify(preparationStepsArray)); // Convert array to JSON string
-    formData.append('nutritionalInfo', JSON.stringify(data.nutritionalInfo)); // Convert object to JSON string
-    formData.append('reviews', JSON.stringify(data.reviews)); // Convert array to JSON string
-    formData.append('similarDishes', JSON.stringify(data.similarDishes)); // Convert array to JSON string
+    formData.append('ingredients', JSON.stringify(ingredientsArray));
+    formData.append('preparationSteps', JSON.stringify(preparationStepsArray));
+    formData.append('nutritionalInfo', JSON.stringify(data.nutritionalInfo));
+    formData.append('reviews', JSON.stringify(data.reviews));
+    formData.append('similarDishes', JSON.stringify(data.similarDishes));
 
     try {
       const response = await axios.post('http://localhost:5000/api/food/admin/add', formData);
@@ -131,6 +133,7 @@ const Add = () => {
         setImage(false);
         foodAdd.play();
         toast.success(response.data.message);
+        fetchFoodList();
       } else {
         toast.error(response.data.message);
       }
@@ -144,7 +147,6 @@ const Add = () => {
       <Sidebar />
       <div className="add">
         <form className="flex-col" onSubmit={onSubmitHandler}>
-          {/* Image Upload */}
           <div className="add-img-upload flex-col">
             <p>Upload Image</p>
             <label htmlFor="image">
@@ -153,13 +155,11 @@ const Add = () => {
             <input onChange={(e) => setImage(e.target.files[0])} type="file" id="image" hidden required />
           </div>
 
-          {/* Product Name */}
           <div className="add-product-name flex-col">
             <p>Product Name</p>
             <input onChange={onChangeHandler} value={data.name} type="text" name="name" placeholder="Type here" required />
           </div>
 
-          {/* Product Description */}
           <div className="add-product-description flex-col">
             <p>Product Description</p>
             <textarea
@@ -172,12 +172,11 @@ const Add = () => {
             ></textarea>
           </div>
 
-          {/* Ingredients */}
           <div className="add-ingredients flex-col">
             <p>Ingredients (comma-separated)</p>
             <input
               onChange={(e) => onArrayChangeHandler(e, 'ingredients')}
-              value={data.ingredients} // Use the raw string
+              value={data.ingredients}
               type="text"
               name="ingredients"
               placeholder="e.g., Fresh tomatoes, Basil leaves, Mozzarella cheese"
@@ -185,12 +184,11 @@ const Add = () => {
             />
           </div>
 
-          {/* Preparation Steps */}
           <div className="add-preparation-steps flex-col">
             <p>Preparation Steps (comma-separated)</p>
             <input
               onChange={(e) => onArrayChangeHandler(e, 'preparationSteps')}
-              value={data.preparationSteps} // Use the raw string
+              value={data.preparationSteps}
               type="text"
               name="preparationSteps"
               placeholder="e.g., Slice tomatoes, Layer with cheese, Bake for 20 minutes"
@@ -198,7 +196,6 @@ const Add = () => {
             />
           </div>
 
-          {/* Nutritional Information */}
           <div className="add-nutritional-info flex-col">
             <p>Nutritional Information</p>
             <div className="nutrition-fields">
@@ -271,7 +268,6 @@ const Add = () => {
             </div>
           </div>
 
-          {/* Category and Price */}
           <div className="add-category-price">
             <div className="add-category flex-col">
               <p>Product Category</p>
@@ -299,7 +295,6 @@ const Add = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
           <button type="submit" className="add-btn">
             ADD
           </button>
