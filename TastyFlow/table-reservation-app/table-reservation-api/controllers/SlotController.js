@@ -1,15 +1,15 @@
-const Slot1 = require('../models/Slot1');
-const Slot2 = require('../models/Slot2');
-const Slot3 = require('../models/Slot3');
+const Slot = require('../models/Slot');
 const User = require('../models/User');
 const nodemailer = require('nodemailer');
 const stripe = require('stripe')('sk_test_51PM6qtRwUTaEqzUvt4NK6m6IIecqXl8tkrlrxEiZ7cu2GVfpyteslhlryQALGUJEYjTNz3jdMaTbJ7VrxBIGles300dRauynNO');
 
 const getSlotTime = (slotNumber) => {
-  if (slotNumber === 1) return '5:00 PM to 7:00 PM';
-  if (slotNumber === 2) return '7:00 PM to 9:00 PM';
-  if (slotNumber === 3) return '9:00 PM to 11:00 PM';
-  return 'Unknown time range';
+  const slotTimes = {
+    1: '5:00 PM to 7:00 PM',
+    2: '7:00 PM to 9:00 PM',
+    3: '9:00 PM to 11:00 PM'
+  };
+  return slotTimes[slotNumber] || 'Unknown time range';
 };
 
 const transporter = nodemailer.createTransport({
@@ -20,19 +20,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const getSlotModel = (slotNumber) => {
-  if (slotNumber === 1) return Slot1;
-  if (slotNumber === 2) return Slot2;
-  if (slotNumber === 3) return Slot3;
-  throw new Error('Invalid slot number');
-};
-
-// Get all slots with populated user data
+// Get all slots for a specific slot number
 const getAllSlots = async (req, res) => {
   try {
     const slotNumber = parseInt(req.params.slotNumber);
-    const Slot = getSlotModel(slotNumber);
-    const slots = await Slot.find().populate({
+    const slots = await Slot.find({ slotNumber }).populate({
       path: 'reservedBy',
       select: 'name contact email'
     });
@@ -60,9 +52,8 @@ const reserveSlot = async (req, res) => {
     const { number, paymentIntentId } = req.body;
     const userId = req.user.id;
     const slotNumber = parseInt(req.params.slotNumber);
-    const Slot = getSlotModel(slotNumber);
     
-    const slot = await Slot.findOne({ number });
+    const slot = await Slot.findOne({ slotNumber, number });
     if (!slot) return res.status(404).json({ message: "Slot not found" });
     if (slot.reserved) return res.status(400).json({ message: "Slot is already reserved" });
 
@@ -128,9 +119,8 @@ const unreserveSlot = async (req, res) => {
     const userId = req.user.id;
     const userRole = req.user.role;
     const slotNumber = parseInt(req.params.slotNumber);
-    const Slot = getSlotModel(slotNumber);
-    const slot = await Slot.findOne({ number });
-
+    
+    const slot = await Slot.findOne({ slotNumber, number });
     if (!slot) return res.status(404).json({ message: "Slot not found" });
 
     if (userRole !== "admin" && (!slot.reserved || String(slot.reservedBy) !== String(userId))) {
@@ -179,13 +169,12 @@ const adminUnreserveSlot = async (req, res) => {
     const { number } = req.body;
     const userRole = req.user.role;
     const slotNumber = parseInt(req.params.slotNumber);
-    const Slot = getSlotModel(slotNumber);
 
     if (userRole !== 'admin') {
       return res.status(403).json({ message: 'Access denied. Admins only.' });
     }
 
-    const slot = await Slot.findOne({ number });
+    const slot = await Slot.findOne({ slotNumber, number });
     if (!slot) return res.status(404).json({ message: 'Slot not found' });
 
     const reservedByUser = await User.findById(slot.reservedBy);
@@ -218,26 +207,48 @@ const adminUnreserveSlot = async (req, res) => {
   }
 };
 
+// In addSlot function
 const addSlot = async (req, res) => {
-  const { number, capacity } = req.body;
   try {
-    const Slot = getSlotModel(parseInt(req.params.slotNumber));
-    const newSlot = new Slot({ number, capacity });
+    const { number, capacity } = req.body;
+    const slotNumber = parseInt(req.params.slotNumber);
+    
+    const newSlot = new Slot({ 
+      slotNumber,
+      number, 
+      capacity 
+    });
+    
     await newSlot.save();
+
+    // Emit socket event
+    const io = req.app.get('io');
+    io.to(`slot_${slotNumber}`).emit('tableAdded', {
+      slotNumber,
+      table: newSlot
+    });
+
     res.status(201).json(newSlot);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// In deleteSlot function
 const deleteSlot = async (req, res) => {
   try {
     const { number } = req.body;
     const slotNumber = parseInt(req.params.slotNumber);
-    const Slot = getSlotModel(slotNumber);
-    const slot = await Slot.findOneAndDelete({ number });
+    const slot = await Slot.findOneAndDelete({ slotNumber, number });
 
     if (!slot) return res.status(404).json({ message: 'Slot not found' });
+
+    // Emit socket event
+    const io = req.app.get('io');
+    io.to(`slot_${slotNumber}`).emit('tableDeleted', {
+      slotNumber,
+      tableNumber: number
+    });
 
     res.json({ message: 'Slot deleted' });
   } catch (error) {

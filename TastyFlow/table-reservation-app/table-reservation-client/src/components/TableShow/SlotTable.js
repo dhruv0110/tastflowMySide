@@ -31,24 +31,28 @@ function SlotTable(props) {
     fetchTables();
     
     if (socket) {
-      socket.emit('joinRoom', slotNumber);
+      socket.emit('joinRoom', `slot_${slotNumber}`);
       socket.on('slotUpdated', handleSlotUpdate);
       
       return () => {
         socket.off('slotUpdated', handleSlotUpdate);
+        socket.emit('leaveRoom', `slot_${slotNumber}`);
       };
     }
   }, [socket, slotNumber, fetchTables]);
 
   const handleSlotUpdate = (data) => {
+    console.log('Socket update received:', data);
     if (data.slotNumber.toString() === slotNumber) {
       setTables(prevTables => {
+        // If we have full slot data (from admin operations)
         if (data.slot) {
           return prevTables.map(table => 
             table._id === data.slot._id ? data.slot : table
           );
         }
         
+        // For reservation/unreservation updates
         return prevTables.map(table => {
           if (table.number === data.tableNumber) {
             return {
@@ -163,40 +167,40 @@ function SlotTable(props) {
         )}
 
         {tables.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ff4135" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-              </svg>
-            </div>
-            <h2>No Tables Available</h2>
-            <p>Get started by adding your first table to this slot</p>
-            
-            <div className='table-input-container empty-input-container'>
-              <div className="input-group">
-                <input 
-                  type="number" 
-                  value={tableNumber}
-                  onChange={(e) => setTableNumber(e.target.value)}
-                  placeholder="Table number"
-                  className="table-input"
-                  min="1"
-                />
-                <input 
-                  type="number" 
-                  value={tableCapacity}
-                  onChange={(e) => setTableCapacity(e.target.value)}
-                  placeholder="Seat capacity"
-                  className="table-input"
-                  min="1"
-                />
-              </div>
-              <button onClick={addTable} className="add-button empty-add-button" disabled={addingTable}>
-                {addingTable ? <CustomSpinner /> : 'Add First Table'}
-              </button>
-            </div>
-          </div>
+           <div className="empty-state">
+           <div className="empty-state-icon">
+             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ff4135" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+               <polyline points="9 22 9 12 15 12 15 22"></polyline>
+             </svg>
+           </div>
+           <h2>No Tables Available</h2>
+           <p>Get started by adding your first table to this slot</p>
+           
+           <div className='table-input-container empty-input-container'>
+             <div className="input-group">
+               <input 
+                 type="number" 
+                 value={tableNumber}
+                 onChange={(e) => setTableNumber(e.target.value)}
+                 placeholder="Table number"
+                 className="table-input"
+                 min="1"
+               />
+               <input 
+                 type="number" 
+                 value={tableCapacity}
+                 onChange={(e) => setTableCapacity(e.target.value)}
+                 placeholder="Seat capacity"
+                 className="table-input"
+                 min="1"
+               />
+             </div>
+             <button onClick={addTable} className="add-button empty-add-button" disabled={addingTable}>
+               {addingTable ? <CustomSpinner /> : 'Add First Table'}
+             </button>
+           </div>
+         </div>
         ) : (
           <>
             <div className='table-input-container'>

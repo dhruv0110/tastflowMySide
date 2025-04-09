@@ -31,16 +31,22 @@ const TableComponent = ({ showAlert }) => {
     fetchTables();
     
     if (socket) {
-      socket.emit('joinRoom', slotFilter);
+      socket.emit('joinRoom', `slot_${slotFilter}`);
       socket.on('slotUpdated', handleSlotUpdate);
+      socket.on('tableAdded', handleTableAdded);
+      socket.on('tableDeleted', handleTableDeleted);
       
       return () => {
         socket.off('slotUpdated', handleSlotUpdate);
+        socket.off('tableAdded', handleTableAdded);
+        socket.off('tableDeleted', handleTableDeleted);
+        socket.emit('leaveRoom', `slot_${slotFilter}`);
       };
     }
   }, [socket, slotFilter]);
 
   const handleSlotUpdate = (data) => {
+    console.log('Socket update received:', data);
     if (data.slotNumber.toString() === slotFilter) {
       setTables(prevTables => prevTables.map(table => {
         if (table.number === data.tableNumber) {
@@ -54,7 +60,17 @@ const TableComponent = ({ showAlert }) => {
       }));
     }
   };
-
+  const handleTableAdded = (data) => {
+    if (data.slotNumber.toString() === slotFilter) {
+      setTables(prevTables => [...prevTables, data.table].sort((a, b) => a.number - b.number));
+    }
+  };
+  
+  const handleTableDeleted = (data) => {
+    if (data.slotNumber.toString() === slotFilter) {
+      setTables(prevTables => prevTables.filter(table => table.number !== data.tableNumber));
+    }
+  };
   const fetchUserDetails = async () => {
     try {
       const token = localStorage.getItem('token');

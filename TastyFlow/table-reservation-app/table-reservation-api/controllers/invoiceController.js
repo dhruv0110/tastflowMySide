@@ -1,8 +1,6 @@
 const Invoice = require("../models/Invoice");
 const User = require("../models/User");
-const Slot1 = require("../models/Slot1");
-const Slot2 = require("../models/Slot2");
-const Slot3 = require("../models/Slot3");
+const Slot = require("../models/Slot");
 
 // Helper function to get slot time
 const getSlotTime = (slotNumber) => {
@@ -14,28 +12,16 @@ const getSlotTime = (slotNumber) => {
   return slotTimes[slotNumber] || "Unknown time range";
 };
 
-const getSlotModel = (slotNumber) => {
-  if (slotNumber === 1) {
-    return Slot1;
-  } else if (slotNumber === 2) {
-    return Slot2;
-  } else if (slotNumber === 3) {
-    return Slot3;
-  }
-  throw new Error("Invalid slot number");
-};
-
-// Helper function to find the correct reserved slot
+// Helper function to find the reserved slot
 const findReservedSlot = async (reservationId) => {
-  const slot1 = await Slot1.findOne({ _id: reservationId });
-  const slot2 = await Slot2.findOne({ _id: reservationId });
-  const slot3 = await Slot3.findOne({ _id: reservationId });
-
-  if (slot1) return { slotNumber: 1, tableNumber: slot1.number, date: slot1.reserveDate };
-  if (slot2) return { slotNumber: 2, tableNumber: slot2.number, date: slot2.reserveDate };
-  if (slot3) return { slotNumber: 3, tableNumber: slot3.number, date: slot3.reserveDate };
-
-  return null;
+  const slot = await Slot.findById(reservationId);
+  if (!slot) return null;
+  
+  return {
+    slotNumber: slot.slotNumber,
+    tableNumber: slot.number,
+    date: slot.reserveDate
+  };
 };
 
 // Create an invoice
@@ -83,8 +69,10 @@ const createInvoice = async (req, res) => {
           };
 
           // Unreserve the table after invoice creation
-          const Slot = getSlotModel(reservedSlot.slotNumber);
-          const slot = await Slot.findOne({ number: reservedSlot.tableNumber });
+          const slot = await Slot.findOne({ 
+            slotNumber: reservedSlot.slotNumber,
+            number: reservedSlot.tableNumber 
+          });
 
           if (slot) {
             console.log("Slot found in database:", slot);
