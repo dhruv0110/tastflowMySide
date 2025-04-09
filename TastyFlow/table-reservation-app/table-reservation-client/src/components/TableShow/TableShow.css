@@ -1,5 +1,3 @@
-/* src/components/TableShow/TableShow.css */
-
 /* Base Styles */
 .table-show {
   width: 100%;
@@ -194,12 +192,132 @@
   background-color: #1c1b1b;
 }
 
-/* Loading Spinner */
-.spinner-container {
+/* Empty State Styles */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  background: #252629;
+  border-radius: 8px;
+  border: 1px dashed #444;
+  margin: 20px 0;
+}
+
+.empty-state-icon {
+  margin-bottom: 20px;
+}
+
+.empty-state h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #ff4135;
+}
+
+.empty-state p {
+  color: #aaa;
+  margin-bottom: 30px;
+  font-size: 1rem;
+}
+
+.empty-input-container {
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+  max-width: 500px;
+}
+
+.empty-add-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: #252629;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  border: 1px solid #ff4135;
+}
+
+.modal-header {
+  padding: 15px 20px;
+  background: #1B1C1F;
+  border-bottom: 1px solid #333;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #ff4135;
+  font-size: 1.2rem;
+}
+
+.modal-body {
+  padding: 20px;
+  color: #ddd;
+  line-height: 1.5;
+}
+
+.modal-body p {
+  margin: 0 0 10px;
+}
+
+.modal-footer {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: #1B1C1F;
+  border-top: 1px solid #333;
+}
+
+.modal-cancel-btn {
+  padding: 8px 15px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-cancel-btn:hover {
+  background: #444;
+}
+
+.modal-delete-btn {
+  padding: 8px 15px;
+  background: #ff4135;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-delete-btn:hover {
+  background: #ff5a4f;
 }
 
 /* Responsive Styles */

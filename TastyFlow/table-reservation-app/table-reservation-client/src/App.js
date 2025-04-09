@@ -32,6 +32,7 @@ import Graph from "./components/Graph/Graph";
 import FoodDetail from "./components/FoodDetail/FoodDetail";
 import { SocketProvider } from './context/SocketContext';
 import { FoodProvider } from './context/FoodContext';
+import { MessageProvider } from './context/MessageContext';
 
 const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf');
 
@@ -109,6 +110,7 @@ function App() {
   return (
     <SocketProvider>
       <FoodProvider>
+        <MessageProvider>
         {shouldShowNavbar && <Navbar showAlert={showAlert} userDetails={userDetails} />}
         <Alert alert={alert} />
         <Routes>
@@ -149,6 +151,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/About" element={<About />} />
         </Routes>
+        </MessageProvider>
       </FoodProvider>
     </SocketProvider>
   );

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './ContactUs.css';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useSocket } from '../../context/SocketContext';
+import { Howl } from 'howler';
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({
@@ -13,15 +15,17 @@ const ContactUs = () => {
     });
 
     const [userDetails, setUserDetails] = useState({ name: "", email: "", contact: "", id: "" });
-    let navigate = useNavigate();
+    const navigate = useNavigate();
+    const socket = useSocket();
+    const messageSentSound = new Howl({
+        src: ['/sounds/success.mp3']
+    });
 
-    // Function to handle form changes (only for the message field)
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    // Function to submit the form
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -36,27 +40,30 @@ const ContactUs = () => {
                     firstName: formData.firstName,
                     lastName: formData.lastName,
                     email: formData.email,
-                    contact: formData.phone, // Use 'contact' instead of 'phone' as required by the schema
+                    contact: formData.contact,
                     message: formData.message,
                 }),
             });
 
             if (response.ok) {
                 const result = await response.json();
-                toast.success(result.message); // Alert success message
-                setFormData({ ...formData, message: "" }); // Reset message only
+                messageSentSound.play();
+                toast.success(result.message);
+                setFormData({ ...formData, message: "" });
+                
+                if (socket) {
+                    socket.emit('newMessage');
+                }
             } else {
                 const error = await response.json();
                 toast.error(error.message);
             }
         } catch (error) {
             console.error("Error submitting message:", error);
-            alert("An error occurred while submitting your message.");
+            toast.error("An error occurred while submitting your message.");
         }
     };
 
-
-    // Function to fetch user details
     const fetchUserDetails = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -81,7 +88,6 @@ const ContactUs = () => {
         }
     };
 
-    // Effect to get user details on component mount
     useEffect(() => {
         const getUserDetails = async () => {
             const userData = await fetchUserDetails();
@@ -96,7 +102,7 @@ const ContactUs = () => {
                         firstName: firstName || "",
                         lastName: lastName || "",
                         email: userData.email || "",
-                        phone: userData.contact || "",
+                        contact: userData.contact || "",
                         message: "",
                     });
                 } else {
@@ -167,7 +173,7 @@ const ContactUs = () => {
                                 <input
                                     type="tel"
                                     name="contact"
-                                    value={formData.phone}
+                                    value={formData.contact}
                                     readOnly
                                 />
                             </div>

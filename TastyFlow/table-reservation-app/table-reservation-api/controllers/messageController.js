@@ -6,24 +6,54 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'tastyflow01@gmail.com',
-    pass: 'npgughkbjtivvxrc', // Replace with your email password
+    pass: 'npgughkbjtivvxrc',
   },
 });
 
-const sendReply = async (req, res) => {
-  const { messageId, replyContent } = req.body;
-  const adminId = req.user.id; // Assuming you have authentication middleware
+const storeMessage = async (req, res) => {
+  const { firstName, lastName, email, contact, message } = req.body;
+  const userId = req.user.id;
 
   try {
-    // 1. Validate inputs
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const newMessage = new Message({
+      userId: user._id,
+      firstName,
+      lastName,
+      email,
+      contact,
+      message,
+      status: 'pending'
+    });
+
+    await newMessage.save();
+
+    const io = req.app.get('io');
+    io.to('adminMessages').emit('newMessage', newMessage);
+
+    res.status(200).json({ message: 'Message saved successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const sendReply = async (req, res) => {
+  const { messageId, replyContent } = req.body;
+  const adminId = req.user.id;
+
+  try {
     if (!messageId || !replyContent) {
       return res.status(400).json({ 
         success: false,
-        message: 'Missing required fields: messageId or replyContent' 
+        message: 'Missing required fields' 
       });
     }
 
-    // 2. Find the original message
     const originalMessage = await Message.findById(messageId);
     if (!originalMessage) {
       return res.status(404).json({ 
@@ -32,7 +62,6 @@ const sendReply = async (req, res) => {
       });
     }
 
-    // 3. Get admin details
     const adminUser = await User.findById(adminId);
     if (!adminUser) {
       return res.status(403).json({ 
@@ -41,7 +70,6 @@ const sendReply = async (req, res) => {
       });
     }
 
-    // 4. Format date for email
     const formattedDate = new Date(originalMessage.date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -50,7 +78,6 @@ const sendReply = async (req, res) => {
       minute: '2-digit'
     });
 
-    // 5. Prepare email (using your existing template)
     const mailOptions = {
       from: '"TastyFlow" <tastyflow01@gmail.com>',
       to: originalMessage.email,
@@ -174,7 +201,6 @@ const sendReply = async (req, res) => {
             `
     };
 
-    // 6. Create reply object for database
     const newReply = {
       content: replyContent,
       adminId: adminId,
@@ -187,7 +213,6 @@ const sendReply = async (req, res) => {
       }
     };
 
-    // 7. Send email and update database
     await transporter.sendMail(mailOptions);
     
     const updatedMessage = await Message.findByIdAndUpdate(
@@ -202,15 +227,13 @@ const sendReply = async (req, res) => {
       { new: true }
     );
 
-    // 8. Return success response
+    const io = req.app.get('io');
+    io.to('adminMessages').emit('messageUpdated', updatedMessage);
+
     return res.status(200).json({
       success: true,
       message: 'Reply sent and stored successfully',
-      data: {
-        messageId: updatedMessage._id,
-        replyId: newReply._id,
-        status: updatedMessage.status
-      }
+      data: updatedMessage
     });
 
   } catch (err) {
@@ -223,38 +246,9 @@ const sendReply = async (req, res) => {
   }
 };
 
-const storeMessage = async (req, res) => {
-    const { firstName, lastName, email, contact, message } = req.body;
-    const userId = req.user.id;
-  
-    try {
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // Ensure all required fields are passed to the Message model
-      const newMessage = new Message({
-        userId: user._id,
-        firstName,
-        lastName,
-        email,
-        contact,
-        message
-      });
-  
-      await newMessage.save();
-      res.status(200).json({ message: 'Message saved successfully' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Server error' });
-    }
-  };
-
-// Get all reviews
 const getUserMessages = async (req, res) => {
   try {
-    const messages = await Message.find();
+    const messages = await Message.find().sort({ date: -1 });
     res.json(messages);
   } catch (err) {
     console.error(err);
@@ -263,9 +257,9 @@ const getUserMessages = async (req, res) => {
 };
 
 const getUserReviews = async (req, res) => {
-  const { userId } = req.params; // Use req.params to get the userId
+  const { userId } = req.params;
   try {
-    const messages = await Message.find({ userId }); // Fetch messages only for this userId
+    const messages = await Message.find({ userId }).sort({ date: -1 });
     res.json(messages);
   } catch (err) {
     console.error(err);
@@ -273,10 +267,9 @@ const getUserReviews = async (req, res) => {
   }
 };
 
-
 module.exports = {
   storeMessage,
+  sendReply,
   getUserMessages,
-  getUserReviews,
-  sendReply
+  getUserReviews
 };

@@ -13,6 +13,8 @@ function SlotTable(props) {
   const [tableCapacity, setTableCapacity] = useState('');
   const [loadingTable, setLoadingTable] = useState(null);
   const [addingTable, setAddingTable] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [tableToDelete, setTableToDelete] = useState(null);
   const socket = useSocket();
 
   const fetchTables = useCallback(async () => {
@@ -41,14 +43,12 @@ function SlotTable(props) {
   const handleSlotUpdate = (data) => {
     if (data.slotNumber.toString() === slotNumber) {
       setTables(prevTables => {
-        // If we have the full slot data from the reservation
         if (data.slot) {
           return prevTables.map(table => 
             table._id === data.slot._id ? data.slot : table
           );
         }
         
-        // Fallback to manual update
         return prevTables.map(table => {
           if (table.number === data.tableNumber) {
             return {
@@ -87,16 +87,24 @@ function SlotTable(props) {
     }
   };
 
-  const deleteTable = async (number) => {
+  const confirmDelete = (number) => {
+    setTableToDelete(number);
+    setShowDeleteModal(true);
+  };
+
+  const deleteTable = async () => {
     try {
       await axios.delete(`http://localhost:5000/api/slot/${slotNumber}/delete`, { 
-        data: { number }
+        data: { number: tableToDelete }
       });
-      props.showAlert('Table deleted', 'success');
+      props.showAlert('Table deleted successfully', 'success');
       fetchTables();
     } catch (error) {
       console.error('Error deleting table:', error);
       props.showAlert('Error deleting table', 'error');
+    } finally {
+      setShowDeleteModal(false);
+      setTableToDelete(null);
     }
   };
 
@@ -125,73 +133,141 @@ function SlotTable(props) {
       <div className='table-show'>
         <h1 className='header'>Manage Tables in Slot - {slotNumber}</h1>
 
-        <div className='table-input-container'>
-          <div className="input-group">
-            <input 
-              type="number" 
-              value={tableNumber}
-              onChange={(e) => setTableNumber(e.target.value)}
-              placeholder="Table number"
-              className="table-input"
-              min="1"
-            />
-            <input 
-              type="number" 
-              value={tableCapacity}
-              onChange={(e) => setTableCapacity(e.target.value)}
-              placeholder="Seat capacity"
-              className="table-input"
-              min="1"
-            />
-          </div>
-          <button onClick={addTable} className="add-button" disabled={addingTable}>
-            {addingTable ? <CustomSpinner /> : 'Add Table'}
-          </button>
-        </div>
-
-        <div className='table-list'>
-          {sortedTables.map(table => (
-            <div key={table._id} className={`table-item ${table.reserved ? 'reserved' : ''}`}>
-              <div className='table-main-info'>
-                <div className='table-number'>Table {table.number}</div>
-                <div className='table-capacity'>{table.capacity} seats</div>
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="modal-overlay">
+            <div className="modal-container">
+              <div className="modal-header">
+                <h3>Confirm Deletion</h3>
               </div>
-              
-              <div className='table-actions'>
-                {table.reserved && (
-                  <div className='reserved-info'>
-                    <div className='reserved-label'>Reserved by:</div>
-                    <div>{table.reservedBy?.name || 'Loading...'}</div>
-                    <div>{table.reservedBy?.contact || 'Loading...'}</div>
-                  </div>
-                )}
-                
-                <div className='action-buttons'>
-                  {table.reserved && (
-                    <button
-                      onClick={() => unreserveTable(table.number)}
-                      className='unreserve-button'
-                      disabled={loadingTable === table.number}
-                    >
-                      {loadingTable === table.number ? (
-                        <CustomSpinner small />
-                      ) : (
-                        'Unreserve'
-                      )}
-                    </button>
-                  )}
-                  
-                  <button
-                    onClick={() => deleteTable(table.number)}
-                    className='delete-button'
-                  >
-                    Delete
-                  </button>
-                </div>
+              <div className="modal-body">
+                <p>Are you sure you want to delete Table {tableToDelete}?</p>
+                <p>This action cannot be undone.</p>
+              </div>
+              <div className="modal-footer">
+                <button 
+                  className="modal-cancel-btn"
+                  onClick={() => setShowDeleteModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="modal-delete-btn"
+                  onClick={deleteTable}
+                >
+                  Delete Table
+                </button>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {tables.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ff4135" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </div>
+            <h2>No Tables Available</h2>
+            <p>Get started by adding your first table to this slot</p>
+            
+            <div className='table-input-container empty-input-container'>
+              <div className="input-group">
+                <input 
+                  type="number" 
+                  value={tableNumber}
+                  onChange={(e) => setTableNumber(e.target.value)}
+                  placeholder="Table number"
+                  className="table-input"
+                  min="1"
+                />
+                <input 
+                  type="number" 
+                  value={tableCapacity}
+                  onChange={(e) => setTableCapacity(e.target.value)}
+                  placeholder="Seat capacity"
+                  className="table-input"
+                  min="1"
+                />
+              </div>
+              <button onClick={addTable} className="add-button empty-add-button" disabled={addingTable}>
+                {addingTable ? <CustomSpinner /> : 'Add First Table'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className='table-input-container'>
+              <div className="input-group">
+                <input 
+                  type="number" 
+                  value={tableNumber}
+                  onChange={(e) => setTableNumber(e.target.value)}
+                  placeholder="Table number"
+                  className="table-input"
+                  min="1"
+                />
+                <input 
+                  type="number" 
+                  value={tableCapacity}
+                  onChange={(e) => setTableCapacity(e.target.value)}
+                  placeholder="Seat capacity"
+                  className="table-input"
+                  min="1"
+                />
+              </div>
+              <button onClick={addTable} className="add-button" disabled={addingTable}>
+                {addingTable ? <CustomSpinner /> : 'Add Table'}
+              </button>
+            </div>
+
+            <div className='table-list'>
+              {sortedTables.map(table => (
+                <div key={table._id} className={`table-item ${table.reserved ? 'reserved' : ''}`}>
+                  <div className='table-main-info'>
+                    <div className='table-number'>Table {table.number}</div>
+                    <div className='table-capacity'>{table.capacity} seats</div>
+                  </div>
+                  
+                  <div className='table-actions'>
+                    {table.reserved && (
+                      <div className='reserved-info'>
+                        <div className='reserved-label'>Reserved by:</div>
+                        <div>{table.reservedBy?.name || 'Loading...'}</div>
+                        <div>{table.reservedBy?.contact || 'Loading...'}</div>
+                      </div>
+                    )}
+                    
+                    <div className='action-buttons'>
+                      {table.reserved && (
+                        <button
+                          onClick={() => unreserveTable(table.number)}
+                          className='unreserve-button'
+                          disabled={loadingTable === table.number}
+                        >
+                          {loadingTable === table.number ? (
+                            <CustomSpinner small />
+                          ) : (
+                            'Unreserve'
+                          )}
+                        </button>
+                      )}
+                      
+                      <button
+                        onClick={() => confirmDelete(table.number)}
+                        className='delete-button'
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

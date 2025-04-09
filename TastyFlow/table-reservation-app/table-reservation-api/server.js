@@ -50,16 +50,23 @@ const io = socketIo(server, {
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 
-  socket.on('joinRoom', (slotNumber) => {
-    socket.join(`slot_${slotNumber}`);
-    // console.log(`Socket ${socket.id} joined room slot_${slotNumber}`);
+  socket.on('joinRoom', (room) => {
+    socket.join(room);
+    console.log(`Socket ${socket.id} joined room ${room}`);
   });
+
   socket.on('joinFoodRoom', () => {
     socket.join('foodUpdates');
-    // console.log(`Socket ${socket.id} joined foodUpdates room`);
+    console.log(`Socket ${socket.id} joined foodUpdates room`);
   });
+
+  socket.on('joinAdminMessageRoom', () => {
+    socket.join('adminMessages');
+    console.log(`Socket ${socket.id} joined adminMessages room`);
+  });
+
   socket.on('disconnect', () => {
-    // console.log('Client disconnected:', socket.id);
+    console.log('Client disconnected:', socket.id);
   });
 });
 

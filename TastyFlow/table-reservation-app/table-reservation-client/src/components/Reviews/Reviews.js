@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import './Reviews.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,12 +9,14 @@ import {
   faSearch,
   faPaperPlane,
   faHistory,
-  faUser
+  faUser,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
+import { useMessages } from '../../context/MessageContext';
+import { Howl } from 'howler';
 
 const Reviews = () => {
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { messages, loading, newMessageNotification } = useMessages();
   const [searchTerm, setSearchTerm] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyContent, setReplyContent] = useState('');
@@ -22,32 +24,11 @@ const Reviews = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
+  const [NewMessageNotification, setNewMessageNotification] = useState(false);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/api/message/admin/all-reviews', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'auth-token': token
-          },
-        });
-
-        if (!response.ok) throw new Error('Failed to fetch messages');
-        
-        const data = await response.json();
-        setMessages(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchMessages();
-  }, []);
+  const notificationSound = new Howl({
+    src: ['/sounds/notification.mp3']
+  });
 
   const handleReplyClick = (messageId) => {
     setReplyingTo(replyingTo === messageId ? null : messageId);
@@ -59,7 +40,7 @@ const Reviews = () => {
     setShowHistory(true);
   };
 
-  const handleSendReply = async (messageId, userEmail) => {
+  const handleSendReply = async (messageId) => {
     if (!replyContent.trim()) {
       setErrorMessage('Reply content cannot be empty');
       return;
@@ -78,28 +59,15 @@ const Reviews = () => {
         },
         body: JSON.stringify({
           messageId,
-          userEmail,
           replyContent
         })
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to send reply');
+        throw new Error('Failed to send reply');
       }
 
-      // Refresh messages after sending reply
-      const updatedResponse = await fetch('http://localhost:5000/api/message/admin/all-reviews', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'auth-token': token
-        },
-      });
-      const updatedData = await updatedResponse.json();
-      setMessages(updatedData);
-
+      notificationSound.play();
       setReplyingTo(null);
       setReplyContent('');
     } catch (error) {
@@ -122,22 +90,35 @@ const Reviews = () => {
       <Sidebar />
       
       <main className="reviews-content">
+        {newMessageNotification && (
+          <div className="new-message-notification">
+            <FontAwesomeIcon icon={faComments} className="notification-icon" />
+            <div className="notification-content">
+              New message from {newMessageNotification.name}
+            </div>
+            <FontAwesomeIcon 
+              icon={faTimes} 
+              className="notification-close" 
+              onClick={() => setNewMessageNotification(null)} 
+            />
+          </div>
+        )}
+
         <div className="reviews-header">
           <div>
-            <h1>Customer Reviews</h1>
-            <p>Manage and respond to customer feedback</p>
+            <h1>Customer Messages</h1>
+            <p>Manage and respond to customer inquiries</p>
           </div>
           <div className="search-box">
             <FontAwesomeIcon icon={faSearch} className="search-icon" />
             <input 
               type="text" 
-              placeholder="Search reviews..." 
+              placeholder="Search messages..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
-
 
         {errorMessage && (
           <div className="alert alert-error">
@@ -152,7 +133,7 @@ const Reviews = () => {
             </div>
             <div>
               <h3>{messages.length}</h3>
-              <p>Total Reviews</p>
+              <p>Total Messages</p>
             </div>
           </div>
           <div className="stat-card">
@@ -161,7 +142,7 @@ const Reviews = () => {
             </div>
             <div>
               <h3>{messages.filter(m => new Date(m.date).toDateString() === new Date().toDateString()).length}</h3>
-              <p>Today's Reviews</p>
+              <p>Today's Messages</p>
             </div>
           </div>
         </div>
@@ -169,12 +150,12 @@ const Reviews = () => {
         {loading ? (
           <div className="loading-reviews">
             <div className="spinner"></div>
-            <p>Loading reviews...</p>
+            <p>Loading messages...</p>
           </div>
         ) : filteredMessages.length === 0 ? (
           <div className="no-reviews">
             <FontAwesomeIcon icon={faExclamationCircle} size="2x" />
-            <p>{searchTerm ? 'No matching reviews found' : 'No reviews available'}</p>
+            <p>{searchTerm ? 'No matching messages found' : 'No messages available'}</p>
           </div>
         ) : (
           <div className="reviews-list-container">
@@ -188,7 +169,7 @@ const Reviews = () => {
             
             <div className="reviews-list">
               {filteredMessages.map((message) => (
-                <div key={message._id} className="review-card">
+                <div key={message._id} className={`review-card ${message.status === 'pending' ? 'unread' : ''}`}>
                   <div className="user-info">
                     <div className="avatar">
                       {message.firstName.charAt(0)}{message.lastName.charAt(0)}
@@ -236,7 +217,7 @@ const Reviews = () => {
                           </button>
                           <button 
                             className="send-reply-btn"
-                            onClick={() => handleSendReply(message._id, message.email)}
+                            onClick={() => handleSendReply(message._id)}
                             disabled={isSending}
                           >
                             {isSending ? 'Sending...' : (
@@ -262,7 +243,6 @@ const Reviews = () => {
           </div>
         )}
 
-        {/* History Modal */}
         {showHistory && selectedMessage && (
           <div className="modal-overlay">
             <div className="modal-container">
