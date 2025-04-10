@@ -35,33 +35,79 @@ const TableComponent = ({ showAlert }) => {
       socket.on('slotUpdated', handleSlotUpdate);
       socket.on('tableAdded', handleTableAdded);
       socket.on('tableDeleted', handleTableDeleted);
+      socket.on('tableStatusChanged', handleTableStatusChanged);
       
       return () => {
         socket.off('slotUpdated', handleSlotUpdate);
         socket.off('tableAdded', handleTableAdded);
         socket.off('tableDeleted', handleTableDeleted);
+        socket.off('tableStatusChanged', handleTableStatusChanged);
         socket.emit('leaveRoom', `slot_${slotFilter}`);
       };
     }
   }, [socket, slotFilter]);
 
-  const handleSlotUpdate = (data) => {
-    console.log('Socket update received:', data);
+  const handleTableStatusChanged = (data) => {
     if (data.slotNumber.toString() === slotFilter) {
-      setTables(prevTables => prevTables.map(table => {
-        if (table.number === data.tableNumber) {
-          return {
-            ...table,
-            reserved: data.action === 'reserved',
-            reservedBy: data.reservedBy || null
-          };
+      setTables(prevTables => {
+        // Remove the table if it's disabled, add it back if enabled
+        if (data.disabled) {
+          return prevTables.filter(table => table.number !== data.tableNumber);
+        } else {
+          // Check if table already exists
+          const exists = prevTables.some(table => table.number === data.tableNumber);
+          if (!exists) {
+            // Fetch the newly enabled table
+            fetchSingleTable(data.tableNumber);
+          }
+          return prevTables;
         }
-        return table;
-      }));
+      });
     }
   };
-  const handleTableAdded = (data) => {
+
+  const fetchSingleTable = async (tableNumber) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/slot/${slotFilter}`);
+      const table = response.data.find(t => t.number === tableNumber);
+      if (table && !table.disabled) {
+        setTables(prevTables => {
+          const exists = prevTables.some(t => t.number === tableNumber);
+          if (!exists) {
+            return [...prevTables, table].sort((a, b) => a.number - b.number);
+          }
+          return prevTables;
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching single table:', error);
+    }
+  };
+
+  const handleSlotUpdate = (data) => {
     if (data.slotNumber.toString() === slotFilter) {
+      setTables(prevTables => {
+        // Don't show disabled tables
+        if (data.slot?.disabled) {
+          return prevTables.filter(table => table.number !== data.tableNumber);
+        }
+        
+        return prevTables.map(table => {
+          if (table.number === data.tableNumber) {
+            return {
+              ...table,
+              reserved: data.action === 'reserved',
+              reservedBy: data.reservedBy || null
+            };
+          }
+          return table;
+        });
+      });
+    }
+  };
+
+  const handleTableAdded = (data) => {
+    if (data.slotNumber.toString() === slotFilter && !data.table.disabled) {
       setTables(prevTables => [...prevTables, data.table].sort((a, b) => a.number - b.number));
     }
   };
@@ -71,6 +117,7 @@ const TableComponent = ({ showAlert }) => {
       setTables(prevTables => prevTables.filter(table => table.number !== data.tableNumber));
     }
   };
+
   const fetchUserDetails = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -91,7 +138,8 @@ const TableComponent = ({ showAlert }) => {
   const fetchTables = async () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/slot/${slotFilter}`);
-      setTables(response.data);
+      // Filter out disabled tables from the initial fetch
+      setTables(response.data.filter(table => !table.disabled));
     } catch (error) {
       console.error('Error fetching tables:', error);
       showAlert('Error fetching tables', 'danger');
@@ -173,7 +221,7 @@ const TableComponent = ({ showAlert }) => {
 
   const sortedTables = [...tables].sort((a, b) => a.number - b.number);
   const filteredTables = sortedTables.filter(table => 
-    !capacityFilter || table.capacity === parseInt(capacityFilter)
+    (!capacityFilter || table.capacity === parseInt(capacityFilter))
   );
 
   return (

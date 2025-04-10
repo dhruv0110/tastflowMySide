@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import Invoice from '../Invoice/Invoice';
 import { toast } from 'react-toastify';
 import './UserFoodPage.css';
@@ -21,6 +22,8 @@ const UserFoodPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const socket = io('http://localhost:5000');
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -37,15 +40,7 @@ const UserFoodPage = () => {
           const userData = await userResponse.json();
           
           setUser(userData);
-          const succeededPayments = userData.payments?.filter(
-            payment => payment.status === "succeeded" && !payment.deducted
-          ) || [];
-          
-          setReservations(succeededPayments.map(payment => ({
-            reservationId: payment.reservationId,
-            tableNumber: payment.tableNumber,
-            slotTime: payment.slotTime,
-          })));
+          updateReservations(userData);
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -55,8 +50,41 @@ const UserFoodPage = () => {
       }
     };
 
+    const updateReservations = (userData) => {
+      const succeededPayments = userData.payments?.filter(
+        payment => payment.status === "succeeded" && !payment.deducted
+      ) || [];
+      
+      setReservations(succeededPayments.map(payment => ({
+        reservationId: payment.reservationId,
+        tableNumber: payment.tableNumber,
+        slotTime: payment.slotTime,
+      })));
+    };
+
     fetchData();
-  }, [userId]);
+
+    // Socket event listeners
+    socket.on('newReservation', ({ reservation }) => {
+      setReservations(prev => [...prev, reservation]);
+    });
+
+    socket.on('reservationRemoved', ({ reservationId }) => {
+      setReservations(prev => prev.filter(res => res.reservationId !== reservationId));
+      if (selectedReservation?.reservationId === reservationId) {
+        setSelectedReservation(null);
+      }
+    });
+
+    // Join user's room
+    socket.emit('joinUserRoom', userId);
+
+    return () => {
+      socket.off('newReservation');
+      socket.off('reservationRemoved');
+      socket.disconnect();
+    };
+  }, [userId, selectedReservation]);
 
   const filteredFoods = foods.filter(food =>
     food.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -316,7 +344,7 @@ const UserFoodPage = () => {
               </div>
               <button
                 onClick={saveSelection}
-                // disabled={selectedFoods.length === 0 || isSelectionSaved}
+                disabled={selectedFoods.length === 0 || isSelectionSaved}
                 className="ufp-save-btn"
               >
                 Save

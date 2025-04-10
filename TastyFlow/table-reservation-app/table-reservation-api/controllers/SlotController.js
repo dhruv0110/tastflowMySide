@@ -56,6 +56,7 @@ const reserveSlot = async (req, res) => {
     const slot = await Slot.findOne({ slotNumber, number });
     if (!slot) return res.status(404).json({ message: "Slot not found" });
     if (slot.reserved) return res.status(400).json({ message: "Slot is already reserved" });
+    if (slot.disabled) return res.status(400).json({ message: "Slot is currently disabled" });
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -64,7 +65,7 @@ const reserveSlot = async (req, res) => {
     slot.reservedBy = userId;
     await slot.save();
 
-    user.payments.push({
+    const paymentData = {
       paymentIntentId,
       amount: 100,
       currency: "inr",
@@ -72,7 +73,10 @@ const reserveSlot = async (req, res) => {
       tableNumber: number,
       slotTime: getSlotTime(slotNumber),
       reservationId: slot._id,
-    });
+      deducted: false
+    };
+
+    user.payments.push(paymentData);
     await user.save();
 
     // Send email
@@ -84,13 +88,11 @@ const reserveSlot = async (req, res) => {
     };
     transporter.sendMail(mailOptions);
 
-    // Get populated slot for response and socket emission
     const populatedSlot = await Slot.findById(slot._id).populate({
       path: 'reservedBy',
       select: 'name contact'
     });
 
-    // Emit socket event
     const io = req.app.get('io');
     io.to(`slot_${slotNumber}`).emit('slotUpdated', { 
       action: 'reserved', 
@@ -102,6 +104,15 @@ const reserveSlot = async (req, res) => {
         contact: user.contact
       },
       slot: populatedSlot
+    });
+
+    // Emit new reservation to user's room
+    io.to(`user_${userId}`).emit('newReservation', {
+      reservation: {
+        reservationId: slot._id,
+        tableNumber: number,
+        slotTime: getSlotTime(slotNumber)
+      }
     });
 
     res.status(200).json({ 
@@ -129,9 +140,13 @@ const unreserveSlot = async (req, res) => {
 
     const reservedByUser = await User.findById(slot.reservedBy);
     if (reservedByUser) {
-      reservedByUser.payments = reservedByUser.payments.filter(
-        payment => String(payment.reservationId) !== String(slot._id)
-      );
+      // Update the payment record to mark as deducted
+      reservedByUser.payments = reservedByUser.payments.map(payment => {
+        if (String(payment.reservationId) === String(slot._id)) {
+          return { ...payment, deducted: true };
+        }
+        return payment;
+      });
       await reservedByUser.save();
     }
 
@@ -139,23 +154,17 @@ const unreserveSlot = async (req, res) => {
     slot.reservedBy = null;
     await slot.save();
 
-    // Send email
-    if (reservedByUser) {
-      const mailOptions = {
-        from: "tastyflow01@gmail.com",
-        to: reservedByUser.email,
-        subject: "Slot Unreserved",
-        text: `Your reservation for Table ${slot.number} (${getSlotTime(slotNumber)}) has been canceled.`,
-      };
-      transporter.sendMail(mailOptions);
-    }
-
-    // Emit socket event
     const io = req.app.get('io');
     io.to(`slot_${slotNumber}`).emit('slotUpdated', { 
       action: 'unreserved', 
       slotNumber, 
-      tableNumber: number 
+      tableNumber: number,
+      slot: slot
+    });
+
+    // Emit event to update reservations dropdown
+    io.to(`user_${userId}`).emit('reservationRemoved', {
+      reservationId: slot._id
     });
 
     res.status(200).json({ message: "Slot unreserved successfully", slot });
@@ -178,28 +187,35 @@ const adminUnreserveSlot = async (req, res) => {
     if (!slot) return res.status(404).json({ message: 'Slot not found' });
 
     const reservedByUser = await User.findById(slot.reservedBy);
+    if (reservedByUser) {
+      // Update the payment record to mark as deducted
+      reservedByUser.payments = reservedByUser.payments.map(payment => {
+        if (String(payment.reservationId) === String(slot._id)) {
+          return { ...payment, deducted: true };
+        }
+        return payment;
+      });
+      await reservedByUser.save();
+    }
+
     slot.reserved = false;
     slot.reservedBy = null;
     await slot.save();
 
-    // Send email
-    if (reservedByUser) {
-      const mailOptions = {
-        from: 'tastyflow01@gmail.com',
-        to: reservedByUser.email,
-        subject: 'Slot Unreserved by Admin',
-        text: `Your reservation for Table ${slot.number} (${getSlotTime(slotNumber)}) has been canceled by admin.`,
-      };
-      transporter.sendMail(mailOptions);
-    }
-
-    // Emit socket event
     const io = req.app.get('io');
     io.to(`slot_${slotNumber}`).emit('slotUpdated', { 
       action: 'adminUnreserved', 
       slotNumber, 
-      tableNumber: number 
+      tableNumber: number,
+      slot: slot
     });
+
+    // Emit event to update reservations dropdown
+    if (reservedByUser) {
+      io.to(`user_${reservedByUser._id}`).emit('reservationRemoved', {
+        reservationId: slot._id
+      });
+    }
 
     res.status(200).json({ message: 'Slot unreserved by admin successfully', slot });
   } catch (error) {
@@ -207,7 +223,6 @@ const adminUnreserveSlot = async (req, res) => {
   }
 };
 
-// In addSlot function
 const addSlot = async (req, res) => {
   try {
     const { number, capacity } = req.body;
@@ -221,7 +236,6 @@ const addSlot = async (req, res) => {
     
     await newSlot.save();
 
-    // Emit socket event
     const io = req.app.get('io');
     io.to(`slot_${slotNumber}`).emit('tableAdded', {
       slotNumber,
@@ -234,7 +248,6 @@ const addSlot = async (req, res) => {
   }
 };
 
-// In deleteSlot function
 const deleteSlot = async (req, res) => {
   try {
     const { number } = req.body;
@@ -243,7 +256,6 @@ const deleteSlot = async (req, res) => {
 
     if (!slot) return res.status(404).json({ message: 'Slot not found' });
 
-    // Emit socket event
     const io = req.app.get('io');
     io.to(`slot_${slotNumber}`).emit('tableDeleted', {
       slotNumber,
@@ -251,6 +263,45 @@ const deleteSlot = async (req, res) => {
     });
 
     res.json({ message: 'Slot deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const toggleTableStatus = async (req, res) => {
+  try {
+    const { number } = req.body;
+    const slotNumber = parseInt(req.params.slotNumber);
+    
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Only admins can toggle table status' });
+    }
+
+    const slot = await Slot.findOne({ slotNumber, number });
+    if (!slot) return res.status(404).json({ message: 'Slot not found' });
+
+    slot.disabled = !slot.disabled;
+    await slot.save();
+
+    const io = req.app.get('io');
+    io.to(`slot_${slotNumber}`).emit('slotUpdated', { 
+      action: slot.disabled ? 'tableDisabled' : 'tableEnabled',
+      slotNumber,
+      tableNumber: number,
+      slot: slot
+    });
+
+    // Emit to foodUpdates room for user interface
+    io.to('foodUpdates').emit('tableStatusChanged', {
+      slotNumber,
+      tableNumber: number,
+      disabled: slot.disabled
+    });
+
+    res.status(200).json({ 
+      message: `Table ${slot.disabled ? 'disabled' : 'enabled'} successfully`,
+      slot
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -264,4 +315,5 @@ module.exports = {
   addSlot,
   deleteSlot,
   createPaymentIntent,
+  toggleTableStatus
 };

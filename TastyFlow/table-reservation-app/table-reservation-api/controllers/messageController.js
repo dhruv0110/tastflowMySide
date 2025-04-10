@@ -184,7 +184,7 @@ const sendReply = async (req, res) => {
       
           <div class="signature">
               <p>Best regards,</p>
-              <p><strong>Customer Support Team of Tastyflow</strong></p>
+              <p><strong>Customer Support</strong></p>
               <p>Tastyflow</p>
           </div>
       

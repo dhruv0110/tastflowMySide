@@ -90,20 +90,6 @@ const Reviews = () => {
       <Sidebar />
       
       <main className="reviews-content">
-        {newMessageNotification && (
-          <div className="new-message-notification">
-            <FontAwesomeIcon icon={faComments} className="notification-icon" />
-            <div className="notification-content">
-              New message from {newMessageNotification.name}
-            </div>
-            <FontAwesomeIcon 
-              icon={faTimes} 
-              className="notification-close" 
-              onClick={() => setNewMessageNotification(null)} 
-            />
-          </div>
-        )}
-
         <div className="reviews-header">
           <div>
             <h1>Customer Messages</h1>

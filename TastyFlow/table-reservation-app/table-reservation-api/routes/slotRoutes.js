@@ -10,5 +10,6 @@ router.post('/:slotNumber/admin/unreserve', fetchUser, SlotController.adminUnres
 router.post('/:slotNumber/add', SlotController.addSlot);
 router.delete('/:slotNumber/delete', SlotController.deleteSlot);
 router.post('/:slotNumber/create-payment-intent', fetchUser, SlotController.createPaymentIntent);
+router.post('/:slotNumber/toggle-status', fetchUser, SlotController.toggleTableStatus);
 
 module.exports = router;

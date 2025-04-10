@@ -31,8 +31,11 @@ const slotSchema = new mongoose.Schema({
     type: Date, 
     default: Date.now 
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
 }, {
-  // Add compound index to ensure unique table numbers per slot
   indexes: [
     {
       unique: true,
