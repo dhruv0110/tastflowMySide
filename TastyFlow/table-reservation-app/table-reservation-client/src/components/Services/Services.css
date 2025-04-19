@@ -1,0 +1,43 @@
+/* Add this to your stylesheet */
+@media (max-width: 768px) {
+    .main-div {
+      padding: 1rem;
+    }
+  
+    .services-card {
+      max-width: 100% !important; 
+    }
+  
+    .services-card-group {
+      flex-direction: column; 
+    }
+  
+    .services-card img {
+      max-width: 4rem !important;
+      max-height: 12rem !important;
+    }
+  
+    .services-card-title {
+      font-size: 1rem;
+    }
+  
+    .services-card-text {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .services-card img {
+      max-width: 3rem !important;
+      max-height: 10rem !important;
+    }
+  
+    .services-card-title {
+      font-size: 0.9rem;
+    }
+  
+    .services-card-text {
+      font-size: 0.8rem;
+    }
+  }
+  

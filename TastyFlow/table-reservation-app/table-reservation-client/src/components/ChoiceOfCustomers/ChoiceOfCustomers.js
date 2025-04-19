@@ -4,6 +4,7 @@ import card1 from "../../assets/card1.svg"
 import card2 from "../../assets/card2.svg"
 import card3 from "../../assets/card3.svg"
 import card4 from "../../assets/card4.svg"
+import {Link} from "react-router-dom"; // Import Link for navigation
 
 
 const ChoiceOfCustomers = () => {
@@ -18,7 +19,9 @@ const ChoiceOfCustomers = () => {
               Embraced by a discerning clientele, our offerings stand as the
               preferred choice among customers seeking excellence.
             </p>
+            <Link to="/Services">
             <button className="choice-view-more-btn">View More</button>
+            </Link>
           </div>
           <div className="choice-cards-section">
               <div className="choice-card-1">

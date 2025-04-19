@@ -60,7 +60,7 @@ const FoodItem = ({ id, name, description, price, image, date, category }) => {
       <div className="food-item-info">
         <div className="food-item-name-price">
           <p className="food-item-name">{currentFood.name}</p>
-          <p className="food-item-price">${currentFood.price}</p>
+          <p className="food-item-price">₹{currentFood.price}</p>
         </div>
         <div className="view-more" onClick={handleViewMore}>
           View More

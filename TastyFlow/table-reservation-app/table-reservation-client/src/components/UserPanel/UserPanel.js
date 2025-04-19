@@ -22,6 +22,7 @@ import Footer from "../Footer/Footer";
 import ContactUs from "../ContactUs/ContactUs";
 import Blog from "../Blog/Blog";
 import Testimonial from "../Testimonial/Testimonial";
+import {Link} from "react-router-dom"; // Import Link for navigation
 
 function UserPanel({ showAlert }) {
   const divRef = useRef(null);
@@ -121,7 +122,9 @@ function UserPanel({ showAlert }) {
               thrills your taste buds while feeding your body - welcome to the
               universe of Nutritious & Tasty food!
             </p>
+            <Link to='Menu_Page'>
             <button className="hero-button">Get Menu</button>
+            </Link>
           </div>
 
           <div className="spinner-div">

@@ -30,9 +30,15 @@ import EditInvoice from './components/EditInvoice/EditInvoice';
 import UserInvoice from "./components/UserInvoice/UserInvoice";
 import Graph from "./components/Graph/Graph";
 import FoodDetail from "./components/FoodDetail/FoodDetail";
+import Services from './components/Services/Services';
+import BlogDeatils from './components/BlogDetails/BlogDetails';
+import Recipes from "./components/Recipes/Recipes"
+import Menu_Page from './components/Menu Page/Menu_Page';
 import { SocketProvider } from './context/SocketContext';
 import { FoodProvider } from './context/FoodContext';
 import { MessageProvider } from './context/MessageContext';
+
+
 
 const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf');
 
@@ -150,6 +156,11 @@ function App() {
           <Route path="/food/:id" element={<FoodDetail />} />
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/About" element={<About />} />
+
+          <Route path="/Menu_Page" element={<Menu_Page />} />
+        <Route path="/Recipes" element={<Recipes />} />
+        <Route path='/Services' element={<Services/>}/>
+        <Route path='/BlogDetails' element={<BlogDeatils/>}/>
         </Routes>
         </MessageProvider>
       </FoodProvider>

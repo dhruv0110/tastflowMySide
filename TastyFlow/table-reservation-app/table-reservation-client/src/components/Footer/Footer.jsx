@@ -6,7 +6,7 @@ import img3 from "./Images/imageThree.jpg"
 import img4 from "./Images/imageFour.jpg"
 import img5 from "./Images/imageFive.jpg"
 import logo from "./Images/tastyflowlogo.svg";
-
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -37,11 +37,30 @@ const Footer = () => {
         <div className="footer-section pages">
           <h3>Pages</h3>
           <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#menu">Menu</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li>
+              <Link to='/UserPanel'>
+              <a>Home</a>
+              </Link>
+              </li>
+
+              <li>
+              <Link to='/About'>
+              <a>About</a>
+              </Link>
+              </li>
+           
+              <li>
+              <Link to='/Menu_Page'>
+              <a>Menu</a>
+              </Link>
+              </li>
+
+
+              <li>
+              <Link to='/Services'>
+              <a>Services</a>
+              </Link>
+              </li>
           </ul>
         </div>
 

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import './Blog.css'; // Import CSS for styling
+import {Link} from "react-router-dom"; // Import Link for navigation
 
 const Blog = () => {
   return (
@@ -12,7 +13,9 @@ const Blog = () => {
         Stay ahead of the curve, explore new ideas, and engage with the pulse of evolving trends through our repository of timely and insightful content.
         </p>
       </div>
-      <button className="view-more-btn">View More</button> 
+      <Link to='/BlogDetails'>
+      <button className="view-more-btn m-5">View More</button> 
+      </Link>
     </section>
   );
 };

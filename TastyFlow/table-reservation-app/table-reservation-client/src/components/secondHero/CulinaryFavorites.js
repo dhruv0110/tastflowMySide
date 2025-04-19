@@ -2,6 +2,7 @@ import React from "react";
 import "./CulinaryFavorites.css"; // Import the CSS file for custom styling
 import secondHero1 from "../../assets/secondHero1.jpg";
 import secondHero2 from "../../assets/secondHero2.jpg";
+import { Link } from "react-router-dom"; // Import Link for navigation
 
 const CulinaryFavorites = () => {
   return (
@@ -30,8 +31,13 @@ const CulinaryFavorites = () => {
               journey.
             </p>
             <div className="fav-button-container">
-              <button className="fav-get-menu-btn">Get Menu</button>
+            <Link to='Menu_Page'>
+            <button className="fav-get-menu-btn">Get Menu</button>
+            </Link>
+
+            <Link to='About'>
               <a className="fav-about-tastyflow-btn">About TastyFlow</a>
+              </Link>
             </div>
           </div>
         </div>

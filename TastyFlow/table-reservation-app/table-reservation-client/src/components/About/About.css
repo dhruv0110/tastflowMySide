@@ -5,44 +5,72 @@
     box-sizing: border-box;
 }
 
-/* SectionOne */
+/* About section one */
 .AboutSectionOne {
     background-color: #1b1c1f;
 }
 
-.AboutSectionOneLeft {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-}
-
-
 .AboutSectionOneLeft h1 {
-    font-size: 4rem;
+    font-size: 3rem;
     margin: 10px 0;
     font-weight: bold;
     font-family: "Inter", serif;
-    color: #ffff;
+    color: #fff;
 }
 
 .AboutSectionOneLeft p {
     max-width: 565px;
-    color: #ffff;
+    color: #fff;
     font-family: Inter, sans-serif;
-    font-size: 19px;
+    font-size: 18px;
     font-weight: 400;
     line-height: 1.5;
 }
 
-.AboutSectionOneLeft .hero-button {
+.hero-button {
     margin-top: 2rem;
     padding: 1rem 3rem;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    font-size: 1rem;
+    border-radius: 50px;
 }
 
-/* Section Two */
 
-/* HeadingPart Css */
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .AboutSectionOneLeft h1 {
+        font-size: 2.5rem;
+    }
+
+    .AboutSectionOneLeft p {
+        font-size: 16px;
+    }
+
+    .hero-button {
+        padding: 0.8rem 2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .AboutSectionOneLeft h1 {
+        font-size: 2rem;
+    }
+
+    .AboutSectionOneLeft p {
+        font-size: 14px;
+    }
+
+    .hero-button {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Section 2 css */
+/* Heading Section */
 .Subheadingflex {
     display: flex;
     flex-direction: column;
@@ -55,7 +83,6 @@
     font-size: 60px;
     font-weight: bold;
     max-width: 847px;
-
 }
 
 .AboutStorysubheading {
@@ -67,32 +94,21 @@
     padding-top: 10px;
 }
 
-/* Story Part Css */
+/* Story Part */
 .AboutStoryContainer {
     grid-column-gap: 30px;
 }
 
-.AboutStorySectionTwoLeft img {
-    height: 100%;
-}
-
 .StoryImage {
     object-fit: cover;
-    border-radius: 30px;
     width: 100%;
-}
-
-.AboutStorySectionTwoRight {
-    display: flex;
-    flex-direction: column;
-    grid-row-gap: 25px;
+    height: auto;
+    border-radius: 20px;
 }
 
 .AboutStorySectionTwoTop {
     background-color: #ff4135;
     color: #ffffff;
-    border-radius: 30px;
-    padding: 45px 65px 45px 40px;
 }
 
 .AboutStorySectionTwoTop h2 {
@@ -103,9 +119,6 @@
 }
 
 .AboutStorySectionTwoTop p {
-    /* margin-bottom: 35px; */
-    font-size: 20px;
-    max-width: 600px;
     font-family: Inter, sans-serif;
 }
 
@@ -115,6 +128,7 @@
     font-size: 1.2rem;
     border: none;
     font-weight: 600;
+    background-color: #1b1c1f;
 }
 
 .AboutStorySectionTwoTop .hero-button:hover {
@@ -122,39 +136,48 @@
     color: #1b1c1f;
 }
 
-.AboutStorySectionTwoBottom {
-    display: flex;
-    grid-column-gap: 18px;
+/* Responsive Design */
+@media (max-width: 991px) {
+
+    /* Tablets */
+    .AboutStoryContainer {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .AboutStorySectionTwoLeft,
+    .AboutStorySectionTwoRight {
+        width: 100%;
+    }
+
+    .AboutStorySectionTwoBottom {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .AboutStorySectionTwoBottom .col-md-6 {
+        width: 48%;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Mobile screens */
+    .AboutStorySectionTwoBottom .col-md-6 {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
 
 /* Section Three */
-.AboutSectionThree {
-    background-color: #1b1c1f;
-    margin-top: 5rem;
-    padding-bottom: 10rem;
-}
-
-.AboutSectionThreeHeadingflex {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
 .AboutSectionThreeheading {
     font-family: Playfair Display, sans-serif;
     font-size: 60px;
     font-weight: bold;
-    color: #ffffff;
 }
 
-.AboutSectionThreeubheading {
-    font-family: Inter, sans-serif;
-    color: #ffffff;
-    font-size: 18px;
-    line-height: 1.5;
-    max-width: 776px;
-    padding-top: 10px;
+.AboutSectionThreesubheading {
+    font-size: 20px;
 }
 
 /* Carousel Css*/
@@ -176,7 +199,7 @@
     /* Bring the active slide to the front */
 }
 
-.AboutCarouselCard img{
+.AboutCarouselCard img {
     border-radius: 20px;
 }
 
@@ -286,6 +309,45 @@
     z-index: 2;
 }
 
+/* Section 4 */
+.stat-number {
+    font-family: "Playfair Display", serif;
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.highlight {
+    color: #ff4135;
+    /* Red color for + and % */
+}
+
+.stat-text {
+    font-family: "Playfair Display", serif;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .stat-text {
+        font-size: 1rem;
+    }
+}
+
+
+/* Section-5 Css */
+/* Section-5 Css */
+/* Menu Css */
+.menu-container {
+    margin: 50px auto;
+    max-width: 90%;
+}
+
+/* Circular Images */
 /* Section-5 Css */
 /* Menu Css */
 .menu-container {
@@ -306,20 +368,23 @@
     height: 210px;
     border-radius: 50%;
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: center;
     align-items: center;
+    background: #fff;  /* White circular background */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 15px; /* Space inside the circle */
 }
 
-
+/* Image inside the white circle */
 .circle img {
-    width: 170px;
-    height: 170px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    border-radius: 50%;
 }
 
-/* Positioning the circles*/
+/* Positioning the circles */
 
 /* Left top */
 .circle-1 {
@@ -335,23 +400,22 @@
 
 /* Middle large top */
 .circle-3 {
-    height: 300px;
     width: 300px;
+    height: 300px;
     left: 30%;
     top: 16%;
 }
 
-.circle-3 img{
-    height: 250px;
-    width: 250px;
-
+.circle-3 img {
+    width: 100%;
+    height: 100%;
 }
+
 /* Left bottom Circle */
 .circle-4 {
     bottom: -48%;
     left: -31%;
 }
-
 
 /* Right Bottom Circle */
 .circle-5 {
@@ -359,9 +423,9 @@
     right: -30%;
 }
 
+/* Text Styling */
 .AboutMenu-text-content {
     text-align: center;
-    background-color: #fff;
 }
 
 .AboutMenu-text-content h1 {
@@ -379,6 +443,7 @@
     line-height: 1.5;
 }
 
+/* Button */
 .AboutMenuButton {
     background-color: #ff4135;
     color: #ffffff;
@@ -395,6 +460,7 @@
     transition: all 0.2s;
 }
 
+/* Menu Links */
 .menu-links {
     display: flex;
     justify-content: space-between;
@@ -413,7 +479,118 @@
     border-bottom: 3px solid #ff4135;
 }
 
+/* 📌 Tablet Screens (Below 1024px) */
+@media (max-width: 1024px) {
+    .menu-container {
+        max-width: 90%;
+    }
+
+    .circular-images {
+        height: 400px;
+    }
+
+    .circle {
+        width: 180px;
+        height: 180px;
+        padding: 10px; /* Maintain white background */
+    }
+
+    .circle-3 {
+        width: 250px;
+        height: 250px;
+        left: 35%;
+        top: 18%;
+    }
+
+    .circle-1,
+    .circle-2 {
+        top: 50%;
+    }
+
+    .circle-4,
+    .circle-5 {
+        bottom: -35%;
+    }
+
+    .AboutMenu-text-content h1 {
+        font-size: 50px;
+    }
+
+    .menu-links {
+        justify-content: center;
+        gap: 20px;
+    }
+}
+
+/* 📌 Mobile Screens (Below 768px) */
+@media (max-width: 768px) {
+    .menu-container {
+        text-align: center;
+    }
+
+    .circular-images {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        height: auto;
+    }
+
+    .circle {
+        position: static;
+        width: 150px;
+        height: 150px;
+        padding: 8px;
+    }
+
+    .circle-3 {
+        width: 200px;
+        height: 200px;
+    }
+
+    .AboutMenu-text-content h1 {
+        font-size: 40px;
+    }
+
+    .menu-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .menu-links span {
+        font-size: 18px;
+    }
+}
+
+/* 📌 Small Mobile Screens (Below 480px) */
+@media (max-width: 480px) {
+    .circle {
+        width: 120px;
+        height: 120px;
+        padding: 5px;
+    }
+
+    .circle-3 {
+        width: 160px;
+        height: 160px;
+    }
+
+    .AboutMenu-text-content h1 {
+        font-size: 30px;
+    }
+
+    .menu-links span {
+        font-size: 16px;
+    }
+
+    .AboutMenuButton {
+        padding: 12px 30px;
+        font-size: 16px;
+    }
+}
+
 /* Testimonial css */
-.AboutRepeats{
+.AboutRepeats {
     margin-top: 8rem;
 }

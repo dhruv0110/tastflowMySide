@@ -13,7 +13,6 @@ const ArtisanComponent = () => {
           Welcome to a realm of meticulously crafted culinary masterpieces, where every dish is a testament to artistry and flavour.
         </p>
       </div>
-      <button className="view-more-btn">View More</button>
     </section>
   );
 };
