@@ -473,7 +473,7 @@ const addFoodToUser = async (req, res) => {
 
             <div class="final-total">
               <div>Total Payable:</div>
-              <div>₹${invoice.totalAmount.toFixed(2)}</div>
+              <div>₹${invoice.finalAmount.toFixed(2)}</div>
             </div>
 
             ${
