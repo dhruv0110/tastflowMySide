@@ -5,7 +5,6 @@
     min-height: 100vh;
     background-color: #1B1C1F; /* Same dark background color */
     border: 1.5px solid #a9a9a9;
-    border-top: 1.5px solid #a9a9a9;
     font-size: max(1vw, 10px);
     padding-top: 2rem;
     margin-left: -1px;

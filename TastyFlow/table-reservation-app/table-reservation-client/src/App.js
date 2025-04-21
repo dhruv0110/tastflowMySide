@@ -51,7 +51,7 @@ function AdminRoute({ element, ...rest }) {
   const userDetails = JSON.parse(localStorage.getItem("userDetails"));
   return userDetails?.role === 'admin' ? element : <Navigate to="/" />;
 }
-
+  
 function AppWrapper() {
   return (
     <Router>

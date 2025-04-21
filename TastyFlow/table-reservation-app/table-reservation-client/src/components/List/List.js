@@ -190,7 +190,7 @@ const List = () => {
                       </div>
                       <div className="table-cell">{item.name}</div>
                       <div className="table-cell">{item.category}</div>
-                      <div className="table-cell">${item.price.toFixed(2)}</div>
+                      <div className="table-cell">{item.price.toFixed(2)}</div>
                       <div className="table-cell actions-cell">
                         <button 
                           onClick={() => removeFood(item._id)}

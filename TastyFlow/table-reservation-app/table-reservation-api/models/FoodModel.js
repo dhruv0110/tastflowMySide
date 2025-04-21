@@ -6,6 +6,11 @@ const foodSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   category: { type: String, required: true },
   image: { type: String, required: true },
+  mealType: {
+    type: String,
+    enum: ['Breakfast', 'Lunch', 'Dinner'],
+    required: true
+},
   date: {
     type: Date,
     default: () => {

@@ -13,7 +13,8 @@ const Add = () => {
     name: '',
     description: '',
     price: '',
-    category: 'Salad',
+    mealType: 'Breakfast',
+    category: 'Starter',
     ingredients: '',
     preparationSteps: '',
     nutritionalInfo: {
@@ -101,6 +102,7 @@ const Add = () => {
     formData.append('name', data.name);
     formData.append('description', data.description);
     formData.append('price', Number(data.price));
+    formData.append('mealType', data.mealType);
     formData.append('category', data.category);
     formData.append('image', image);
     formData.append('ingredients', JSON.stringify(ingredientsArray));
@@ -116,7 +118,8 @@ const Add = () => {
           name: '',
           description: '',
           price: '',
-          category: 'Salad',
+          mealType: 'Breakfast',
+          category: 'Starter',
           ingredients: '',
           preparationSteps: '',
           nutritionalInfo: {
@@ -270,18 +273,23 @@ const Add = () => {
 
           <div className="add-category-price">
             <div className="add-category flex-col">
-              <p>Product Category</p>
-              <select onChange={onChangeHandler} name="category" value={data.category}>
-                <option value="Salad">Salad</option>
-                <option value="Rolls">Rolls</option>
-                <option value="Deserts">Deserts</option>
-                <option value="Sandwich">Sandwich</option>
-                <option value="Starters">Starters</option>
-                <option value="Main Course">Main Course</option>
-                <option value="Pasta">Pasta</option>
-                <option value="Noodles">Noodles</option>
+              <p>Meal Type</p>
+              <select onChange={onChangeHandler} name="mealType" value={data.mealType}>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
               </select>
             </div>
+            
+            <div className="add-category flex-col">
+              <p>Category</p>
+              <select onChange={onChangeHandler} name="category" value={data.category}>
+                <option value="Starter">Starter</option>
+                <option value="Main Course">Main Course</option>
+                <option value="Dessert">Dessert</option>
+              </select>
+            </div>
+            
             <div className="add-price flex-col">
               <p>Product Price</p>
               <input
