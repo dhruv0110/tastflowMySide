@@ -47,9 +47,11 @@ const io = socketIo(server, {
   }
 });
 
+// Enhanced socket.io connection handling
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 
+  // Room joining handlers
   socket.on('joinRoom', (room) => {
     socket.join(room);
     console.log(`Socket ${socket.id} joined room ${room}`);
@@ -65,19 +67,22 @@ io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} joined adminMessages room`);
   });
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+  socket.on('joinSlotRoom', (slotNumber) => {
+    socket.join(`slot_${slotNumber}`);
+    console.log(`Socket ${socket.id} joined slot room ${slotNumber}`);
   });
 
   socket.on('joinUserRoom', (userId) => {
     socket.join(`user_${userId}`);
     console.log(`Socket ${socket.id} joined user room ${userId}`);
   });
-  socket.on('joinUserRoom', (userId) => {
-    socket.join(`user_${userId}`);
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
   });
 });
 
+// Make io accessible to routes
 app.set('io', io);
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

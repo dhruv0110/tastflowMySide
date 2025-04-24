@@ -369,12 +369,20 @@ const Invoice = ({ invoiceId, user }) => {
           Print Invoice
         </button>
         <button
-          className="tf-invoice-send-btn"
-          onClick={sendInvoice}
-          disabled={isSending}
-        >
-          {isSending ? 'Sending...' : 'Send Invoice'}
-        </button>
+  className="tf-invoice-send-btn"
+  onClick={sendInvoice}
+  disabled={isSending}
+>
+  {isSending ? (
+    <span className="tf-invoice-loader">
+      <span className="tf-invoice-loader-dot"></span>
+      <span className="tf-invoice-loader-dot"></span>
+      <span className="tf-invoice-loader-dot"></span>
+    </span>
+  ) : (
+    'Send Invoice'
+  )}
+</button>
       </div>
 
       {/* Footer */}

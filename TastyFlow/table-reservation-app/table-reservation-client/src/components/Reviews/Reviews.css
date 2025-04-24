@@ -367,6 +367,41 @@
 .send-reply-btn:hover {
   background-color: #25a25a;
 }
+/* Loading Animation */
+.reviews-loader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 20px;
+}
+
+.reviews-loader-dot {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  display: inline-block;
+  animation: reviews-bounce 1.4s infinite ease-in-out both;
+}
+
+.reviews-loader-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.reviews-loader-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes reviews-bounce {
+  0%, 80%, 100% { 
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
 .cancel-btn {
   background-color: var(--bg-light);

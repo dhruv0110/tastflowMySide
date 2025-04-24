@@ -159,41 +159,51 @@ const UserFoodPage = () => {
       toast.error("Please save your selection first");
       return;
     }
-
+  
     try {
       const cgst = total * 0.025;
       const sgst = total * 0.025;
       const roundOff = Math.round(total + cgst + sgst) - (total + cgst + sgst);
       const finalAmount = (total + cgst + sgst + roundOff).toFixed(2);
-
+  
+      // Create payload including reservation details if selected
+      const payload = {
+        userId,
+        foods: selectedFoods.map(food => ({
+          foodId: food.foodId,
+          name: food.name,
+          price: food.price,
+          quantity: food.quantity
+        })),
+        totalAmount: finalAmount,
+        cgst: cgst.toFixed(2),
+        sgst: sgst.toFixed(2),
+        roundOff: roundOff.toFixed(2)
+      };
+  
+      // Add reservation details if selected
+      if (selectedReservation) {
+        payload.reservationId = selectedReservation.reservationId;
+        payload.tableNumber = selectedReservation.tableNumber;
+        payload.slotNumber = getSlotNumberFromTime(selectedReservation.slotTime);
+      }
+  
       const response = await fetch("http://localhost:5000/api/invoice/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "auth-token": localStorage.getItem("token")
         },
-        body: JSON.stringify({
-          userId,
-          foods: selectedFoods.map(food => ({
-            foodId: food.foodId,
-            name: food.name,
-            price: food.price,
-            quantity: food.quantity
-          })),
-          totalAmount: finalAmount,
-          cgst: cgst.toFixed(2),
-          sgst: sgst.toFixed(2),
-          roundOff: roundOff.toFixed(2),
-          ...(selectedReservation && { reservationId: selectedReservation.reservationId })
-        })
+        body: JSON.stringify(payload)
       });
-
+  
       const data = await response.json();
       if (data.invoice?._id) {
         setInvoiceId(data.invoice._id);
         setInvoiceGenerated(true);
         setIsModalOpen(true);
         
+        // Update local state immediately
         if (selectedReservation) {
           setReservations(prev => 
             prev.filter(res => res.reservationId !== selectedReservation.reservationId)
@@ -205,6 +215,14 @@ const UserFoodPage = () => {
       console.error("Error creating invoice:", err);
       toast.error("Failed to generate invoice");
     }
+  };
+
+  // Helper function to get slot number from time
+  const getSlotNumberFromTime = (slotTime) => {
+    if (slotTime.includes('5:00 PM')) return 1;
+    if (slotTime.includes('7:00 PM')) return 2;
+    if (slotTime.includes('9:00 PM')) return 3;
+    return 1; // default
   };
 
   const closeModal = () => setIsModalOpen(false);

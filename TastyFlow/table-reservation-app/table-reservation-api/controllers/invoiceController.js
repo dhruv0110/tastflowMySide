@@ -33,17 +33,24 @@ const createInvoice = async (req, res) => {
 
     if (!userId || !foods || !totalAmount) {
       console.log("Missing required fields");
-      return res.status(400).json({ message: "Missing required fields" });
+      return res.status(400).json({ 
+        success: false,
+        message: "Missing required fields: userId, foods, and totalAmount" 
+      });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('+email +name');
     if (!user) {
       console.log("User not found");
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ 
+        success: false,
+        message: "User not found" 
+      });
     }
 
     let finalTotalAmount = totalAmount;
     let reservedTableInfo = null;
+    let slotToUnreserve = null;
 
     if (reservationId) {
       console.log("Reservation ID found:", reservationId);
@@ -68,18 +75,21 @@ const createInvoice = async (req, res) => {
             date: reservedSlot.date,
           };
 
-          // Unreserve the table after invoice creation
-          const slot = await Slot.findOne({ 
+          // Find and unreserve the slot
+          slotToUnreserve = await Slot.findOne({ 
             slotNumber: reservedSlot.slotNumber,
             number: reservedSlot.tableNumber 
           });
 
-          if (slot) {
-            console.log("Slot found in database:", slot);
+          if (slotToUnreserve) {
+            console.log("Slot found in database:", slotToUnreserve);
 
-            slot.reserved = false;
-            slot.reservedBy = null;
-            await slot.save();
+            slotToUnreserve.reserved = false;
+            slotToUnreserve.reservedBy = null;
+            await slotToUnreserve.save();
+
+            // Send thank you email for table unreservation
+            await sendThankYouEmail(user, slotToUnreserve, reservedSlot.slotNumber);
           }
         }
       }
@@ -87,7 +97,7 @@ const createInvoice = async (req, res) => {
 
     // Generate invoice number
     const lastInvoice = await Invoice.findOne().sort({ invoiceNumber: -1 });
-    const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1;
+    const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1000;
 
     const invoice = new Invoice({
       userId,
@@ -104,19 +114,53 @@ const createInvoice = async (req, res) => {
       sgst,
       roundOff,
       reservedTableInfo,
+      status: 'paid',
+      issuedAt: new Date(),
     });
 
     await invoice.save();
 
     console.log("Invoice created successfully:", invoice);
 
+    // Send invoice email
+    await sendInvoiceEmail(user, invoice, reservedTableInfo);
+
+    // Emit socket events after successful invoice creation
+    if (slotToUnreserve) {
+      const io = req.app.get('io');
+      
+      // Emit to slot room
+      io.to(`slot_${slotToUnreserve.slotNumber}`).emit('slotUpdated', {
+        action: 'unreserved',
+        slotNumber: slotToUnreserve.slotNumber,
+        tableNumber: slotToUnreserve.number,
+        slot: slotToUnreserve
+      });
+
+      // Emit to user room to update reservations
+      io.to(`user_${userId}`).emit('reservationRemoved', {
+        reservationId: reservationId
+      });
+    }
+
     res.status(201).json({
+      success: true,
       message: "Invoice created successfully",
-      invoice,
+      invoice: {
+        id: invoice._id,
+        number: invoice.invoiceNumber,
+        amount: invoice.totalAmount,
+        date: invoice.issuedAt,
+        downloadLink: `/api/invoice/download/${invoice._id}`
+      }
     });
   } catch (error) {
     console.error("Error creating invoice:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ 
+      success: false,
+      message: "Internal Server Error",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 

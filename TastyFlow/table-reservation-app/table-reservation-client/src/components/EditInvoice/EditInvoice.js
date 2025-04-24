@@ -345,7 +345,7 @@ const EditInvoice = () => {
             <h2>Food Items</h2>
             <div className="ei-items-table">
               <div className="ei-table-header">
-                <div>#</div>
+              <div>SI <br/> No.</div>
                 <div>Item</div>
                 <div>Price</div>
                 <div>Qty</div>

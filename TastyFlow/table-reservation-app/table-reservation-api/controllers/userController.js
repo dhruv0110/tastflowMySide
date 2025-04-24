@@ -473,11 +473,17 @@ const addFoodToUser = async (req, res) => {
 
             <div class="final-total">
               <div>Total Payable:</div>
-              <div>₹${invoice.finalAmount.toFixed(2)}</div>
+              ${
+                invoice.reservedTableInfo == "true" && invoice.reservedTableInfo.tableNumber != null
+                ?
+                `<div>₹${invoice.finalAmount}</div>`
+                :
+                `<div>₹${invoice.totalAmount}</div>`
+              }
             </div>
 
             ${
-              invoice.reservedTableInfo
+              invoice.reservedTableInfo == "true" && invoice.reservedTableInfo.tableNumber != null
                 ? `
               <div class="reservation-details">
                 <h5>Reservation Details</h5>

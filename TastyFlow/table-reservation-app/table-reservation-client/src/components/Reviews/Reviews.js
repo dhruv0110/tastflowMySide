@@ -202,16 +202,22 @@ const Reviews = () => {
                             Cancel
                           </button>
                           <button 
-                            className="send-reply-btn"
-                            onClick={() => handleSendReply(message._id)}
-                            disabled={isSending}
-                          >
-                            {isSending ? 'Sending...' : (
-                              <>
-                                <FontAwesomeIcon icon={faPaperPlane} /> Send
-                              </>
-                            )}
-                          </button>
+  className="send-reply-btn"
+  onClick={() => handleSendReply(message._id)}
+  disabled={isSending}
+>
+  {isSending ? (
+    <span className="reviews-loader">
+      <span className="reviews-loader-dot"></span>
+      <span className="reviews-loader-dot"></span>
+      <span className="reviews-loader-dot"></span>
+    </span>
+  ) : (
+    <>
+      <FontAwesomeIcon icon={faPaperPlane} /> Send
+    </>
+  )}
+</button>
                         </div>
                       </div>
                     ) : (

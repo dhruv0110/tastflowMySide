@@ -163,9 +163,11 @@ const unreserveSlot = async (req, res) => {
     });
 
     // Emit event to update reservations dropdown
-    io.to(`user_${userId}`).emit('reservationRemoved', {
-      reservationId: slot._id
-    });
+    if (reservedByUser) {
+      io.to(`user_${reservedByUser._id}`).emit('reservationRemoved', {
+        reservationId: slot._id
+      });
+    }
 
     res.status(200).json({ message: "Slot unreserved successfully", slot });
   } catch (error) {
