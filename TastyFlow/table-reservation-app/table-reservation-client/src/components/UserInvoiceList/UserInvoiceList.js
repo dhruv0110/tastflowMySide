@@ -248,7 +248,13 @@ const InvoiceDetail = () => {
               <div class="total"><span>CGST (2.5%):</span> <span>₹${state.invoice.cgst.toFixed(2)}</span></div>
               <div class="total"><span>SGST (2.5%):</span> <span>₹${state.invoice.sgst.toFixed(2)}</span></div>
               <div class="total"><span>Round-off:</span> <span>₹${state.invoice.roundOff.toFixed(2)}</span></div>
-
+              ${
+                state.invoice.discount > 0
+                ?
+                `<div class="total"><span>Discount:</span> <span>₹${state.invoice.discount.toFixed(2)}</span></div>`
+                :
+                ''
+              }
             </div>
 
             <div class="inv-detail-print-final">

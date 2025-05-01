@@ -469,12 +469,19 @@ const addFoodToUser = async (req, res) => {
               <div class="total"><span>CGST (2.5%):</span> <span>₹${invoice.cgst.toFixed(2)}</span></div>
               <div class="total"><span>SGST (2.5%):</span> <span>₹${invoice.sgst.toFixed(2)}</span></div>
               <div class="total"><span>Round-off:</span> <span>₹${invoice.roundOff.toFixed(2)}</span></div>
+              ${
+                invoice.discount > 0
+                ?
+                `<div class="total"><span>Discount:</span> <span>₹${invoice.discount.toFixed(2)}</span></div>`
+                :
+                ''
+              }
             </div>
 
             <div class="final-total">
               <div>Total Payable:</div>
               ${
-                invoice.reservedTableInfo == "true" && invoice.reservedTableInfo.tableNumber != null
+                invoice.discount > 0
                 ?
                 `<div>₹${invoice.finalAmount}</div>`
                 :
@@ -482,18 +489,16 @@ const addFoodToUser = async (req, res) => {
               }
             </div>
 
-            ${
-              invoice.reservedTableInfo == "true" && invoice.reservedTableInfo.tableNumber != null
-                ? `
+         
+            ${invoice.reservedTableInfo && invoice.reservedTableInfo.tableNumber ? `
               <div class="reservation-details">
                 <h5>Reservation Details</h5>
                 <p><strong>Table No:</strong> ${invoice.reservedTableInfo.tableNumber}</p>
                 <p><strong>Reservation Slot:</strong> ${invoice.reservedTableInfo.slotTime}</p>
                 <p><strong>Reservation Fee:</strong> ₹100 (included in total)</p>
               </div>
-            `
-                : ''
-            }
+            ` : ''}
+         
 
             <div class="footer">
               <p>Thank you for dining with us!</p>

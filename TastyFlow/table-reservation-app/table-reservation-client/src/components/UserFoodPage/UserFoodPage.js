@@ -180,12 +180,11 @@ const UserFoodPage = () => {
         sgst: sgst.toFixed(2),
         roundOff: roundOff.toFixed(2)
       };
-  
-      // Add reservation details if selected
+      
+      // Only add reservation details if selected
       if (selectedReservation) {
         payload.reservationId = selectedReservation.reservationId;
-        payload.tableNumber = selectedReservation.tableNumber;
-        payload.slotNumber = getSlotNumberFromTime(selectedReservation.slotTime);
+        // Don't include tableNumber and slotNumber here - they should be handled by the backend
       }
   
       const response = await fetch("http://localhost:5000/api/invoice/create", {

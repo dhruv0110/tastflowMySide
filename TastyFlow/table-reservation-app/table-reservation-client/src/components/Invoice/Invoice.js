@@ -212,6 +212,13 @@ const Invoice = ({ invoiceId, user }) => {
               <div class="tf-invoice-print-total"><span>CGST (2.5%):</span> <span>₹${invoice.cgst.toFixed(2)}</span></div>
               <div class="tf-invoice-print-total"><span>SGST (2.5%):</span> <span>₹${invoice.sgst.toFixed(2)}</span></div>
               <div class="tf-invoice-print-total"><span>Round-off:</span> <span>₹${invoice.roundOff.toFixed(2)}</span></div>
+              ${
+                invoice.discount > 0
+                ?
+                `<div class="total"><span>Discount:</span> <span>₹${invoice.discount.toFixed(2)}</span></div>`
+                :
+                ''
+              }
             </div>
 
             <div class="tf-invoice-print-final">

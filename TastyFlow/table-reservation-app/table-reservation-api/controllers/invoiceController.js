@@ -33,23 +33,17 @@ const createInvoice = async (req, res) => {
 
     if (!userId || !foods || !totalAmount) {
       console.log("Missing required fields");
-      return res.status(400).json({ 
-        success: false,
-        message: "Missing required fields: userId, foods, and totalAmount" 
-      });
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const user = await User.findById(userId).select('+email +name');
+    const user = await User.findById(userId);
     if (!user) {
       console.log("User not found");
-      return res.status(404).json({ 
-        success: false,
-        message: "User not found" 
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
     let finalTotalAmount = totalAmount;
-    let reservedTableInfo = null;
+    let reservedTableInfo = null; // Initialize as null
     let slotToUnreserve = null;
 
     if (reservationId) {
@@ -87,9 +81,6 @@ const createInvoice = async (req, res) => {
             slotToUnreserve.reserved = false;
             slotToUnreserve.reservedBy = null;
             await slotToUnreserve.save();
-
-            // Send thank you email for table unreservation
-            await sendThankYouEmail(user, slotToUnreserve, reservedSlot.slotNumber);
           }
         }
       }
@@ -97,9 +88,10 @@ const createInvoice = async (req, res) => {
 
     // Generate invoice number
     const lastInvoice = await Invoice.findOne().sort({ invoiceNumber: -1 });
-    const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1000;
+    const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1;
 
-    const invoice = new Invoice({
+    // Create invoice data object
+    const invoiceData = {
       userId,
       foods: foods.map((food) => ({
         foodId: food.foodId,
@@ -113,17 +105,14 @@ const createInvoice = async (req, res) => {
       cgst,
       sgst,
       roundOff,
-      reservedTableInfo,
-      status: 'paid',
-      issuedAt: new Date(),
-    });
+      // Only include reservedTableInfo if it's not null
+      ...(reservedTableInfo && { reservedTableInfo })
+    };
 
+    const invoice = new Invoice(invoiceData);
     await invoice.save();
 
     console.log("Invoice created successfully:", invoice);
-
-    // Send invoice email
-    await sendInvoiceEmail(user, invoice, reservedTableInfo);
 
     // Emit socket events after successful invoice creation
     if (slotToUnreserve) {
@@ -144,23 +133,12 @@ const createInvoice = async (req, res) => {
     }
 
     res.status(201).json({
-      success: true,
       message: "Invoice created successfully",
-      invoice: {
-        id: invoice._id,
-        number: invoice.invoiceNumber,
-        amount: invoice.totalAmount,
-        date: invoice.issuedAt,
-        downloadLink: `/api/invoice/download/${invoice._id}`
-      }
+      invoice,
     });
   } catch (error) {
     console.error("Error creating invoice:", error);
-    res.status(500).json({ 
-      success: false,
-      message: "Internal Server Error",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

@@ -29,12 +29,6 @@ const Add = () => {
     similarDishes: [],
   });
 
-  const [reviewInput, setReviewInput] = useState({
-    text: '',
-    author: '',
-    rating: 0,
-  });
-
   const foodAdd = new Howl({
     src: ['/sounds/success.mp3'],
   });
@@ -63,33 +57,6 @@ const Add = () => {
         [name]: Number(value),
       },
     }));
-  };
-
-  const onReviewChangeHandler = (event) => {
-    const { name, value } = event.target;
-    setReviewInput((prevReview) => ({
-      ...prevReview,
-      [name]: value,
-    }));
-  };
-
-  const addReview = () => {
-    if (reviewInput.text && reviewInput.author && reviewInput.rating > 0) {
-      const newReview = {
-        text: reviewInput.text,
-        author: reviewInput.author,
-        rating: Number(reviewInput.rating),
-        date: new Date().toISOString(),
-      };
-      setData((prevData) => ({
-        ...prevData,
-        reviews: [...prevData.reviews, newReview],
-      }));
-      setReviewInput({ text: '', author: '', rating: 0 });
-      toast.success('Review added successfully!');
-    } else {
-      toast.error('Please fill all review fields and provide a valid rating.');
-    }
   };
 
   const onSubmitHandler = async (event) => {
@@ -287,6 +254,7 @@ const Add = () => {
                 <option value="Starter">Starter</option>
                 <option value="Main Course">Main Course</option>
                 <option value="Dessert">Dessert</option>
+                <option value="Beverages">Beverages</option>
               </select>
             </div>
             
