@@ -15,6 +15,10 @@ function SlotTable(props) {
   const [addingTable, setAddingTable] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [tableToDelete, setTableToDelete] = useState(null);
+  const [showChangeModal, setShowChangeModal] = useState(false);
+  const [tableToChange, setTableToChange] = useState(null);
+  const [availableTables, setAvailableTables] = useState([]);
+  const [selectedNewTable, setSelectedNewTable] = useState('');
   const socket = useSocket();
 
   const fetchTables = useCallback(async () => {
@@ -35,11 +39,13 @@ function SlotTable(props) {
       socket.on('slotUpdated', handleSlotUpdate);
       socket.on('tableAdded', handleTableAdded);
       socket.on('tableDeleted', handleTableDeleted);
+      socket.on('tableChanged', handleTableChanged);
       
       return () => {
         socket.off('slotUpdated', handleSlotUpdate);
         socket.off('tableAdded', handleTableAdded);
         socket.off('tableDeleted', handleTableDeleted);
+        socket.off('tableChanged', handleTableChanged);
         socket.emit('leaveRoom', `slot_${slotNumber}`);
       };
     }
@@ -79,6 +85,20 @@ function SlotTable(props) {
   const handleTableDeleted = (data) => {
     if (data.slotNumber.toString() === slotNumber) {
       setTables(prevTables => prevTables.filter(table => table.number !== data.tableNumber));
+    }
+  };
+
+  const handleTableChanged = (data) => {
+    if (data.slotNumber.toString() === slotNumber) {
+      setTables(prevTables => prevTables.map(table => {
+        if (table.number === data.oldTableNumber) {
+          return { ...table, reserved: false, reservedBy: null };
+        }
+        if (table.number === data.newTableNumber) {
+          return { ...table, reserved: true, reservedBy: data.reservedBy };
+        }
+        return table;
+      }));
     }
   };
 
@@ -160,6 +180,49 @@ function SlotTable(props) {
     }
   };
 
+  const openChangeModal = async (table) => {
+    try {
+      setTableToChange(table);
+      const response = await axios.get(
+        `http://localhost:5000/api/slot/${slotNumber}/available-tables`,
+        { params: { capacity: table.capacity, exclude: table.number } }
+      );
+      setAvailableTables(response.data);
+      setShowChangeModal(true);
+    } catch (error) {
+      console.error('Error fetching available tables:', error);
+      props.showAlert('Error fetching available tables', 'error');
+    }
+  };
+
+  const changeTable = async () => {
+    if (!selectedNewTable) {
+      props.showAlert('Please select a new table', 'error');
+      return;
+    }
+
+    try {
+      setLoadingTable(tableToChange.number);
+      await axios.post(
+        `http://localhost:5000/api/slot/${slotNumber}/change-table`,
+        { 
+          oldTableNumber: tableToChange.number,
+          newTableNumber: selectedNewTable 
+        },
+        { headers: { 'auth-token': localStorage.getItem('token') } }
+      );
+      props.showAlert('Table changed successfully', 'success');
+      setShowChangeModal(false);
+      setSelectedNewTable('');
+      fetchTables();
+    } catch (error) {
+      console.error('Error changing table:', error);
+      props.showAlert(error.response?.data?.message || 'Error changing table', 'error');
+    } finally {
+      setLoadingTable(null);
+    }
+  };
+
   const sortedTables = [...tables].sort((a, b) => a.number - b.number);
 
   return (
@@ -190,6 +253,49 @@ function SlotTable(props) {
                   onClick={deleteTable}
                 >
                   Delete Table
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showChangeModal && (
+          <div className="modal-overlay">
+            <div className="modal-container">
+              <div className="modal-header">
+                <h3>Change Table {tableToChange?.number}</h3>
+              </div>
+              <div className="modal-body">
+                <p>Select a new table with same capacity ({tableToChange?.capacity} seats):</p>
+                <select 
+                  className="table-select"
+                  value={selectedNewTable}
+                  onChange={(e) => setSelectedNewTable(e.target.value)}
+                >
+                  <option value="">Select a table</option>
+                  {availableTables.map(table => (
+                    <option key={table.number} value={table.number}>
+                      Table {table.number} ({table.capacity} seats)
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="modal-footer">
+                <button 
+                  className="modal-cancel-btn"
+                  onClick={() => {
+                    setShowChangeModal(false);
+                    setSelectedNewTable('');
+                  }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="modal-confirm-btn"
+                  onClick={changeTable}
+                  disabled={!selectedNewTable || loadingTable === tableToChange?.number}
+                >
+                  {loadingTable === tableToChange?.number ? <CustomSpinner small /> : 'Change Table'}
                 </button>
               </div>
             </div>
@@ -276,17 +382,26 @@ function SlotTable(props) {
                     
                     <div className='action-buttons'>
                       {table.reserved && (
-                        <button
-                          onClick={() => unreserveTable(table.number)}
-                          className='unreserve-button'
-                          disabled={loadingTable === table.number}
-                        >
-                          {loadingTable === table.number ? (
-                            <CustomSpinner small />
-                          ) : (
-                            'Unreserve'
-                          )}
-                        </button>
+                        <>
+                          <button
+                            onClick={() => unreserveTable(table.number)}
+                            className='unreserve-button'
+                            disabled={loadingTable === table.number}
+                          >
+                            {loadingTable === table.number ? (
+                              <CustomSpinner small />
+                            ) : (
+                              'Unreserve'
+                            )}
+                          </button>
+                          <button
+                            onClick={() => openChangeModal(table)}
+                            className='change-button'
+                            disabled={loadingTable === table.number}
+                          >
+                            Change
+                          </button>
+                        </>
                       )}
                       
                       <button

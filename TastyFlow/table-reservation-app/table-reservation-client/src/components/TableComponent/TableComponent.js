@@ -13,6 +13,7 @@ const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lP
 
 const reserveSound = new Howl({ src: ['/sounds/success.mp3'] });
 const unreserveSound = new Howl({ src: ['/sounds/success.mp3'] });
+const tableChangedSound = new Howl({ src: ['/sounds/notification.mp3'] });
 
 const TableComponent = ({ showAlert }) => {
   const [tables, setTables] = useState([]);
@@ -32,32 +33,65 @@ const TableComponent = ({ showAlert }) => {
     
     if (socket) {
       socket.emit('joinRoom', `slot_${slotFilter}`);
+      socket.emit('joinRoom', `user_${userId}`); // Join user-specific room
+      
       socket.on('slotUpdated', handleSlotUpdate);
       socket.on('tableAdded', handleTableAdded);
       socket.on('tableDeleted', handleTableDeleted);
       socket.on('tableStatusChanged', handleTableStatusChanged);
+      socket.on('reservationChanged', handleReservationChanged);
+      socket.on('reservationRemoved', handleReservationRemoved);
       
       return () => {
         socket.off('slotUpdated', handleSlotUpdate);
         socket.off('tableAdded', handleTableAdded);
         socket.off('tableDeleted', handleTableDeleted);
         socket.off('tableStatusChanged', handleTableStatusChanged);
+        socket.off('reservationChanged', handleReservationChanged);
+        socket.off('reservationRemoved', handleReservationRemoved);
         socket.emit('leaveRoom', `slot_${slotFilter}`);
+        socket.emit('leaveRoom', `user_${userId}`);
       };
     }
-  }, [socket, slotFilter]);
+  }, [socket, slotFilter, userId]);
+
+  const handleReservationChanged = (data) => {
+    tableChangedSound.play();
+    showAlert(`Your table has been changed to Table ${data.newReservation.tableNumber}`, 'info');
+    
+    setTables(prevTables => {
+      return prevTables.map(table => {
+        if (table.number === data.newReservation.tableNumber) {
+          return { ...table, reserved: true, reservedBy: { _id: userId } };
+        }
+        if (table.number === data.oldReservationId) {
+          return { ...table, reserved: false, reservedBy: null };
+        }
+        return table;
+      });
+    });
+  };
+
+  const handleReservationRemoved = (data) => {
+    showAlert('Your reservation has been removed by admin', 'warning');
+    setTables(prevTables => {
+      return prevTables.map(table => {
+        if (table._id === data.reservationId) {
+          return { ...table, reserved: false, reservedBy: null };
+        }
+        return table;
+      });
+    });
+  };
 
   const handleTableStatusChanged = (data) => {
     if (data.slotNumber.toString() === slotFilter) {
       setTables(prevTables => {
-        // Remove the table if it's disabled, add it back if enabled
         if (data.disabled) {
           return prevTables.filter(table => table.number !== data.tableNumber);
         } else {
-          // Check if table already exists
           const exists = prevTables.some(table => table.number === data.tableNumber);
           if (!exists) {
-            // Fetch the newly enabled table
             fetchSingleTable(data.tableNumber);
           }
           return prevTables;
@@ -87,7 +121,6 @@ const TableComponent = ({ showAlert }) => {
   const handleSlotUpdate = (data) => {
     if (data.slotNumber.toString() === slotFilter) {
       setTables(prevTables => {
-        // Don't show disabled tables
         if (data.slot?.disabled) {
           return prevTables.filter(table => table.number !== data.tableNumber);
         }
@@ -138,7 +171,6 @@ const TableComponent = ({ showAlert }) => {
   const fetchTables = async () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/slot/${slotFilter}`);
-      // Filter out disabled tables from the initial fetch
       setTables(response.data.filter(table => !table.disabled));
     } catch (error) {
       console.error('Error fetching tables:', error);
@@ -288,7 +320,9 @@ const TableComponent = ({ showAlert }) => {
               </button>
 
               {table.reserved && (
-                <div className="table-button-reserved">Reserved</div>
+                <div className="table-button-reserved">
+                  {table.reservedBy?._id === userId ? 'Your Reservation' : 'Reserved'}
+                </div>
               )}
             </div>
           ))}

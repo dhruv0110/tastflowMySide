@@ -20,7 +20,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Get all slots for a specific slot number
 const getAllSlots = async (req, res) => {
   try {
     const slotNumber = parseInt(req.params.slotNumber);
@@ -29,6 +28,29 @@ const getAllSlots = async (req, res) => {
       select: 'name contact email'
     });
     res.json(slots);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getAvailableTables = async (req, res) => {
+  try {
+    const { capacity, exclude } = req.query;
+    const slotNumber = parseInt(req.params.slotNumber);
+    
+    const query = { 
+      slotNumber,
+      capacity: parseInt(capacity),
+      reserved: false,
+      disabled: false
+    };
+    
+    if (exclude) {
+      query.number = { $ne: parseInt(exclude) };
+    }
+
+    const tables = await Slot.find(query).sort('number');
+    res.json(tables);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -309,13 +331,131 @@ const toggleTableStatus = async (req, res) => {
   }
 };
 
+const changeTable = async (req, res) => {
+  try {
+    const { oldTableNumber, newTableNumber } = req.body;
+    const slotNumber = parseInt(req.params.slotNumber);
+    
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Only admins can change tables' });
+    }
+
+    // Get the old table
+    const oldTable = await Slot.findOne({ slotNumber, number: oldTableNumber });
+    if (!oldTable) return res.status(404).json({ message: 'Old table not found' });
+    if (!oldTable.reserved) return res.status(400).json({ message: 'Old table is not reserved' });
+
+    // Get the new table
+    const newTable = await Slot.findOne({ slotNumber, number: newTableNumber });
+    if (!newTable) return res.status(404).json({ message: 'New table not found' });
+    if (newTable.reserved) return res.status(400).json({ message: 'New table is already reserved' });
+    if (newTable.disabled) return res.status(400).json({ message: 'New table is disabled' });
+    if (newTable.capacity !== oldTable.capacity) {
+      return res.status(400).json({ message: 'Tables must have the same capacity' });
+    }
+
+    // Get the user who reserved the old table
+    const user = await User.findById(oldTable.reservedBy);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Update the payment record with the new table number
+    user.payments = user.payments.map(payment => {
+      if (String(payment.reservationId) === String(oldTable._id)) {
+        return { ...payment, tableNumber: newTableNumber };
+      }
+      return payment;
+    });
+    await user.save();
+
+    // Reserve the new table
+    newTable.reserved = true;
+    newTable.reservedBy = oldTable.reservedBy;
+    await newTable.save();
+
+    // Unreserve the old table
+    oldTable.reserved = false;
+    oldTable.reservedBy = null;
+    await oldTable.save();
+
+    const io = req.app.get('io');
+
+    // Emit events for both tables
+    io.to(`slot_${slotNumber}`).emit('tableChanged', {
+      slotNumber,
+      oldTableNumber,
+      newTableNumber,
+      reservedBy: {
+        _id: user._id,
+        name: user.name,
+        contact: user.contact
+      }
+    });
+
+    // Emit event to update user's reservation
+    io.to(`user_${user._id}`).emit('reservationChanged', {
+      oldReservationId: oldTable._id,
+      newReservation: {
+        reservationId: newTable._id,
+        tableNumber: newTable.number,
+        slotTime: getSlotTime(slotNumber)
+      }
+    });
+
+    // Send email notification to user
+    const mailOptions = {
+      from: "tastyflow01@gmail.com",
+      to: user.email,
+      subject: "Your Table Reservation Has Been Changed",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Table Reservation Update</h2>
+          <p>Dear ${user.name},</p>
+          <p>Your table reservation has been updated by the restaurant admin.</p>
+          <p><strong>Original Reservation:</strong></p>
+          <ul>
+            <li>Table: ${oldTableNumber}</li>
+            <li>Time Slot: ${getSlotTime(slotNumber)}</li>
+          </ul>
+          <p><strong>New Reservation:</strong></p>
+          <ul>
+            <li>Table: ${newTableNumber}</li>
+            <li>Time Slot: ${getSlotTime(slotNumber)}</li>
+          </ul>
+          <p>If you have any questions or concerns, please contact us at tastyflow01@gmail.com or call us at +91 1234567890.</p>
+          <p>Thank you for choosing our restaurant!</p>
+          <p style="margin-top: 30px;">Best regards,</p>
+          <p><strong>The TastyFlow Team</strong></p>
+        </div>
+      `
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+      } else {
+        console.log('Email sent:', info.response);
+      }
+    });
+
+    res.status(200).json({ 
+      message: 'Table changed successfully',
+      oldTable,
+      newTable
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllSlots,
+  getAvailableTables,
   reserveSlot,
   unreserveSlot,
   adminUnreserveSlot,
   addSlot,
   deleteSlot,
   createPaymentIntent,
-  toggleTableStatus
+  toggleTableStatus,
+  changeTable
 };
