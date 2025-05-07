@@ -226,11 +226,12 @@ function SlotTable(props) {
   const sortedTables = [...tables].sort((a, b) => a.number - b.number);
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className="table-management-container">
       <Sidebar />
       <div className='table-show'>
         <h1 className='header'>Manage Tables in Slot - {slotNumber}</h1>
 
+        {/* Delete Confirmation Modal */}
         {showDeleteModal && (
           <div className="modal-overlay">
             <div className="modal-container">
@@ -259,6 +260,7 @@ function SlotTable(props) {
           </div>
         )}
 
+        {/* Change Table Modal */}
         {showChangeModal && (
           <div className="modal-overlay">
             <div className="modal-container">
@@ -302,6 +304,7 @@ function SlotTable(props) {
           </div>
         )}
 
+        {/* Empty State */}
         {tables.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">
@@ -339,6 +342,7 @@ function SlotTable(props) {
           </div>
         ) : (
           <>
+            {/* Table Input Form */}
             <div className='table-input-container'>
               <div className="input-group">
                 <input 
@@ -363,11 +367,23 @@ function SlotTable(props) {
               </button>
             </div>
 
+            {/* Tables List */}
             <div className='table-list'>
               {sortedTables.map(table => (
                 <div key={table._id} className={`table-item ${table.reserved ? 'reserved' : ''} ${table.disabled ? 'disabled' : ''}`}>
                   <div className='table-main-info'>
                     <div className='table-number'>Table {table.number}</div>
+                    <button
+                        onClick={() => toggleTableStatus(table.number)}
+                        className={`status-toggle ${table.disabled ? 'disabled' : 'enabled'}`}
+                        disabled={loadingTable === table.number}
+                      >
+                        {loadingTable === table.number ? (
+                          <CustomSpinner small />
+                        ) : (
+                          table.disabled ? 'Disabled' : 'Enabled'
+                        )}
+                      </button>
                     <div className='table-capacity'>{table.capacity} seats</div>
                   </div>
                   
@@ -409,18 +425,6 @@ function SlotTable(props) {
                         className='delete-button'
                       >
                         Delete
-                      </button>
-
-                      <button
-                        onClick={() => toggleTableStatus(table.number)}
-                        className={`status-toggle ${table.disabled ? 'disabled' : 'enabled'}`}
-                        disabled={loadingTable === table.number}
-                      >
-                        {loadingTable === table.number ? (
-                          <CustomSpinner small />
-                        ) : (
-                          table.disabled ? 'Disabled' : 'Enabled'
-                        )}
                       </button>
                     </div>
                   </div>

@@ -45,20 +45,17 @@ const io = socketIo(server, {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"]
   },
-  pingTimeout: 60000, // Increase ping timeout
-  pingInterval: 25000 // Increase ping interval
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
-// Enhanced socket.io connection handling with error events
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 
-  // Error handling
   socket.on('error', (error) => {
     console.error('Socket error:', error);
   });
 
-  // Room joining handlers
   socket.on('joinRoom', (room) => {
     try {
       socket.join(room);
@@ -104,21 +101,10 @@ io.on('connection', (socket) => {
     }
   });
 
-  // New event for table changes
-  socket.on('tableChangeRequest', (data) => {
-    try {
-      console.log('Table change request received:', data);
-      // You can add additional validation or processing here
-    } catch (error) {
-      console.error('Error handling table change request:', error);
-    }
-  });
-
   socket.on('disconnect', (reason) => {
     console.log('Client disconnected:', socket.id, 'Reason:', reason);
   });
 
-  // Heartbeat monitoring
   let heartbeatInterval = setInterval(() => {
     if (socket.connected) {
       socket.emit('ping');
@@ -132,16 +118,13 @@ io.on('connection', (socket) => {
   });
 });
 
-// Make io accessible to routes
 app.set('io', io);
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
 
-// Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err);
 });

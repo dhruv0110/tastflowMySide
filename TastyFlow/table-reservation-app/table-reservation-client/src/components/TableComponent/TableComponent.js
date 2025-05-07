@@ -6,7 +6,6 @@ import { useSocket } from '../../context/SocketContext';
 import PaymentForm from '../../components/PaymentForm/PaymentForm';
 import CustomSpinner from '../CustomSpinner/CustomSpinner';
 import './TableComponent.css';
-import { toast } from 'react-toastify';
 import { Howl } from 'howler';
 
 const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf');
@@ -33,7 +32,7 @@ const TableComponent = ({ showAlert }) => {
     
     if (socket) {
       socket.emit('joinRoom', `slot_${slotFilter}`);
-      socket.emit('joinRoom', `user_${userId}`); // Join user-specific room
+      socket.emit('joinRoom', `user_${userId}`);
       
       socket.on('slotUpdated', handleSlotUpdate);
       socket.on('tableAdded', handleTableAdded);
@@ -64,7 +63,7 @@ const TableComponent = ({ showAlert }) => {
         if (table.number === data.newReservation.tableNumber) {
           return { ...table, reserved: true, reservedBy: { _id: userId } };
         }
-        if (table.number === data.oldReservationId) {
+        if (table._id === data.oldReservationId) {
           return { ...table, reserved: false, reservedBy: null };
         }
         return table;
