@@ -109,6 +109,7 @@ const createInvoice = async (req, res) => {
       sgst: sgst || 0,
       subtotal,
       roundOff: roundOff || 0,
+      status: 'unpaid', // Default status
       // Only include reservedTableInfo if it's not null
       ...(reservedTableInfo && { reservedTableInfo })
     };
@@ -151,7 +152,8 @@ const getAllInvoices = async (req, res) => {
   try {
     const invoices = await Invoice.find()
       .populate("userId", "name email")
-      .populate("foods.foodId", "name price");
+      .populate("foods.foodId", "name price")
+      .sort({ invoiceDate: -1 });
 
     if (!invoices || invoices.length === 0) {
       return res.status(404).json({ message: "No invoices found" });
@@ -169,7 +171,8 @@ const getInvoiceById = async (req, res) => {
   try {
     const invoice = await Invoice.findById(req.params.invoiceId)
       .populate("userId", "name email contact")
-      .populate("foods.foodId", "name price");
+      .populate("foods.foodId", "name price")
+      .populate("payments.receivedBy", "name");
 
     if (!invoice) {
       return res.status(404).json({ message: "Invoice not found" });
@@ -226,7 +229,8 @@ const getInvoicesByUser = async (req, res) => {
 
     const invoices = await Invoice.find({ userId })
       .populate("userId", "name email")
-      .populate("foods.foodId", "name price");
+      .populate("foods.foodId", "name price")
+      .sort({ invoiceDate: -1 });
 
     if (!invoices || invoices.length === 0) {
       return res.status(404).json({ message: "No invoices found for this user" });
@@ -265,11 +269,164 @@ const getUserWithPayments = async (req, res) => {
   }
 };
 
+// Update invoice status - improved version
+const updateInvoiceStatus = async (req, res) => {
+  try {
+    const { invoiceId } = req.params;
+    const { status } = req.body;
+
+    if (!['unpaid', 'paid', 'partially_paid', 'overdue', 'cancelled'].includes(status)) {
+      return res.status(400).json({ 
+        message: "Invalid status value",
+        validStatuses: ['unpaid', 'paid', 'partially_paid', 'overdue', 'cancelled']
+      });
+    }
+
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) return res.status(404).json({ message: "Invoice not found" });
+
+    if (invoice.status === 'cancelled' && status !== 'cancelled') {
+      return res.status(400).json({ 
+        message: "Cannot change status from cancelled",
+        currentStatus: invoice.status
+      });
+    }
+
+    invoice.status = status;
+    await invoice.save();
+
+    res.status(200).json({ 
+      message: "Invoice status updated successfully",
+      invoice 
+    });
+  } catch (error) {
+    console.error("Error updating invoice status:", error);
+    res.status(500).json({ 
+      message: "Failed to update invoice status",
+      error: error.message 
+    });
+  }
+};
+
+const recordPayment = async (req, res) => {
+  try {
+    const { invoiceId } = req.params;
+    let { amount, paymentMethod, reference, receivedBy } = req.body;
+
+    // Validate input
+    if (!amount || isNaN(amount) ){
+      return res.status(400).json({ message: "Valid payment amount is required" });
+    }
+    
+    amount = parseFloat(amount);
+    if (amount <= 0) {
+      return res.status(400).json({ message: "Payment amount must be positive" });
+    }
+
+    if (!['cash', 'card', 'upi', 'bank_transfer', 'other'].includes(paymentMethod)) {
+      return res.status(400).json({ 
+        message: "Invalid payment method",
+        validMethods: ['cash', 'card', 'upi', 'bank_transfer', 'other']
+      });
+    }
+
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) return res.status(404).json({ message: "Invoice not found" });
+
+    if (invoice.status === 'cancelled') {
+      return res.status(400).json({ 
+        message: "Cannot record payment for cancelled invoice",
+        currentStatus: invoice.status
+      });
+    }
+
+    // Record payment
+    invoice.payments.push({
+      amount,
+      paymentMethod,
+      reference: reference || '',
+      receivedBy,
+      paymentDate: new Date()
+    });
+
+    // Update status
+    const totalPaid = invoice.payments.reduce((sum, p) => sum + p.amount, 0);
+    const invoiceAmount = invoice.finalAmount || invoice.totalAmount || 0;
+
+    if (totalPaid >= invoiceAmount) {
+      invoice.status = 'paid';
+    } else if (totalPaid > 0) {
+      invoice.status = 'partially_paid';
+    }
+
+    await invoice.save();
+
+    res.status(200).json({ 
+      message: "Payment recorded successfully",
+      invoice,
+      paymentSummary: {
+        totalPaid,
+        amountDue: Math.max(0, invoiceAmount - totalPaid)
+      }
+    });
+  } catch (error) {
+    console.error("Error recording payment:", error);
+    res.status(500).json({ 
+      message: "Failed to record payment",
+      error: error.message 
+    });
+  }
+};
+
+
+// Get invoices by status
+const getInvoicesByStatus = async (req, res) => {
+  try {
+    const { status } = req.params;
+    
+    if (!['unpaid', 'paid', 'partially_paid', 'overdue', 'cancelled'].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const invoices = await Invoice.find({ status })
+      .populate("userId", "name email")
+      .populate("foods.foodId", "name price")
+      .sort({ invoiceDate: -1 });
+
+    res.json(invoices);
+  } catch (error) {
+    console.error("Error fetching invoices by status:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// Get overdue invoices
+const getOverdueInvoices = async (req, res) => {
+  try {
+    const today = new Date();
+    const overdueInvoices = await Invoice.find({
+      status: { $in: ['unpaid', 'partially_paid'] },
+      dueDate: { $lt: today }
+    })
+    .populate("userId", "name email")
+    .sort({ dueDate: 1 });
+
+    res.json(overdueInvoices);
+  } catch (error) {
+    console.error("Error fetching overdue invoices:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
-  createInvoice,
+   createInvoice,
   getAllInvoices,
   getInvoiceById,
   updateInvoice,
   getInvoicesByUser,
   getUserWithPayments,
+  updateInvoiceStatus,
+  recordPayment,
+  getInvoicesByStatus,
+  getOverdueInvoices
 };

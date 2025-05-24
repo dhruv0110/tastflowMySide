@@ -7,6 +7,10 @@ const {
   updateInvoice,
   getInvoicesByUser,
   getUserWithPayments,
+  updateInvoiceStatus,
+  recordPayment,
+  getInvoicesByStatus,
+  getOverdueInvoices
 } = require("../controllers/invoiceController");
 
 // Create an invoice
@@ -26,5 +30,18 @@ router.get("/admin/invoices/:userId", getInvoicesByUser);
 
 // Get user data with payment details
 router.get("/admin/getuser/:userId", getUserWithPayments);
+
+// Update invoice status
+router.patch("/admin/:invoiceId/status", updateInvoiceStatus);
+
+// Record a payment for an invoice
+router.post("/admin/:invoiceId/record-payment", recordPayment);
+
+// Get invoices by status
+router.get("/admin/status/:status", getInvoicesByStatus);
+
+// Get overdue invoices
+router.get("/admin/overdue", getOverdueInvoices);
+// router.patch("/admin/:invoiceId/status", updateInvoiceStatus);
 
 module.exports = router;

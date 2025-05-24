@@ -13,14 +13,32 @@ const invoiceSchema = new mongoose.Schema(
       },
     ],
     totalAmount: { type: Number, required: true },
-    subtotal : { type: Number, required: true },
+    subtotal: { type: Number, required: true },
     invoiceDate: { type: Date, default: Date.now },
     invoiceNumber: { type: Number, required: true },
     cgst: { type: Number, required: true },
     sgst: { type: Number, required: true },
     roundOff: { type: Number, required: true },
     discount: { type: Number, default: 0 },
-    finalAmount: { type: Number},
+    finalAmount: { type: Number },
+    status: { 
+      type: String, 
+      enum: ['unpaid', 'paid', 'partially_paid', 'overdue', 'cancelled'], 
+      default: 'unpaid' 
+    },
+    payments: [{
+      amount: { type: Number, required: true },
+      paymentDate: { type: Date, default: Date.now },
+      paymentMethod: { 
+        type: String, 
+        enum: ['cash', 'card', 'upi', 'bank_transfer', 'other'],
+        required: true 
+      },
+      reference: { type: String },
+      receivedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+    }],
+    dueDate: { type: Date },
+    notes: { type: String },
     reservedTableInfo: {
       tableNumber: { type: Number },
       slotTime: { type: String },

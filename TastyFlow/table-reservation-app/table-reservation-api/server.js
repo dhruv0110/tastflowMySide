@@ -15,7 +15,7 @@ const socketIo = require('socket.io');
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true,
-  methods: ['GET', 'POST', 'DELETE', 'PUT']
+  methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH']
 }));
 app.use(express.json());
 
