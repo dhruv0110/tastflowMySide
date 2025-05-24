@@ -36,7 +36,7 @@
   flex: 1;
   padding: 2rem;
   max-width: 1400px;
-  border: 1px solid #a9a9a9;
+  border-top: 1px solid #a9a9a9;
   margin: 0 auto;
   width: 100%;
 }

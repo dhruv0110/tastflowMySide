@@ -1,30 +1,67 @@
-/* src/components/Add/Add.css */
-
+/* Add.css - Professional Admin Dashboard */
+:root {
+    --primary: #FF4135;
+    --primary-dark: #D8352B;
+    --primary-light: #FF6D63;
+    --secondary: #2A3F54;
+    --success: #26B99A;
+    --warning: #F39C12;
+    --info: #3498DB;
+    --bg-dark: #1B1C1F;
+    --bg-darker: #121316;
+    --bg-light: #252629;
+    --bg-lighter: #3A3B40;
+    --text-primary: #FFFFFF;
+    --text-secondary: #E2E2E2;
+    --text-tertiary: #A0A0A0;
+    --border-dark: #333333;
+    --border-light: #4A4A4A;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+    --transition: all 0.3s ease;
+  }
 .add {
-    width: 100%;
-    max-width: 1225px;
-    color: #fff;
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    background-color: #1b1c1f;
+    flex: 1;
     padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-top: 1.5px solid #a9a9a9;
+    max-width: 1400px;
     margin: 0 auto;
+    width: 100%;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    border-top: 1px solid #a9a9a9;
+    box-shadow: var(--shadow-sm);
+}
+
+.add-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-dark);
+}
+
+.add-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+.add-subtitle {
+    color: var(--text-tertiary);
+    font-size: 0.95rem;
+    margin: 0;
 }
 
 .add form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 1.5rem;
 }
 
 .add-img-upload {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1rem;
     align-items: center;
 }
 
@@ -32,9 +69,9 @@
     width: 120px;
     height: 120px;
     object-fit: cover;
-    border: 2px solid #ff4135;
+    border: 2px solid var(--primary);
     border-radius: 50%;
-    transition: border-color 0.3s ease, transform 0.2s ease;
+    transition: var(--transition);
 }
 
 .add-product-name,
@@ -54,14 +91,14 @@
 .add-reviews input,
 .add-reviews textarea {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    font-size: 1rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    font-size: 0.95rem;
     box-sizing: border-box;
-    background-color: #333;
-    color: #fff;
-    transition: border-color 0.3s ease;
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    transition: var(--transition);
 }
 
 .add-product-name input:focus,
@@ -71,154 +108,154 @@
 .add-nutritional-info input:focus,
 .add-reviews input:focus,
 .add-reviews textarea:focus {
-    border-color: #ff4135;
+    border-color: var(--primary);
     outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 65, 53, 0.2);
 }
 
 .add-nutritional-info .nutrition-fields {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
+    gap: 1rem;
 }
 
 .add-nutritional-info .nutrition-field {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0.5rem;
 }
 
 .add-nutritional-info .nutrition-field label {
-    font-size: 0.9rem;
-    color: #a9a9a9;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
 .add-nutritional-info .nutrition-field input {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #333;
-    color: #fff;
-    transition: border-color 0.3s ease;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    transition: var(--transition);
 }
 
 .add-nutritional-info .nutrition-field input:focus {
-    border-color: #ff4135;
+    border-color: var(--primary);
     outline: none;
 }
 
 .add-category-price {
     display: flex;
-    gap: 20px;
+    gap: 1.5rem;
     flex-wrap: wrap;
-    justify-content: space-between;
 }
 
 .add-category-price select,
 .add-category-price input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #333;
-    color: #fff;
-    transition: border-color 0.3s ease;
+    padding: 0.75rem;
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.add-category-price select:focus,
+.add-category-price input:focus {
+    border-color: var(--primary);
+    outline: none;
 }
 
 .add-btn {
-    width: 100%;
-    max-width: 150px;
-    padding: 12px;
+    padding: 0.75rem 1.5rem;
     border: none;
-    background-color: #ff4135;
+    background-color: var(--primary);
     color: white;
-    font-size: 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 4px;
+    transition: var(--transition);
     align-self: flex-end;
+}
+
+.add-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
 }
 
 /* Reviews Section */
 .add-reviews .review-inputs {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1rem;
 }
 
 .add-reviews .review-inputs input,
 .add-reviews .review-inputs textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #333;
-    color: #fff;
-    transition: border-color 0.3s ease;
+    padding: 0.75rem;
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    transition: var(--transition);
 }
 
 .add-reviews .review-inputs textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 100px;
 }
 
 .add-reviews .add-review-btn {
-    width: 100%;
-    max-width: 150px;
-    padding: 10px;
+    padding: 0.5rem 1rem;
     border: none;
-    background-color: #ff4135;
+    background-color: var(--primary);
     color: white;
-    font-size: 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 4px;
+    transition: var(--transition);
     align-self: flex-start;
 }
 
 .add-reviews .add-review-btn:hover {
-    background-color: #ff6f61;
-    transform: scale(1.05);
+    background-color: var(--primary-dark);
 }
 
 .add-reviews .review-list {
-    margin-top: 20px;
+    margin-top: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1rem;
 }
 
 .add-reviews .review-item {
-    background-color: #333;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #444;
+    background-color: var(--bg-light);
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-dark);
 }
 
 .add-reviews .review-item p {
     margin: 0;
     font-size: 0.9rem;
-    color: #fff;
+    color: var(--text-secondary);
 }
 
 .add-reviews .review-item p strong {
-    color: #ff4135;
-}
-
-/* Hover effects */
-.add-img-upload img:hover,
-.add-btn:hover {
-    transform: scale(1.05);
-    background-color: #ff6f61;
+    color: var(--primary);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .add {
-        padding: 1rem;
+        padding: 1.5rem;
     }
 
     .add-img-upload img {
@@ -228,35 +265,30 @@
 
     .add-category-price {
         flex-direction: column;
-    }
-
-    .add-category-price select,
-    .add-category-price input {
-        max-width: 100%;
-    }
-
-    .add-btn {
-        max-width: 100%;
+        gap: 1rem;
     }
 
     .add-nutritional-info .nutrition-fields {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     }
 
-    .add-reviews .add-review-btn {
-        max-width: 100%;
+    .add-btn {
+        width: 100%;
     }
 }
 
 @media (max-width: 480px) {
+    .add {
+        padding: 1rem;
+    }
+
+    .add-title {
+        font-size: 1.5rem;
+    }
+
     .add-img-upload img {
         width: 80px;
         height: 80px;
-    }
-
-    .add-category-price select,
-    .add-category-price input {
-        width: 100%;
     }
 
     .add-nutritional-info .nutrition-fields {

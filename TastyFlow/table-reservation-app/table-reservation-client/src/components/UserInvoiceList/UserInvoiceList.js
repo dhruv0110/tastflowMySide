@@ -317,7 +317,7 @@ const InvoiceDetail = () => {
             <div className="inv-detail-summary-grid">
               <div className="inv-detail-summary-item">
                 <label>Total Amount</label>
-                <p>₹{state.invoice.totalAmount.toFixed(2)}</p>
+                <p>₹{state.invoice.subtotal.toFixed(2)}</p>
               </div>
               <div className="inv-detail-summary-item inv-detail-discount">
                 <label>Discount</label>

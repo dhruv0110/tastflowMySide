@@ -1,11 +1,12 @@
 .graph {
     width: 100%;
-    max-width: 1225px;
     background-color: #1B1C1F;
     padding: 2rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-top: 1.5px solid #a9a9a9;
     margin: 0 auto;
+    flex: 1;
+    max-width: 1400px;
+    border-top: 1px solid #a9a9a9;
 }
 
 .graph .header {

@@ -43,7 +43,7 @@ const createInvoice = async (req, res) => {
     }
 
     let finalTotalAmount = totalAmount;
-    let reservedTableInfo = null; // Initialize as null
+    let reservedTableInfo = null;
     let slotToUnreserve = null;
 
     if (reservationId) {
@@ -86,6 +86,9 @@ const createInvoice = async (req, res) => {
       }
     }
 
+    // Calculate subtotal from food items
+    const subtotal = foods.reduce((sum, food) => sum + (food.price * food.quantity), 0);
+
     // Generate invoice number
     const lastInvoice = await Invoice.findOne().sort({ invoiceNumber: -1 });
     const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1;
@@ -102,9 +105,10 @@ const createInvoice = async (req, res) => {
       })),
       totalAmount: finalTotalAmount,
       invoiceNumber,
-      cgst,
-      sgst,
-      roundOff,
+      cgst: cgst || 0,
+      sgst: sgst || 0,
+      subtotal,
+      roundOff: roundOff || 0,
       // Only include reservedTableInfo if it's not null
       ...(reservedTableInfo && { reservedTableInfo })
     };

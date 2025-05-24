@@ -13,6 +13,7 @@ const invoiceSchema = new mongoose.Schema(
       },
     ],
     totalAmount: { type: Number, required: true },
+    subtotal : { type: Number, required: true },
     invoiceDate: { type: Date, default: Date.now },
     invoiceNumber: { type: Number, required: true },
     cgst: { type: Number, required: true },
