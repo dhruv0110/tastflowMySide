@@ -37,7 +37,16 @@ const invoiceSchema = new mongoose.Schema(
       reference: { type: String },
       receivedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
     }],
-    dueDate: { type: Date },
+     dueDate: {
+    type: Date,
+    required: true,
+    default: function() {
+      // Default to 15 days from invoice date
+      const date = new Date(this.invoiceDate);
+      date.setDate(date.getDate() + 15);
+      return date;
+    }
+  },
     notes: { type: String },
     reservedTableInfo: {
       tableNumber: { type: Number },

@@ -8,31 +8,37 @@ import "./InvoiceList.css";
 const { Option } = Select;
 
 // Helper components
-const StatusBadge = ({ status }) => {
+const StatusBadge = ({ status, dueDate }) => {
   const statusColors = {
     paid: '#4CAF50',
     unpaid: '#F44336',
     partially_paid: '#FF9800',
-    overdue: '#D32F2F',
     cancelled: '#9E9E9E'
   };
 
   const displayStatus = status || 'unpaid';
+  const isOverdue = (status === 'unpaid' || status === 'partially_paid') && 
+                   dueDate && new Date(dueDate) < new Date();
 
   return (
-    <span 
-      style={{
-        backgroundColor: statusColors[displayStatus] || '#9E9E9E',
-        color: 'white',
-        padding: '3px 10px',
-        borderRadius: '12px',
-        fontSize: '12px',
-        textTransform: 'capitalize',
-        fontWeight: '500'
-      }}
-    >
-      {displayStatus.replace('_', ' ')}
-    </span>
+    <div className="status-badge-container">
+      <span 
+        style={{
+          backgroundColor: statusColors[displayStatus] || '#9E9E9E',
+          color: 'white',
+          padding: '3px 10px',
+          borderRadius: '12px',
+          fontSize: '12px',
+          textTransform: 'capitalize',
+          fontWeight: '500'
+        }}
+      >
+        {displayStatus.replace('_', ' ')}
+      </span>
+      {isOverdue && (
+        <span className="overdue-badge">Overdue</span>
+      )}
+    </div>
   );
 };
 
@@ -122,7 +128,7 @@ const StatusModal = ({
     >
       <div className="status-modal-content">
         <div className="status-form-group">
-          <label>Current Status: <StatusBadge status={selectedInvoice?.status} /></label>
+          <label>Current Status: <StatusBadge status={selectedInvoice?.status} dueDate={selectedInvoice?.dueDate} /></label>
         </div>
         <div className="status-form-group">
           <label>New Status</label>
@@ -134,7 +140,6 @@ const StatusModal = ({
             <Option value="unpaid">Unpaid</Option>
             <Option value="paid">Paid</Option>
             <Option value="partially_paid">Partially Paid</Option>
-            <Option value="overdue">Overdue</Option>
             <Option value="cancelled">Cancelled</Option>
           </Select>
         </div>
@@ -144,7 +149,6 @@ const StatusModal = ({
 };
 
 const InvoiceListPage = () => {
-  // State management
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
@@ -158,7 +162,6 @@ const InvoiceListPage = () => {
   const [newStatus, setNewStatus] = useState('unpaid');
   const navigate = useNavigate();
 
-  // Helper functions
   const calculateDueAmount = (invoice) => {
     if (!invoice) return 0;
     const totalPaid = invoice.payments?.reduce((sum, payment) => sum + payment.amount, 0) || 0;
@@ -166,17 +169,13 @@ const InvoiceListPage = () => {
     return Math.max(0, amount - totalPaid);
   };
 
-  // API calls
   const fetchInvoices = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/invoice/admin/all-invoice');
-      const invoicesWithStatus = response.data.map(invoice => ({
-        ...invoice,
-        status: invoice.status || 'unpaid'
-      }));
-      setInvoices(invoicesWithStatus);
+      setInvoices(response.data);
     } catch (error) {
       console.error('Error fetching invoices:', error);
+      message.error('Failed to load invoices');
     } finally {
       setLoading(false);
     }
@@ -211,10 +210,9 @@ const InvoiceListPage = () => {
         }
       );
 
-      const updatedInvoices = invoices.map(inv => 
-        inv._id === selectedInvoice._id ? { ...response.data.invoice, status: response.data.invoice.status || 'unpaid' } : inv
-      );
-      setInvoices(updatedInvoices);
+      setInvoices(prev => prev.map(inv => 
+        inv._id === selectedInvoice._id ? response.data.invoice : inv
+      ));
       message.success('Payment recorded successfully');
       setPaymentModalVisible(false);
     } catch (error) {
@@ -238,10 +236,9 @@ const InvoiceListPage = () => {
         { status: newStatus }
       );
 
-      const updatedInvoices = invoices.map(inv => 
-        inv._id === selectedInvoice._id ? { ...response.data.invoice, status: response.data.invoice.status || 'unpaid' } : inv
-      );
-      setInvoices(updatedInvoices);
+      setInvoices(prev => prev.map(inv => 
+        inv._id === selectedInvoice._id ? response.data.invoice : inv
+      ));
       message.success('Invoice status updated successfully');
       setStatusModalVisible(false);
     } catch (error) {
@@ -252,7 +249,6 @@ const InvoiceListPage = () => {
     }
   };
 
-  // Navigation handlers
   const navigateToInvoiceDetail = (invoiceId) => {
     navigate(`/admin/invoices/${invoiceId}`);
   };
@@ -261,7 +257,6 @@ const InvoiceListPage = () => {
     navigate(`/admin/invoices/edit/${invoiceId}`);
   };
 
-  // Modal handlers
   const showPaymentModal = (invoice) => {
     setSelectedInvoice(invoice);
     setPaymentData({
@@ -278,7 +273,6 @@ const InvoiceListPage = () => {
     setStatusModalVisible(true);
   };
 
-  // Effects
   useEffect(() => {
     fetchInvoices();
   }, []);
@@ -300,9 +294,6 @@ const InvoiceListPage = () => {
             <div className="invoice-list-table-container">
               <div className="invoice-list-table-header">
                 <div className="invoice-list-header-item">
-                  <span>INVOICE #</span>
-                </div>
-                <div className="invoice-list-header-item">
                   <span>DATE</span>
                 </div>
                 <div className="invoice-list-header-item">
@@ -323,9 +314,6 @@ const InvoiceListPage = () => {
                 invoices.map((invoice) => (
                   <div key={invoice._id} className="invoice-list-table-row">
                     <div className="invoice-list-row-item">
-                      <span className="invoice-number">#{invoice.invoiceNumber}</span>
-                    </div>
-                    <div className="invoice-list-row-item">
                       <span>{new Date(invoice.invoiceDate).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
@@ -333,7 +321,7 @@ const InvoiceListPage = () => {
                       })}</span>
                     </div>
                     <div className="invoice-list-row-item">
-                      <StatusBadge status={invoice.status} />
+                      <StatusBadge status={invoice.status} dueDate={invoice.dueDate} />
                     </div>
                     <div className="invoice-list-row-item amount">
                       <span>₹{(invoice.finalAmount || invoice.totalAmount || 0).toFixed(2)}</span>
@@ -347,32 +335,36 @@ const InvoiceListPage = () => {
                       </span>
                     </div>
                     <div className="invoice-list-row-item actions">
-                      <div className="action-buttons">
-                        <button
-                          onClick={() => navigateToInvoiceDetail(invoice._id)}
-                          className="invoice-list-view-btn"
-                        >
-                          Details
-                        </button>
-                        <button
-                          onClick={() => navigateToEditInvoice(invoice._id)}
-                          className="invoice-list-edit-btn"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => showPaymentModal(invoice)}
-                          className="invoice-list-pay-btn"
-                          disabled={invoice.status === 'paid' || invoice.status === 'cancelled'}
-                        >
-                          Record Payment
-                        </button>
-                        <button
-                          onClick={() => showStatusModal(invoice)}
-                          className="invoice-list-status-btn"
-                        >
-                          Update Status
-                        </button>
+                      <div className="action-buttons-container">
+                        <div className="action-buttons-grid">
+                          <button
+                            onClick={() => navigateToInvoiceDetail(invoice._id)}
+                            className="invoice-list-view-btn"
+                          >
+                            Details
+                          </button>
+                          <button
+                            onClick={() => navigateToEditInvoice(invoice._id)}
+                            className="invoice-list-edit-btn"
+                            disabled={invoice.status === 'cancelled'}
+                            title={invoice.status === 'cancelled' ? "Cannot edit cancelled invoices" : ""}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => showPaymentModal(invoice)}
+                            className="invoice-list-pay-btn"
+                            disabled={invoice.status === 'paid' || invoice.status === 'cancelled'}
+                          >
+                            Record Payment
+                          </button>
+                          <button
+                            onClick={() => showStatusModal(invoice)}
+                            className="invoice-list-status-btn"
+                          >
+                            Update Status
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

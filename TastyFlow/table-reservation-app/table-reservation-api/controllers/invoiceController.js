@@ -191,34 +191,75 @@ const updateInvoice = async (req, res) => {
     const { invoiceId } = req.params;
     const { subtotal, cgst, sgst, roundOff, discount, foods, finalAmount } = req.body;
 
-    if (!subtotal || !foods) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    const hasInvalidFood = foods.some((food) => !food.foodId);
-    if (hasInvalidFood) {
-      return res.status(400).json({ message: "FoodId is missing for some food items" });
-    }
-
+    // First find the invoice
     const invoice = await Invoice.findById(invoiceId);
     if (!invoice) {
       return res.status(404).json({ message: "Invoice not found" });
     }
 
+    // Check if invoice is cancelled
+    if (invoice.status === 'cancelled') {
+      return res.status(400).json({ 
+        message: "Cannot edit a cancelled invoice",
+        currentStatus: invoice.status
+      });
+    }
+
+    // Validate required fields
+    if (!subtotal || !foods) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Validate food items
+    const hasInvalidFood = foods.some((food) => !food.foodId);
+    if (hasInvalidFood) {
+      return res.status(400).json({ message: "FoodId is missing for some food items" });
+    }
+
+    // Calculate current total paid amount
+    const currentTotalPaid = invoice.payments.reduce((sum, payment) => sum + payment.amount, 0);
+    
+    // Store previous final amount for comparison
+    const previousFinalAmount = invoice.finalAmount || invoice.totalAmount;
+    
+    // Update invoice fields
     invoice.totalAmount = subtotal;
-    invoice.cgst = cgst;
-    invoice.sgst = sgst;
-    invoice.roundOff = roundOff;
+    invoice.cgst = cgst || 0;
+    invoice.sgst = sgst || 0;
+    invoice.roundOff = roundOff || 0;
     invoice.discount = discount || 0;
     invoice.foods = foods;
     invoice.finalAmount = finalAmount;
 
+    // Determine new status based on payments and new amount
+    if (currentTotalPaid > 0) {
+      if (finalAmount > currentTotalPaid) {
+        invoice.status = 'partially_paid';
+      } else if (finalAmount <= currentTotalPaid) {
+        invoice.status = 'paid';
+      }
+    } else {
+      invoice.status = 'unpaid';
+    }
+
+    // Save the updated invoice
     await invoice.save();
 
-    res.status(200).json({ message: "Invoice updated successfully", invoice });
+    res.status(200).json({ 
+      message: "Invoice updated successfully",
+      invoice,
+      changes: {
+        amountChanged: finalAmount !== previousFinalAmount,
+        newStatus: invoice.status,
+        amountDue: Math.max(0, finalAmount - currentTotalPaid)
+      }
+    });
   } catch (error) {
     console.error("Error updating invoice:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ 
+      message: "Failed to update invoice",
+      error: error.message 
+    });
   }
 };
 
@@ -404,14 +445,14 @@ const getInvoicesByStatus = async (req, res) => {
 const getOverdueInvoices = async (req, res) => {
   try {
     const today = new Date();
-    const overdueInvoices = await Invoice.find({
+    const invoices = await Invoice.find({
       status: { $in: ['unpaid', 'partially_paid'] },
       dueDate: { $lt: today }
     })
     .populate("userId", "name email")
     .sort({ dueDate: 1 });
 
-    res.json(overdueInvoices);
+    res.json(invoices);
   } catch (error) {
     console.error("Error fetching overdue invoices:", error);
     res.status(500).json({ message: "Internal Server Error" });
