@@ -355,7 +355,7 @@ const recordPayment = async (req, res) => {
     let { amount, paymentMethod, reference, receivedBy } = req.body;
 
     // Validate input
-    if (!amount || isNaN(amount) ){
+    if (!amount || isNaN(amount)) {
       return res.status(400).json({ message: "Valid payment amount is required" });
     }
     
@@ -364,16 +364,10 @@ const recordPayment = async (req, res) => {
       return res.status(400).json({ message: "Payment amount must be positive" });
     }
 
-    if (!['cash', 'card', 'upi', 'bank_transfer', 'other'].includes(paymentMethod)) {
-      return res.status(400).json({ 
-        message: "Invalid payment method",
-        validMethods: ['cash', 'card', 'upi', 'bank_transfer', 'other']
-      });
-    }
-
     const invoice = await Invoice.findById(invoiceId);
     if (!invoice) return res.status(404).json({ message: "Invoice not found" });
 
+    // Check if invoice is cancellable
     if (invoice.status === 'cancelled') {
       return res.status(400).json({ 
         message: "Cannot record payment for cancelled invoice",
@@ -390,7 +384,7 @@ const recordPayment = async (req, res) => {
       paymentDate: new Date()
     });
 
-    // Update status
+    // Calculate new status
     const totalPaid = invoice.payments.reduce((sum, p) => sum + p.amount, 0);
     const invoiceAmount = invoice.finalAmount || invoice.totalAmount || 0;
 
@@ -398,6 +392,8 @@ const recordPayment = async (req, res) => {
       invoice.status = 'paid';
     } else if (totalPaid > 0) {
       invoice.status = 'partially_paid';
+    } else {
+      invoice.status = 'unpaid';
     }
 
     await invoice.save();
@@ -407,7 +403,8 @@ const recordPayment = async (req, res) => {
       invoice,
       paymentSummary: {
         totalPaid,
-        amountDue: Math.max(0, invoiceAmount - totalPaid)
+        amountDue: Math.max(0, invoiceAmount - totalPaid),
+        newStatus: invoice.status
       }
     });
   } catch (error) {
@@ -459,6 +456,56 @@ const getOverdueInvoices = async (req, res) => {
   }
 };
 
+const cancelInvoice = async (req, res) => {
+  try {
+    const { invoiceId } = req.params;
+    const { cancellationReason, userId } = req.body; // Get userId from request body
+
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) {
+      return res.status(404).json({ message: "Invoice not found" });
+    }
+
+    if (invoice.status === 'cancelled') {
+      return res.status(400).json({ 
+        message: "Invoice is already cancelled",
+        currentStatus: invoice.status
+      });
+    }
+
+    const invoiceAgeDays = (new Date() - invoice.invoiceDate) / (1000 * 60 * 60 * 24);
+    if (invoiceAgeDays > 30) {
+      return res.status(400).json({ 
+        message: "Cannot cancel invoices older than 30 days",
+        invoiceAgeDays: Math.floor(invoiceAgeDays)
+      });
+    }
+
+    const totalPaid = invoice.payments.reduce((sum, p) => sum + p.amount, 0);
+    const requiresRefund = totalPaid > 0;
+
+    invoice.status = 'cancelled';
+    invoice.cancellationDate = new Date();
+    invoice.cancellationReason = cancellationReason || 'Cancelled by admin';
+    invoice.cancelledBy = userId || req.user?._id; // Use either from body or auth
+    
+    await invoice.save();
+
+    res.status(200).json({ 
+      message: "Invoice cancelled successfully",
+      invoice,
+      requiresRefund,
+      refundAmount: totalPaid
+    });
+  } catch (error) {
+    console.error("Error cancelling invoice:", error);
+    res.status(500).json({ 
+      message: "Failed to cancel invoice",
+      error: error.message 
+    });
+  }
+};
+
 module.exports = {
    createInvoice,
   getAllInvoices,
@@ -469,5 +516,6 @@ module.exports = {
   updateInvoiceStatus,
   recordPayment,
   getInvoicesByStatus,
-  getOverdueInvoices
+  getOverdueInvoices,
+  cancelInvoice
 };

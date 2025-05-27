@@ -13,7 +13,8 @@ const StatusBadge = ({ status, dueDate }) => {
     paid: '#4CAF50',
     unpaid: '#F44336',
     partially_paid: '#FF9800',
-    cancelled: '#9E9E9E'
+    cancelled: '#9E9E9E',
+    overdue: '#FF5722'
   };
 
   const displayStatus = status || 'unpaid';
@@ -35,7 +36,7 @@ const StatusBadge = ({ status, dueDate }) => {
       >
         {displayStatus.replace('_', ' ')}
       </span>
-      {isOverdue && (
+      {isOverdue && !['paid', 'cancelled'].includes(status) && (
         <span className="overdue-badge">Overdue</span>
       )}
     </div>
@@ -107,42 +108,41 @@ const PaymentModal = ({
   );
 };
 
-const StatusModal = ({ 
+const CancelModal = ({ 
   visible, 
   onCancel, 
   onSubmit, 
-  newStatus, 
-  setNewStatus, 
   selectedInvoice,
   loading 
 }) => {
+  const calculatePaidAmount = (invoice) => {
+    if (!invoice) return 0;
+    return invoice.payments?.reduce((sum, payment) => sum + payment.amount, 0) || 0;
+  };
+
   return (
     <Modal
-      title={`Update Status for Invoice #${selectedInvoice?.invoiceNumber || ''}`}
+      title={`Cancel Invoice #${selectedInvoice?.invoiceNumber || ''}`}
       visible={visible}
       onOk={onSubmit}
       onCancel={onCancel}
-      okText="Update Status"
-      cancelText="Cancel"
+      okText="Confirm Cancellation"
+      cancelText="Go Back"
+      okButtonProps={{ danger: true }}
       confirmLoading={loading}
     >
-      <div className="status-modal-content">
-        <div className="status-form-group">
-          <label>Current Status: <StatusBadge status={selectedInvoice?.status} dueDate={selectedInvoice?.dueDate} /></label>
+      <div className="cancel-modal-content">
+        <div className="cancel-form-group">
+          <p>You are about to cancel this invoice. This action cannot be undone.</p>
+          <p><strong>Current Status:</strong> <StatusBadge status={selectedInvoice?.status} dueDate={selectedInvoice?.dueDate} /></p>
+          <p><strong>Amount Paid:</strong> ₹{calculatePaidAmount(selectedInvoice).toFixed(2)}</p>
         </div>
-        <div className="status-form-group">
-          <label>New Status</label>
-          <Select
-            value={newStatus}
-            onChange={(value) => setNewStatus(value)}
-            style={{ width: '100%' }}
-          >
-            <Option value="unpaid">Unpaid</Option>
-            <Option value="paid">Paid</Option>
-            <Option value="partially_paid">Partially Paid</Option>
-            <Option value="cancelled">Cancelled</Option>
-          </Select>
-        </div>
+        
+        {selectedInvoice?.status === 'paid' && (
+          <div className="cancel-warning">
+            <p>Warning: This invoice has been fully paid. Cancelling will require issuing a refund.</p>
+          </div>
+        )}
       </div>
     </Modal>
   );
@@ -153,13 +153,12 @@ const InvoiceListPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
-  const [statusModalVisible, setStatusModalVisible] = useState(false);
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [paymentData, setPaymentData] = useState({
     amount: '',
     paymentMethod: 'cash',
     reference: '',
   });
-  const [newStatus, setNewStatus] = useState('unpaid');
   const navigate = useNavigate();
 
   const calculateDueAmount = (invoice) => {
@@ -206,7 +205,7 @@ const InvoiceListPage = () => {
           amount: parseFloat(paymentData.amount),
           paymentMethod: paymentData.paymentMethod,
           reference: paymentData.reference,
-          receivedBy: '680a48f89926f3832ce1525a'
+          receivedBy: '680a48f89926f3832ce1525a' // Replace with actual user ID
         }
       );
 
@@ -223,7 +222,7 @@ const InvoiceListPage = () => {
     }
   };
 
-  const updateStatus = async () => {
+  const cancelInvoice = async () => {
     try {
       if (!selectedInvoice) {
         message.error('No invoice selected');
@@ -232,18 +231,21 @@ const InvoiceListPage = () => {
 
       setLoading(true);
       const response = await axios.patch(
-        `http://localhost:5000/api/invoice/admin/${selectedInvoice._id}/status`,
-        { status: newStatus }
+        `http://localhost:5000/api/invoice/admin/${selectedInvoice._id}/cancel`,
+        {
+          cancellationReason: 'Cancelled by admin', // You can make this dynamic if needed
+          userId: '680a48f89926f3832ce1525a'
+        }
       );
 
       setInvoices(prev => prev.map(inv => 
         inv._id === selectedInvoice._id ? response.data.invoice : inv
       ));
-      message.success('Invoice status updated successfully');
-      setStatusModalVisible(false);
+      message.success('Invoice cancelled successfully');
+      setCancelModalVisible(false);
     } catch (error) {
-      console.error('Error updating status:', error);
-      message.error(error.response?.data?.message || 'Failed to update status');
+      console.error('Error cancelling invoice:', error);
+      message.error(error.response?.data?.message || 'Failed to cancel invoice');
     } finally {
       setLoading(false);
     }
@@ -267,10 +269,9 @@ const InvoiceListPage = () => {
     setPaymentModalVisible(true);
   };
 
-  const showStatusModal = (invoice) => {
+  const showCancelModal = (invoice) => {
     setSelectedInvoice(invoice);
-    setNewStatus(invoice.status || 'unpaid');
-    setStatusModalVisible(true);
+    setCancelModalVisible(true);
   };
 
   useEffect(() => {
@@ -355,14 +356,20 @@ const InvoiceListPage = () => {
                             onClick={() => showPaymentModal(invoice)}
                             className="invoice-list-pay-btn"
                             disabled={invoice.status === 'paid' || invoice.status === 'cancelled'}
+                            title={
+                              invoice.status === 'paid' ? "Invoice already paid" : 
+                              invoice.status === 'cancelled' ? "Cannot pay cancelled invoice" : ""
+                            }
                           >
                             Record Payment
                           </button>
                           <button
-                            onClick={() => showStatusModal(invoice)}
-                            className="invoice-list-status-btn"
+                            onClick={() => showCancelModal(invoice)}
+                            className="invoice-list-cancel-btn"
+                            disabled={invoice.status === 'cancelled'}
+                            title={invoice.status === 'cancelled' ? "Invoice already cancelled" : ""}
                           >
-                            Update Status
+                            Cancel Invoice
                           </button>
                         </div>
                       </div>
@@ -389,12 +396,10 @@ const InvoiceListPage = () => {
         loading={loading}
       />
 
-      <StatusModal
-        visible={statusModalVisible}
-        onCancel={() => setStatusModalVisible(false)}
-        onSubmit={updateStatus}
-        newStatus={newStatus}
-        setNewStatus={setNewStatus}
+      <CancelModal
+        visible={cancelModalVisible}
+        onCancel={() => setCancelModalVisible(false)}
+        onSubmit={cancelInvoice}
         selectedInvoice={selectedInvoice}
         loading={loading}
       />

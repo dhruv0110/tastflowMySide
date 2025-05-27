@@ -10,8 +10,11 @@ const {
   updateInvoiceStatus,
   recordPayment,
   getInvoicesByStatus,
-  getOverdueInvoices
+  getOverdueInvoices,
+  cancelInvoice
 } = require("../controllers/invoiceController");
+
+const fetchUser = require('../middleware/fetchUser');
 
 // Create an invoice
 router.post("/create", createInvoice);
@@ -43,5 +46,7 @@ router.get("/admin/status/:status", getInvoicesByStatus);
 // Get overdue invoices
 router.get("/admin/overdue", getOverdueInvoices);
 // router.patch("/admin/:invoiceId/status", updateInvoiceStatus);
+
+router.patch("/admin/:invoiceId/cancel", cancelInvoice);
 
 module.exports = router;
