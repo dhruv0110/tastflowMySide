@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import "./UserInvoice.css";
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { message } from 'antd';
 
 const UserInvoice = () => {
     const { userId } = useParams();
@@ -26,10 +26,10 @@ const UserInvoice = () => {
             if (response.ok) {
                 setUser(data);
             } else {
-                toast.error("Error fetching user details");
+                message.error("Error fetching user details");
             }
         } catch (error) {
-            toast.error("An error occurred while fetching user details");
+            message.error("An error occurred while fetching user details");
         }
     }, [userId]);
 
@@ -52,7 +52,7 @@ const UserInvoice = () => {
                 setLoading(false);
             }
         } catch (error) {
-            toast.error("An error occurred while fetching invoices");
+            message.error("An error occurred while fetching invoices");
             setLoading(false);
         }
     }, [userId]);

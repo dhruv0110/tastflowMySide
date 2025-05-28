@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 import logo from "../../assets/logo.svg";
+import { message } from 'antd';
 
 const Login = (props) => {
   const [credentials, setCredentials] = useState({
@@ -32,9 +33,9 @@ const Login = (props) => {
     if (json.success) {
       localStorage.setItem('token', json.authtoken);
       navigate("/");
-      props.showAlert("Logged In Successfully", "success");
+      message.success("Logged In Successfully");
     } else {
-      props.showAlert("Invalid Credentials", "danger");
+      message.error("Invalid Credentials");
     }
   };
 

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { toast } from 'react-toastify';
 import axios from 'axios';
 import './UserInvoiceList.css';
 import { FaUser, FaCalendarAlt, FaTable, FaClock, FaMoneyBillWave, FaEnvelope, FaPhone, FaIdCard } from 'react-icons/fa';
+import { message } from 'antd';
 
 const InvoiceDetail = () => {
   const { invoiceId } = useParams();
@@ -44,10 +44,10 @@ const InvoiceDetail = () => {
         `http://localhost:5000/api/users/send-invoice/${invoiceId}`,
         { userId: state.invoice.userId._id }
       );
-      toast.success('Invoice sent successfully!');
+      message.success('Invoice sent successfully!');
       setState(prev => ({ ...prev, isSending: false }));
     } catch (error) {
-      toast.error('Error sending invoice');
+      message.error('Error sending invoice');
       console.error(error);
       setState(prev => ({ ...prev, isSending: false }));
     }

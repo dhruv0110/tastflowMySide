@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar'
 import "./UserDashboard.css"
 import { useNavigate, useParams } from 'react-router-dom';
+import { message } from 'antd';
 
 const UserDashBoard = () => {
     const { userId } = useParams();
@@ -23,10 +23,10 @@ const UserDashBoard = () => {
           if (response.ok) {
             setUserName(data);
           } else {
-            toast.error("Error fetching user details");
+            message.error("Error fetching user details");
           }
         } catch (error) {
-          toast.error("An error occurred while fetching user details");
+          message.error("An error occurred while fetching user details");
         }
       };
 

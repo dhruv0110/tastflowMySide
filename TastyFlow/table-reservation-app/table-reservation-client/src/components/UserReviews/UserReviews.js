@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import Sidebar from '../Sidebar/Sidebar';
 import './UserReviews.css';
+import { message } from 'antd';
 
 const UserReviews = () => {
   const { userId } = useParams();
@@ -24,10 +24,10 @@ const UserReviews = () => {
       if (response.ok) {
         setUserReviews(data);
       } else {
-        toast.error("Error fetching reviews");
+        message.error("Error fetching reviews");
       }
     } catch (error) {
-      toast.error("An error occurred while fetching reviews");
+      message.error("An error occurred while fetching reviews");
     }
   }, [userId]);
 
@@ -46,10 +46,10 @@ const UserReviews = () => {
       if (response.ok) {
         setUserName(data.name);
       } else {
-        toast.error("Error fetching user details");
+        message.error("Error fetching user details");
       }
     } catch (error) {
-      toast.error("An error occurred while fetching user details");
+      message.error("An error occurred while fetching user details");
     }
   }, [userId]);
 

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { toast } from 'react-toastify';
 import Pagination from '../../components/Pagination/Pagination';
 import './UsersList.css';
+import { message } from 'antd';
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -59,7 +59,7 @@ const UsersList = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      message.error("Passwords do not match");
       return;
     }
 
@@ -84,13 +84,13 @@ const UsersList = () => {
           password: "",
           confirmPassword: "",
         });
-        toast.success("New customer added successfully!");
+        message.success("New customer added successfully!");
       } else {
-        toast.error(result.error || "Error creating new user");
+        message.error(result.error || "Error creating new user");
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error("An error occurred while adding the customer");
+      message.error("An error occurred while adding the customer");
     }
   };
 

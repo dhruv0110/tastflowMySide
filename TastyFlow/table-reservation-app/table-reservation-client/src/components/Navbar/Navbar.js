@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Navbar.css';
 import logo from "../../assets/logo.svg";
+import { message } from 'antd';
+
+
 
 const Navbar = (props) => {
   let location = useLocation();
@@ -68,12 +71,12 @@ const Navbar = (props) => {
     localStorage.removeItem('token');
     localStorage.removeItem('userDetails');
     setUserDetails({ name: "", email: "", id: "", role: "" });
-    props.showAlert("Logout Successfully", "success");
+    message.success("Logout Successfully");
     navigate("/");
   };
 
   const handleAdminClick = () => {
-    props.showAlert("Come to admin panel", "success");
+    message.success("Come to admin panel");
   };
 
   const closeNavbar = () => {

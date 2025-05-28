@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./Invoice.css"; // Import your invoice CSS styles
 import axios from "axios"; // Axios to make HTTP requests
-import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
 import { toWords } from "number-to-words"; // Convert numbers to words
+import { message } from "antd";
 
 const Invoice = ({ invoiceId, user }) => {
   const [invoice, setInvoice] = useState(null);
@@ -264,9 +263,9 @@ const Invoice = ({ invoiceId, user }) => {
         { userId: user }
       );
       setIsSending(false); // Reset sending status after success
-      toast.success(response.data.message);
+      message.success(response.data.message);
     } catch (error) {
-      toast.error('Error sending invoice');
+      message.error('Error sending invoice');
       console.error(error);
     }
   };

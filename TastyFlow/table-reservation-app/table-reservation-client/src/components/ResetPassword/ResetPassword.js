@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './ResetPassword.css';
 import logo from "../../assets/logo.svg";
+import { message } from 'antd';
 
 function ResetPassword(props) {
   const [email, setEmail] = useState('');
@@ -22,7 +23,7 @@ function ResetPassword(props) {
       return () => clearInterval(interval);
     } else if (timer === 0 && !alertShown) {
       setIsTimerActive(false);
-      props.showAlert('OTP expired. Please request a new one.', 'danger');
+      message.error('OTP expired. Please request a new one.');
       setAlertShown(true);
       setOtp(['', '', '', '', '', '']);
     }
@@ -59,7 +60,7 @@ function ResetPassword(props) {
   const handleResetPassword = (e) => {
     e.preventDefault();
     if (!isTimerActive) {
-      props.showAlert('OTP has expired. Please request a new one.', 'danger');
+      message.info('OTP has expired. Please request a new one.');
       navigate('/forgot-password');
       return;
     }
@@ -68,7 +69,7 @@ function ResetPassword(props) {
     axios.post('http://localhost:5000/api/users/reset-password', { email, otp: otpString, newPassword })
       .then(res => {
         if (res.data.message === 'Password reset successfully') {
-          props.showAlert('Password changed successfully', 'success');
+          message.success('Password changed successfully');
           navigate('/login');
         } else {
           props.showAlert(res.data.message, 'danger');

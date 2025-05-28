@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import Invoice from '../Invoice/Invoice';
-import { toast } from 'react-toastify';
 import './UserFoodPage.css';
+import { message } from 'antd';
 
 const UserFoodPage = () => {
   const { userId } = useParams();
@@ -44,7 +44,7 @@ const UserFoodPage = () => {
         }
       } catch (err) {
         console.error("Error fetching data:", err);
-        toast.error("Failed to load data");
+        message.error("Failed to load data");
       } finally {
         setLoading(false);
       }
@@ -146,17 +146,17 @@ const UserFoodPage = () => {
         body: JSON.stringify({ foods: selectedFoods })
       });
       const data = await response.json();
-      toast.success(data.message);
+      message.success(data.message);
       setIsSelectionSaved(true);
     } catch (err) {
       console.error("Error saving selection:", err);
-      toast.error("Failed to save selection");
+      message.error("Failed to save selection");
     }
   };
 
   const generateInvoice = async () => {
     if (!isSelectionSaved) {
-      toast.error("Please save your selection first");
+      message.error("Please save your selection first");
       return;
     }
   
@@ -212,7 +212,7 @@ const UserFoodPage = () => {
       }
     } catch (err) {
       console.error("Error creating invoice:", err);
-      toast.error("Failed to generate invoice");
+      message.error("Failed to generate invoice");
     }
   };
 

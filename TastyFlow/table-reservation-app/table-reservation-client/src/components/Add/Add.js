@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import './Add.css';
 import { assets } from '../../assets/assets';
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { Howl } from 'howler';
 import { useFood } from '../../context/FoodContext';
+import { message } from 'antd';
 
 const Add = () => {
   const [image, setImage] = useState(false);
@@ -102,13 +102,13 @@ const Add = () => {
         });
         setImage(false);
         foodAdd.play();
-        toast.success(response.data.message);
+        message.success(response.data.message);
         fetchFoodList();
       } else {
-        toast.error(response.data.message);
+        message.error(response.data.message);
       }
     } catch (error) {
-      toast.error('An error occurred while adding the food item.');
+      message.error('An error occurred while adding the food item.');
     }
   };
 

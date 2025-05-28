@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { toast } from 'react-toastify';
 import Pagination from '../../components/Pagination/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -10,6 +9,7 @@ import {
   faUserCircle
 } from '@fortawesome/free-solid-svg-icons';
 import './UserData.css';
+import { message } from 'antd';
 
 const UserData = () => {
   const [users, setUsers] = useState([]);
@@ -32,10 +32,10 @@ const UserData = () => {
       if (response.ok) {
         setUsers(data);
       } else {
-        toast.error("Error fetching users");
+        message.error("Error fetching users");
       }
     } catch (error) {
-      toast.error("An error occurred while fetching users");
+      message.error("An error occurred while fetching users");
     }
   };
 

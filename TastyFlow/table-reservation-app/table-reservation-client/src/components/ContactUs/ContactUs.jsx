@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './ContactUs.css';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
 import { Howl } from 'howler';
+import { message } from 'antd';
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({
@@ -14,7 +14,7 @@ const ContactUs = () => {
         message: "",
     });
 
-    const [userDetails, setUserDetails] = useState({ name: "", email: "", contact: "", id: "" });
+    const [, setUserDetails] = useState({ name: "", email: "", contact: "", id: "" });
     const navigate = useNavigate();
     const socket = useSocket();
     const messageSentSound = new Howl({
@@ -48,7 +48,7 @@ const ContactUs = () => {
             if (response.ok) {
                 const result = await response.json();
                 messageSentSound.play();
-                toast.success(result.message);
+                message.success(result.message);
                 setFormData({ ...formData, message: "" });
                 
                 if (socket) {
@@ -56,11 +56,11 @@ const ContactUs = () => {
                 }
             } else {
                 const error = await response.json();
-                toast.error(error.message);
+                message.error(error.message);
             }
         } catch (error) {
             console.error("Error submitting message:", error);
-            toast.error("An error occurred while submitting your message.");
+            message.error("An error occurred while submitting your message.");
         }
     };
 

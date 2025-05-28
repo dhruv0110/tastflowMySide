@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaSpinner, FaCheckCircle } from 'react-icons/fa';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './FoodDetail.css'; // Updated CSS file
 import Footer from '../Footer/Footer';
 import Teams from '../Teams/Teams';
+import { message } from 'antd';
 
 const FoodDetail = () => {
   const { id } = useParams();
@@ -26,11 +27,11 @@ const FoodDetail = () => {
           setFood(data.data);
         } else {
           setError(data.message || 'Failed to fetch food details.');
-          toast.error(data.message || 'Failed to fetch food details.');
+          message.error(data.message || 'Failed to fetch food details.');
         }
       } catch (error) {
         setError(error.message);
-        toast.error('An error occurred while fetching food details.');
+        message.error('An error occurred while fetching food details.');
       } finally {
         setLoading(false);
       }

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import axios from 'axios';
-import { toast } from "react-toastify";
 import './EditInvoice.css';
+import { message } from 'antd';
 
 const EditInvoice = () => {
   const { invoiceId } = useParams();
@@ -28,7 +28,30 @@ const EditInvoice = () => {
     selectedFood: '',
   });
 
-  const fetchInvoiceDetail = async () => {
+  const calculateTotalAmount = useCallback((foods, discount = 0, reservedTableInfo = null) => {
+    const subtotal = foods.reduce((sum, food) => sum + (food.total || 0), 0);
+    const taxableAmount = Math.max(0, subtotal - discount);
+    const cgst = taxableAmount * 0.025;
+    const sgst = taxableAmount * 0.025;
+    const totalBeforeRoundOff = taxableAmount + cgst + sgst;
+    
+    const tableReservationDiscount = reservedTableInfo ? 100 : 0;
+    const totalAfterReservationDiscount = Math.max(0, totalBeforeRoundOff - tableReservationDiscount);
+    
+    const roundOffAmount = Math.round(totalAfterReservationDiscount) - totalAfterReservationDiscount;
+    const finalAmount = (totalAfterReservationDiscount + roundOffAmount).toFixed(2);
+
+    return { 
+      subtotal, 
+      cgst, 
+      sgst, 
+      roundOffAmount, 
+      finalAmount,
+      tableReservationDiscount
+    };
+  }, []);
+
+  const fetchInvoiceDetail = useCallback(async () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/invoice/admin/${invoiceId}`);
       const invoiceData = response.data;
@@ -63,9 +86,9 @@ const EditInvoice = () => {
       }));
       console.error('Error fetching invoice details:', error);
     }
-  };
+  }, [invoiceId, calculateTotalAmount]);
 
-  const fetchFoods = async () => {
+  const fetchFoods = useCallback(async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/food/list');
       setState(prev => ({
@@ -79,32 +102,9 @@ const EditInvoice = () => {
       }));
       console.error('Error fetching food items:', error);
     }
-  };
+  }, []);
 
-  const calculateTotalAmount = (foods, discount = 0, reservedTableInfo = null) => {
-    const subtotal = foods.reduce((sum, food) => sum + (food.total || 0), 0);
-    const taxableAmount = Math.max(0, subtotal - discount);
-    const cgst = taxableAmount * 0.025;
-    const sgst = taxableAmount * 0.025;
-    const totalBeforeRoundOff = taxableAmount + cgst + sgst;
-    
-    const tableReservationDiscount = reservedTableInfo ? 100 : 0;
-    const totalAfterReservationDiscount = Math.max(0, totalBeforeRoundOff - tableReservationDiscount);
-    
-    const roundOffAmount = Math.round(totalAfterReservationDiscount) - totalAfterReservationDiscount;
-    const finalAmount = (totalAfterReservationDiscount + roundOffAmount).toFixed(2);
-
-    return { 
-      subtotal, 
-      cgst, 
-      sgst, 
-      roundOffAmount, 
-      finalAmount,
-      tableReservationDiscount
-    };
-  };
-
-  const handleFoodChange = (index, e) => {
+  const handleFoodChange = useCallback((index, e) => {
     const { name, value } = e.target;
     const numericValue = parseFloat(value) || 0;
     
@@ -136,9 +136,9 @@ const EditInvoice = () => {
         }
       };
     });
-  };
+  }, [calculateTotalAmount]);
 
-  const handleAddFoodItem = (foodId) => {
+  const handleAddFoodItem = useCallback((foodId) => {
     if (!foodId) return;
     
     setState(prev => {
@@ -147,7 +147,7 @@ const EditInvoice = () => {
       
       const isAlreadyAdded = prev.invoice.foods.some(food => food.foodId === foodId);
       if (isAlreadyAdded) {
-        toast.warning("This food item is already added to the invoice.");
+        message.warning("This food item is already added to the invoice.");
         return prev;
       }
 
@@ -176,9 +176,9 @@ const EditInvoice = () => {
         selectedFood: ''
       };
     });
-  };
+  }, [calculateTotalAmount]);
 
-  const handleRemoveFoodItem = (index) => {
+  const handleRemoveFoodItem = useCallback((index) => {
     setState(prev => {
       const updatedFoods = [...prev.invoice.foods];
       updatedFoods.splice(index, 1);
@@ -197,9 +197,9 @@ const EditInvoice = () => {
         }
       };
     });
-  };
+  }, [calculateTotalAmount]);
 
-  const handleDiscountChange = (e) => {
+  const handleDiscountChange = useCallback((e) => {
     const discount = parseFloat(e.target.value) || 0;
     
     setState(prev => {
@@ -217,9 +217,9 @@ const EditInvoice = () => {
         }
       };
     });
-  };
+  }, [calculateTotalAmount]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     
     const subtotal = state.invoice.foods.reduce((sum, food) => sum + (food.total || 0), 0);
@@ -258,24 +258,24 @@ const EditInvoice = () => {
         invoiceData
       );
   
-      toast.success(response.data.message);
+      message.success(response.data.message);
       navigate("/admin/all-invoices");
     } catch (error) {
       console.error('Error updating invoice:', error);
-      toast.error(error.response?.data?.message || "Error updating invoice");
+      message.error(error.response?.data?.message || "Error updating invoice");
     }
-  };
+  }, [state.invoice, invoiceId, navigate]);
 
   useEffect(() => {
     fetchInvoiceDetail();
     fetchFoods();
-  }, [invoiceId]);
+  }, [fetchInvoiceDetail, fetchFoods]);
 
   useEffect(() => {
     if (state.selectedFood) {
       handleAddFoodItem(state.selectedFood);
     }
-  }, [state.selectedFood]);
+  }, [state.selectedFood, handleAddFoodItem]);
 
   if (state.loading) return <div className="ei-loading-container">Loading invoice...</div>;
   if (state.error) return <div className="ei-error-container">{state.error}</div>;

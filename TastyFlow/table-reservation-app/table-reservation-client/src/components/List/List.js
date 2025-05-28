@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt, faFilter, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import Pagination from '../Pagination/Pagination';
 import './List.css';
+import { message } from 'antd';
 
 const List = () => {
   const [list, setList] = useState([]);
@@ -25,10 +25,10 @@ const List = () => {
       if (response.data.success) {
         setList(response.data.data);
       } else {
-        toast.error("Error fetching the food list");
+        message.error("Error fetching the food list");
       }
     } catch (error) {
-      toast.error("An error occurred while fetching the food list");
+      message.error("An error occurred while fetching the food list");
     } finally {
       setIsLoading(false);
     }
@@ -39,12 +39,12 @@ const List = () => {
       const response = await axios.post("http://localhost:5000/api/food/admin/remove", { id: foodId });
       await fetchList();
       if (response.data.success) {
-        toast.success(response.data.message);
+        message.success(response.data.message);
       } else {
-        toast.error("Error removing the food item");
+        message.error("Error removing the food item");
       }
     } catch (error) {
-      toast.error("An error occurred while removing the food item");
+      message.error("An error occurred while removing the food item");
     }
   };
 

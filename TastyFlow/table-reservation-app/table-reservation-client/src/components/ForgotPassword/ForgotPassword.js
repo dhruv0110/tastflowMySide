@@ -3,9 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './ForgotPassword.css';
 import logo from "../../assets/logo.svg";
+import { message } from 'antd';
 
 function ForgotPassword(props) {
   const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for button disable
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,25 +18,23 @@ function ForgotPassword(props) {
       return;
     }
 
-    props.showAlert('Sending OTP...', 'info');
+    setIsSubmitting(true); // Disable the button
+    message.info('Sending OTP...');
 
     try {
       const response = await axios.post('http://localhost:5000/api/users/forgot-password', { email });
 
       if (response.data.message === 'OTP sent successfully') {
-        props.showAlert(null, null);
-        props.showAlert('OTP sent successfully', 'success');
-        setTimeout(() => {
-          navigate('/reset-password');
-        }, 1500);
+        message.success('OTP sent successfully');
+        navigate('/reset-password');
       } else {
-        props.showAlert(null, null);
         props.showAlert(response.data.message, 'error');
+        setIsSubmitting(false); // Re-enable if there's an error
       }
     } catch (error) {
       console.error(error);
-      props.showAlert(null, null);
       props.showAlert('Server error', 'error');
+      setIsSubmitting(false); // Re-enable if there's an error
     }
   };
 
@@ -77,8 +77,12 @@ function ForgotPassword(props) {
                 />
               </div>
               
-              <button type="submit" className="fp-submit-btn">
-                Send OTP
+              <button 
+                type="submit" 
+                className="fp-submit-btn"
+                disabled={isSubmitting} // Button is disabled when isSubmitting is true
+              >
+                {isSubmitting ? 'Sending...' : 'Send OTP'}
               </button>
               
               <div className="fp-auth-redirect">
