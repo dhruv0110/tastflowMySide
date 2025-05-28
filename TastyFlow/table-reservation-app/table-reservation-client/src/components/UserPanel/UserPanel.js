@@ -21,8 +21,9 @@ import ContactUs from "../ContactUs/ContactUs";
 import Blog from "../Blog/Blog";
 import Testimonial from "../Testimonial/Testimonial";
 import { Link } from "react-router-dom";
+import { message } from "antd";
 
-function UserPanel({ showAlert }) {
+function UserPanel() {
   const divRef = useRef(null);
   const heroTextRef = useRef(null);
   const [foodList, setFoodList] = useState([]);
@@ -49,11 +50,11 @@ function UserPanel({ showAlert }) {
       setFoodList(response.data.data);
     } catch (error) {
       console.error("Error fetching food list:", error);
-      showAlert("Error fetching food list", "danger");
+      message.error("Error fetching food list");
     } finally {
       setLoading(false);
     }
-  }, [showAlert]);
+  }, []);
 
   useEffect(() => {
     gsap.to(divRef.current, {

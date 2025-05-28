@@ -72,12 +72,12 @@ function ResetPassword(props) {
           message.success('Password changed successfully');
           navigate('/login');
         } else {
-          props.showAlert(res.data.message, 'danger');
+          message.error(res.data.message);
         }
       })
       .catch(err => {
         console.error(err);
-        props.showAlert('Error resetting password', 'danger');
+        message.error('Error resetting password');
       });
   };
 

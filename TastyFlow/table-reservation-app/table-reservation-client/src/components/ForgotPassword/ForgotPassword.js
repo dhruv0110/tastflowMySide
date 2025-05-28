@@ -14,7 +14,7 @@ function ForgotPassword(props) {
     e.preventDefault();
 
     if (!email) {
-      props.showAlert('Please enter your email', 'error');
+      message.error('Please enter your email');
       return;
     }
 
@@ -28,12 +28,12 @@ function ForgotPassword(props) {
         message.success('OTP sent successfully');
         navigate('/reset-password');
       } else {
-        props.showAlert(response.data.message, 'error');
+        message.error(response.data.message);
         setIsSubmitting(false); // Re-enable if there's an error
       }
     } catch (error) {
       console.error(error);
-      props.showAlert('Server error', 'error');
+      message.error('Server error');
       setIsSubmitting(false); // Re-enable if there's an error
     }
   };

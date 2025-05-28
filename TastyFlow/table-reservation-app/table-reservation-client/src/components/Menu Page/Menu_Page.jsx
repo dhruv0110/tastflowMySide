@@ -5,11 +5,12 @@ import Footer from "../Footer/Footer";
 import MenuSectionOne from './Images/Menu_section_one.png'
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { message } from 'antd';
 
-const Menu_Page = ({showAlert}) => {
+const Menu_Page = () => {
   const [userDetails, setUserDetails] = useState({ name: "", email: "", id: "" });
   const [foodList, setFoodList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   let navigate = useNavigate();
 
   const fetchUserDetails = async () => {
@@ -41,7 +42,7 @@ const Menu_Page = ({showAlert}) => {
       setFoodList(response.data.data);
     } catch (error) {
       console.error("Error fetching food list:", error);
-      showAlert("Error fetching food list", "danger");
+      message.error("Error fetching food list");
     } finally {
       setLoading(false);
     }

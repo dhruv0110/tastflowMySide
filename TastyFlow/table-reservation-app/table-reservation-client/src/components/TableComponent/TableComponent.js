@@ -7,6 +7,7 @@ import PaymentForm from '../../components/PaymentForm/PaymentForm';
 import CustomSpinner from '../CustomSpinner/CustomSpinner';
 import './TableComponent.css';
 import { Howl } from 'howler';
+import { message } from 'antd';
 
 const stripePromise = loadStripe('pk_test_51PM6qtRwUTaEqzUvS6OJGM3YihHTBzBe1X4lPiFacZgFvyHU6E27K7n9qzkmzJoi2V0JH66T7fCpL9MgQCVYerTD00lU9wNdOf');
 
@@ -14,7 +15,7 @@ const reserveSound = new Howl({ src: ['/sounds/success.mp3'] });
 const unreserveSound = new Howl({ src: ['/sounds/success.mp3'] });
 const tableChangedSound = new Howl({ src: ['/sounds/notification.mp3'] });
 
-const TableComponent = ({ showAlert }) => {
+const TableComponent = () => {
   const [tables, setTables] = useState([]);
   const [userId, setUserId] = useState('');
   const [loadingTable, setLoadingTable] = useState(null);
@@ -39,7 +40,6 @@ const TableComponent = ({ showAlert }) => {
       socket.on('tableDeleted', handleTableDeleted);
       socket.on('tableStatusChanged', handleTableStatusChanged);
       socket.on('reservationChanged', handleReservationChanged);
-      socket.on('reservationRemoved', handleReservationRemoved);
       
       return () => {
         socket.off('slotUpdated', handleSlotUpdate);
@@ -47,7 +47,6 @@ const TableComponent = ({ showAlert }) => {
         socket.off('tableDeleted', handleTableDeleted);
         socket.off('tableStatusChanged', handleTableStatusChanged);
         socket.off('reservationChanged', handleReservationChanged);
-        socket.off('reservationRemoved', handleReservationRemoved);
         socket.emit('leaveRoom', `slot_${slotFilter}`);
         socket.emit('leaveRoom', `user_${userId}`);
       };
@@ -56,7 +55,7 @@ const TableComponent = ({ showAlert }) => {
 
   const handleReservationChanged = (data) => {
     tableChangedSound.play();
-    showAlert(`Your table has been changed to Table ${data.newReservation.tableNumber}`, 'info');
+    message.info(`Your table has been changed to Table ${data.newReservation.tableNumber}`);
     
     setTables(prevTables => {
       return prevTables.map(table => {
@@ -64,18 +63,6 @@ const TableComponent = ({ showAlert }) => {
           return { ...table, reserved: true, reservedBy: { _id: userId } };
         }
         if (table._id === data.oldReservationId) {
-          return { ...table, reserved: false, reservedBy: null };
-        }
-        return table;
-      });
-    });
-  };
-
-  const handleReservationRemoved = (data) => {
-    showAlert('Your reservation has been removed by admin', 'warning');
-    setTables(prevTables => {
-      return prevTables.map(table => {
-        if (table._id === data.reservationId) {
           return { ...table, reserved: false, reservedBy: null };
         }
         return table;
@@ -163,7 +150,7 @@ const TableComponent = ({ showAlert }) => {
       setUserId(response.data._id);
     } catch (error) {
       console.error('Error fetching user details:', error);
-      showAlert('Error fetching user details', 'danger');
+      message.error('Error fetching user details');
     }
   };
 
@@ -173,12 +160,12 @@ const TableComponent = ({ showAlert }) => {
       setTables(response.data.filter(table => !table.disabled));
     } catch (error) {
       console.error('Error fetching tables:', error);
-      showAlert('Error fetching tables', 'danger');
+      message.error('Error fetching tables');
     }
   };
 
   const handlePaymentSuccess = async (paymentIntent) => {
-    showAlert('Payment successful!', 'success');
+    message.success('Payment successful!');
     setPaymentIntent(paymentIntent);
     setShowPaymentForm(false);
 
@@ -192,21 +179,21 @@ const TableComponent = ({ showAlert }) => {
         { headers: { 'auth-token': localStorage.getItem('token') } }
       );
       reserveSound.play();
-      showAlert('Table reserved successfully', 'success');
+      message.success('Table reserved successfully');
     } catch (error) {
       console.error('Error reserving table:', error);
-      showAlert('Error reserving table', 'danger');
+      message.error('Error reserving table');
     }
   };
 
   const handlePaymentError = (error) => {
-    showAlert(`Payment failed: ${error}`, 'danger');
+    message.error(`Payment failed: ${error}`);
     setShowPaymentForm(false);
   };
 
   const toggleReservation = async (number, isReserved, reservedBy) => {
     if (isReserved && reservedBy !== userId) {
-      showAlert('You do not have permission to unreserve this table', 'danger');
+      message.error('You do not have permission to unreserve this table');
       return;
     }
   
@@ -228,7 +215,7 @@ const TableComponent = ({ showAlert }) => {
         setShowPaymentForm(true);
       } catch (error) {
         console.error('Error creating payment intent:', error);
-        showAlert('Error creating payment intent', 'danger');
+        message.error('Error creating payment intent');
       } finally {
         setLoadingTable(null);
       }
@@ -240,10 +227,10 @@ const TableComponent = ({ showAlert }) => {
           { headers: { 'auth-token': localStorage.getItem('token') } }
         );
         unreserveSound.play();
-        showAlert('Table unreserved successfully', 'success');
+        message.success('Table unreserved successfully');
       } catch (error) {
         console.error('Error unreserving table:', error);
-        showAlert('Error unreserving table', 'danger');
+        message.error('Error unreserving table');
       } finally {
         setLoadingTable(null);
       }

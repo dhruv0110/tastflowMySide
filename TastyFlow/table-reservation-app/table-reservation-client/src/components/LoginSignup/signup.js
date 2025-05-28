@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Signup.css';
 import logo from "../../assets/logo.svg";
+import { message } from 'antd';
 
 const Signup = (props) => {
   const [credentials, setCredentials] = useState({
@@ -155,19 +156,19 @@ const Signup = (props) => {
       if (json.success) {
         localStorage.setItem('token', json.authtoken);
         navigate("/login");
-        props.showAlert("Account Created Successfully", "success");
+        message.success("Account Created Successfully");
       } else {
         if (json.error.includes("email")) {
           setErrors(prev => ({ ...prev, email: json.error }));
         } else if (json.error.includes("contact")) {
           setErrors(prev => ({ ...prev, contact: json.error }));
         } else {
-          props.showAlert(json.error || "Registration failed", "danger");
+          message.error(json.error || "Registration failed");
         }
       }
     } catch (error) {
       console.error("Signup error:", error);
-      props.showAlert("An error occurred during registration", "danger");
+      message.error("An error occurred during registration");
     } finally {
       setIsSubmitting(false);
     }

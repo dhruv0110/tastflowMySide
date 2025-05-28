@@ -6,10 +6,11 @@ import axios from "axios";
 import Footer from "../Footer/Footer";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import Teams from "../Teams/Teams";
-const Recipes = ({ showAlert }) => {
+import { message } from "antd";
+const Recipes = () => {
   const [foodList, setFoodList] = useState([]);
-  const [category, setCategory] = useState("All");
-  const [loading, setLoading] = useState(true);
+  const [category, ] = useState("All");
+  const [, setLoading] = useState(true);
 
   const fetchFoodList = async () => {
     try {
@@ -17,7 +18,7 @@ const Recipes = ({ showAlert }) => {
       setFoodList(response.data.data);
     } catch (error) {
       console.error("Error fetching food list:", error);
-      showAlert("Error fetching food list", "danger");
+      message.error("Error fetching food list");
     } finally {
       setLoading(false);
     }

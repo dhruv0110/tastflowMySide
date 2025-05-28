@@ -5,6 +5,7 @@ import CustomSpinner from '../CustomSpinner/CustomSpinner';
 import { useParams } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
 import './TableShow.css';
+import { message } from 'antd';
 
 function SlotTable(props) {
   const { slotNumber } = useParams();
@@ -20,16 +21,15 @@ function SlotTable(props) {
   const [availableTables, setAvailableTables] = useState([]);
   const [selectedNewTable, setSelectedNewTable] = useState('');
   const socket = useSocket();
- const { showAlert } = props;
  const fetchTables = useCallback(async () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/slot/${slotNumber}`);
       setTables(response.data);
     } catch (error) {
       console.error('Error fetching tables:', error);
-      showAlert('Error fetching tables', 'error'); // ✅ Use destructured
+      message.error('Error fetching tables');
     }
-  }, [slotNumber, showAlert]); // ✅ Only use 'showAlert' in deps
+  }, [slotNumber]);
 
   // ...
 
@@ -107,7 +107,7 @@ function SlotTable(props) {
 
   const addTable = async () => {
     if (!tableNumber || !tableCapacity) {
-      props.showAlert('Table number and capacity required', 'error');
+      message.error('Table number and capacity required');
       return;
     }
 
@@ -117,13 +117,13 @@ function SlotTable(props) {
         number: tableNumber,
         capacity: tableCapacity,
       });
-      props.showAlert('Table added', 'success');
+      message.success('Table added');
       fetchTables();
       setTableNumber('');
       setTableCapacity('');
     } catch (error) {
       console.error('Error adding table:', error);
-      props.showAlert(error.response?.data?.message || 'Error adding table', 'error');
+      message.error(error.response?.data?.message || 'Error adding table');
     } finally {
       setAddingTable(false);
     }
@@ -139,11 +139,11 @@ function SlotTable(props) {
       await axios.delete(`http://localhost:5000/api/slot/${slotNumber}/delete`, { 
         data: { number: tableToDelete }
       });
-      props.showAlert('Table deleted successfully', 'success');
+      message.success('Table deleted successfully');
       fetchTables();
     } catch (error) {
       console.error('Error deleting table:', error);
-      props.showAlert('Error deleting table', 'error');
+      message.error('Error deleting table');
     } finally {
       setShowDeleteModal(false);
       setTableToDelete(null);
@@ -158,10 +158,10 @@ function SlotTable(props) {
         { number }, 
         { headers: { 'auth-token': localStorage.getItem('token') } }
       );
-      props.showAlert('Table unreserved', 'success');
+      message.success('Table unreserved');
     } catch (error) {
       console.error('Error unreserving table:', error);
-      props.showAlert('Error unreserving table', 'error');
+      message.error('Error unreserving table');
     } finally {
       setLoadingTable(null);
     }
@@ -177,7 +177,7 @@ function SlotTable(props) {
       );
     } catch (error) {
       console.error('Error toggling table status:', error);
-      props.showAlert('Error updating table status', 'error');
+      message.error('Error updating table status');
     } finally {
       setLoadingTable(null);
     }
@@ -194,13 +194,13 @@ function SlotTable(props) {
       setShowChangeModal(true);
     } catch (error) {
       console.error('Error fetching available tables:', error);
-      props.showAlert('Error fetching available tables', 'error');
+      message.error('Error fetching available tables');
     }
   };
 
   const changeTable = async () => {
     if (!selectedNewTable) {
-      props.showAlert('Please select a new table', 'error');
+      message.error('Please select a new table');
       return;
     }
 
@@ -214,13 +214,13 @@ function SlotTable(props) {
         },
         { headers: { 'auth-token': localStorage.getItem('token') } }
       );
-      props.showAlert('Table changed successfully', 'success');
+      message.success('Table changed successfully');
       setShowChangeModal(false);
       setSelectedNewTable('');
       fetchTables();
     } catch (error) {
       console.error('Error changing table:', error);
-      props.showAlert(error.response?.data?.message || 'Error changing table', 'error');
+      message.error(error.response?.data?.message || 'Error changing table');
     } finally {
       setLoadingTable(null);
     }
