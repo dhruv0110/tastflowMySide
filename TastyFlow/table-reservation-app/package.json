@@ -1,0 +1,17 @@
+{
+  "name": "table-reservation-app",
+  "version": "1.0.0",
+  "description": "Combined package.json for TastyFlow table reservation system",
+  "scripts": {
+    "start": "concurrently \"cd table-reservation-client && npm start\" \"cd table-reservation-api && nodemon server.js\"",
+    "start:frontend": "cd table-reservation-client && npm start",
+    "start:backend": "cd table-reservation-api && nodemon server.js",
+    "install-all": "concurrently \"cd table-reservation-client && npm install\" \"cd table-reservation-api && npm install\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import "./UserPanel.css";
 import FoodDisplay from "../FoodDisplay/FoodDisplay";
 import CulinaryFavorites from "../secondHero/CulinaryFavorites";
 import ChoiceOfCustomers from "../ChoiceOfCustomers/ChoiceOfCustomers";
 import gsap from "gsap";
-
-// Import all images you want to use for rotation
 import sectionOneRightTopOne from "../../assets/sectionOneRightTopOne.jpg";
 import sectionOneRightTopTwo from "../../assets/sectionOneRightTopTwo.jpg";
 import sectionOneRightBottomOne from "../../assets/sectionOneRightBottomOne.jpg";
@@ -22,37 +20,16 @@ import Footer from "../Footer/Footer";
 import ContactUs from "../ContactUs/ContactUs";
 import Blog from "../Blog/Blog";
 import Testimonial from "../Testimonial/Testimonial";
-import {Link} from "react-router-dom"; // Import Link for navigation
+import { Link } from "react-router-dom";
 
 function UserPanel({ showAlert }) {
   const divRef = useRef(null);
-  const heroTextRef = useRef(null); // Ref for .hero-text
-
-  useEffect(() => {
-    gsap.to(divRef.current, {
-      rotation: 360,
-      duration: 12,
-      repeat: -1,
-      ease: "linear",
-    });
-  }, []);
-
-  useEffect(() => {
-    gsap.fromTo(
-      heroTextRef.current,
-      { x: "-50%", opacity: 0 }, // Start position (off-screen to the left)
-      { x: "0%", opacity: 1, duration: 1, ease: "power2.out" } // End position (its original place)
-    );
-  }, []);
-
+  const heroTextRef = useRef(null);
   const [foodList, setFoodList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState("All");
-
-  // State for rotating images
+  const [, setLoading] = useState(true); // Keep if needed for future use
   const [topImageIndex, setTopImageIndex] = useState(0);
   const [bottomImageIndex, setBottomImageIndex] = useState(0);
-  const [fade, setFade] = useState(true); // State to handle fade effect
+  const [fade, setFade] = useState(true);
 
   // Array of images for rotation
   const topImages = [
@@ -66,37 +43,7 @@ function UserPanel({ showAlert }) {
     sectionOneRightBottomThree,
   ];
 
-  useEffect(() => {
-    fetchFoodList();
-
-    // Interval for rotating top image
-    const topImageInterval = setInterval(() => {
-      setFade(false); // Start fade-out
-      setTimeout(() => {
-        setTopImageIndex((prevIndex) => (prevIndex + 1) % topImages.length);
-        setFade(true); // Start fade-in
-      }, 500); // Duration of fade-out
-    }, 2500); // Change every 3 seconds
-
-    // Interval for rotating bottom image
-    const bottomImageInterval = setInterval(() => {
-      setFade(false); // Start fade-out
-      setTimeout(() => {
-        setBottomImageIndex(
-          (prevIndex) => (prevIndex + 1) % bottomImages.length
-        );
-        setFade(true); // Start fade-in
-      }, 500); // Duration of fade-out
-    }, 2500); // Change every 3 seconds
-
-    // Cleanup intervals on component unmount
-    return () => {
-      clearInterval(topImageInterval);
-      clearInterval(bottomImageInterval);
-    };
-  }, []);
-
-  const fetchFoodList = async () => {
+  const fetchFoodList = useCallback(async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/food/list");
       setFoodList(response.data.data);
@@ -106,7 +53,47 @@ function UserPanel({ showAlert }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showAlert]);
+
+  useEffect(() => {
+    gsap.to(divRef.current, {
+      rotation: 360,
+      duration: 12,
+      repeat: -1,
+      ease: "linear",
+    });
+
+    gsap.fromTo(
+      heroTextRef.current,
+      { x: "-50%", opacity: 0 },
+      { x: "0%", opacity: 1, duration: 1, ease: "power2.out" }
+    );
+
+    fetchFoodList();
+
+    // Interval for rotating top image
+    const topImageInterval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setTopImageIndex((prevIndex) => (prevIndex + 1) % topImages.length);
+        setFade(true);
+      }, 500);
+    }, 2500);
+
+    // Interval for rotating bottom image
+    const bottomImageInterval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setBottomImageIndex((prevIndex) => (prevIndex + 1) % bottomImages.length);
+        setFade(true);
+      }, 500);
+    }, 2500);
+
+    return () => {
+      clearInterval(topImageInterval);
+      clearInterval(bottomImageInterval);
+    };
+  }, [fetchFoodList, topImages.length, bottomImages.length]);
 
   return (
     <>
@@ -114,7 +101,7 @@ function UserPanel({ showAlert }) {
         <div className="circle-bg"></div>
         <div className="arrow-img"></div>
         <div className="container hero-content">
-          <div className="hero-text" ref={heroTextRef}> {/* Ref added here */}
+          <div className="hero-text" ref={heroTextRef}>
             <p className="subheading">Best Taste</p>
             <h1>Healthy & Tasty Food</h1>
             <p className="description">
@@ -123,7 +110,7 @@ function UserPanel({ showAlert }) {
               universe of Nutritious & Tasty food!
             </p>
             <Link to='Menu_Page'>
-            <button className="hero-button">Get Menu</button>
+              <button className="hero-button">Get Menu</button>
             </Link>
           </div>
 
@@ -131,7 +118,7 @@ function UserPanel({ showAlert }) {
             <img
               src={spinner}
               loading="eager"
-              alt="home wheel img"
+              alt="Decorative spinning wheel"
               className="rotate-text"
               ref={divRef}
             />
@@ -139,26 +126,25 @@ function UserPanel({ showAlert }) {
           <div className="hero-images">
             <img
               src={topImages[topImageIndex]}
-              alt="Top Image"
+              alt="Delicious food presentation"
               className={`hero-image1 ${fade ? "fade-in" : "fade-out"}`}
             />
             <img
               src={bottomImages[bottomImageIndex]}
-              alt="Bottom Image"
+              alt="Tasty meal close-up"
               className={`hero-image2 ${fade ? "fade-in" : "fade-out"}`}
             />
           </div>
         </div>
       </div>
 
-    
-        <CulinaryFavorites />
+      <CulinaryFavorites />
       <div>
         <ChoiceOfCustomers />
       </div>
       <div className="container">
         <ArtisanComponent />
-        <FoodDisplay category={category} food_list={foodList} />
+        <FoodDisplay category="All" food_list={foodList} />
       </div>
 
       <Teams />
@@ -166,7 +152,7 @@ function UserPanel({ showAlert }) {
       <HomepageGallery />
       <div className="container">
         <Blog />
-        <FilterDisplay category={category} food_list={foodList} />
+        <FilterDisplay category="All" food_list={foodList} />
       </div>
       <ContactUs />
       <Footer />

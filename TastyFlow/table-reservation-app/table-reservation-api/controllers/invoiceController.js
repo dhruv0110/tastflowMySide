@@ -27,18 +27,18 @@ const findReservedSlot = async (reservationId) => {
 // Create an invoice
 const createInvoice = async (req, res) => {
   try {
-    console.log("Request body:", req.body);
+    // console.log("Request body:", req.body);
 
     const { userId, foods, totalAmount, cgst, sgst, roundOff, reservationId } = req.body;
 
     if (!userId || !foods || !totalAmount) {
-      console.log("Missing required fields");
+      // console.log("Missing required fields");
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found");
+      // console.log("User not found");
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -47,7 +47,7 @@ const createInvoice = async (req, res) => {
     let slotToUnreserve = null;
 
     if (reservationId) {
-      console.log("Reservation ID found:", reservationId);
+      // console.log("Reservation ID found:", reservationId);
 
       const payment = user.payments.find(
         (p) =>
@@ -76,7 +76,7 @@ const createInvoice = async (req, res) => {
           });
 
           if (slotToUnreserve) {
-            console.log("Slot found in database:", slotToUnreserve);
+            // console.log("Slot found in database:", slotToUnreserve);
 
             slotToUnreserve.reserved = false;
             slotToUnreserve.reservedBy = null;

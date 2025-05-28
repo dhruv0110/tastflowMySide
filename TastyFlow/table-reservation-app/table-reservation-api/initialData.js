@@ -9,7 +9,7 @@ const mongoUrl = "mongodb://127.0.0.1:27017/register?directConnection=true&serve
 const connectToMongo = () => {
     main()
     .then(() => {
-      console.log("connected to mongo successfully");
+      // console.log("connected to mongo successfully");
     })
     .catch((err) => console.log(err));
   async function main() {
@@ -26,7 +26,7 @@ const seedTables = async () => {
     { number: 3, reserved: false },
   ];
   await Table.insertMany(tables);
-  console.log('Tables seeded!');
+  // console.log('Tables seeded!');
   mongoose.connection.close();
 };
 

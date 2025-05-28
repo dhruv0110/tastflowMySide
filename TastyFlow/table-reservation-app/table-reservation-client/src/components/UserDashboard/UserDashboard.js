@@ -32,6 +32,7 @@ const UserDashBoard = () => {
 
         useEffect(() => {
           fetchUserDetails();
+          // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [userId]);
 
         const handleReviewsClick = () => {

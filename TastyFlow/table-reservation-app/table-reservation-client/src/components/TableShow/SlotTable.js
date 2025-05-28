@@ -20,38 +20,21 @@ function SlotTable(props) {
   const [availableTables, setAvailableTables] = useState([]);
   const [selectedNewTable, setSelectedNewTable] = useState('');
   const socket = useSocket();
-
-  const fetchTables = useCallback(async () => {
+ const { showAlert } = props;
+ const fetchTables = useCallback(async () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/slot/${slotNumber}`);
       setTables(response.data);
     } catch (error) {
       console.error('Error fetching tables:', error);
-      props.showAlert('Error fetching tables', 'error');
+      showAlert('Error fetching tables', 'error'); // ✅ Use destructured
     }
-  }, [slotNumber, props]);
+  }, [slotNumber, showAlert]); // ✅ Only use 'showAlert' in deps
 
-  useEffect(() => {
-    fetchTables();
-    
-    if (socket) {
-      socket.emit('joinRoom', `slot_${slotNumber}`);
-      socket.on('slotUpdated', handleSlotUpdate);
-      socket.on('tableAdded', handleTableAdded);
-      socket.on('tableDeleted', handleTableDeleted);
-      socket.on('tableChanged', handleTableChanged);
-      
-      return () => {
-        socket.off('slotUpdated', handleSlotUpdate);
-        socket.off('tableAdded', handleTableAdded);
-        socket.off('tableDeleted', handleTableDeleted);
-        socket.off('tableChanged', handleTableChanged);
-        socket.emit('leaveRoom', `slot_${slotNumber}`);
-      };
-    }
-  }, [socket, slotNumber, fetchTables]);
+  // ...
 
-  const handleSlotUpdate = (data) => {
+
+  const handleSlotUpdate = useCallback((data) => {
     if (data.slotNumber.toString() === slotNumber) {
       setTables(prevTables => {
         if (data.slot) {
@@ -74,21 +57,21 @@ function SlotTable(props) {
         });
       });
     }
-  };
+  }, [slotNumber]);
 
-  const handleTableAdded = (data) => {
+  const handleTableAdded = useCallback((data) => {
     if (data.slotNumber.toString() === slotNumber) {
       setTables(prevTables => [...prevTables, data.table].sort((a, b) => a.number - b.number));
     }
-  };
+  }, [slotNumber]);
   
-  const handleTableDeleted = (data) => {
+  const handleTableDeleted = useCallback((data) => {
     if (data.slotNumber.toString() === slotNumber) {
       setTables(prevTables => prevTables.filter(table => table.number !== data.tableNumber));
     }
-  };
+  }, [slotNumber]);
 
-  const handleTableChanged = (data) => {
+  const handleTableChanged = useCallback((data) => {
     if (data.slotNumber.toString() === slotNumber) {
       setTables(prevTables => prevTables.map(table => {
         if (table.number === data.oldTableNumber) {
@@ -100,7 +83,27 @@ function SlotTable(props) {
         return table;
       }));
     }
-  };
+  }, [slotNumber]);
+
+  useEffect(() => {
+    fetchTables();
+    
+    if (socket) {
+      socket.emit('joinRoom', `slot_${slotNumber}`);
+      socket.on('slotUpdated', handleSlotUpdate);
+      socket.on('tableAdded', handleTableAdded);
+      socket.on('tableDeleted', handleTableDeleted);
+      socket.on('tableChanged', handleTableChanged);
+      
+      return () => {
+        socket.off('slotUpdated', handleSlotUpdate);
+        socket.off('tableAdded', handleTableAdded);
+        socket.off('tableDeleted', handleTableDeleted);
+        socket.off('tableChanged', handleTableChanged);
+        socket.emit('leaveRoom', `slot_${slotNumber}`);
+      };
+    }
+  }, [socket, slotNumber, fetchTables, handleSlotUpdate, handleTableAdded, handleTableDeleted, handleTableChanged]);
 
   const addTable = async () => {
     if (!tableNumber || !tableCapacity) {

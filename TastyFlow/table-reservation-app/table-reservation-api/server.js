@@ -24,9 +24,9 @@ const mongoUrl = "mongodb://127.0.0.1:27017/register?directConnection=true&serve
 const connectToMongo = async () => {
   try {
     await mongoose.connect(mongoUrl);
-    console.log("Connected to MongoDB successfully");
+    // console.log("Connected to MongoDB successfully");
   } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
+    // console.error("Error connecting to MongoDB:", error);
   }
 };
 
@@ -50,59 +50,59 @@ const io = socketIo(server, {
 });
 
 io.on('connection', (socket) => {
-  console.log('New client connected:', socket.id);
+  // console.log('New client connected:', socket.id);
 
   socket.on('error', (error) => {
-    console.error('Socket error:', error);
+    // console.error('Socket error:', error);
   });
 
   socket.on('joinRoom', (room) => {
     try {
       socket.join(room);
-      console.log(`Socket ${socket.id} joined room ${room}`);
+      // console.log(`Socket ${socket.id} joined room ${room}`);
     } catch (error) {
-      console.error('Error joining room:', error);
+      // console.error('Error joining room:', error);
     }
   });
 
   socket.on('joinFoodRoom', () => {
     try {
       socket.join('foodUpdates');
-      console.log(`Socket ${socket.id} joined foodUpdates room`);
+      // console.log(`Socket ${socket.id} joined foodUpdates room`);
     } catch (error) {
-      console.error('Error joining food room:', error);
+      // console.error('Error joining food room:', error);
     }
   });
 
   socket.on('joinAdminMessageRoom', () => {
     try {
       socket.join('adminMessages');
-      console.log(`Socket ${socket.id} joined adminMessages room`);
+      // console.log(`Socket ${socket.id} joined adminMessages room`);
     } catch (error) {
-      console.error('Error joining admin message room:', error);
+      // console.error('Error joining admin message room:', error);
     }
   });
 
   socket.on('joinSlotRoom', (slotNumber) => {
     try {
       socket.join(`slot_${slotNumber}`);
-      console.log(`Socket ${socket.id} joined slot room ${slotNumber}`);
+      // console.log(`Socket ${socket.id} joined slot room ${slotNumber}`);
     } catch (error) {
-      console.error('Error joining slot room:', error);
+      // console.error('Error joining slot room:', error);
     }
   });
 
   socket.on('joinUserRoom', (userId) => {
     try {
       socket.join(`user_${userId}`);
-      console.log(`Socket ${socket.id} joined user room ${userId}`);
+      // console.log(`Socket ${socket.id} joined user room ${userId}`);
     } catch (error) {
-      console.error('Error joining user room:', error);
+      // console.error('Error joining user room:', error);
     }
   });
 
   socket.on('disconnect', (reason) => {
-    console.log('Client disconnected:', socket.id, 'Reason:', reason);
+    // console.log('Client disconnected:', socket.id, 'Reason:', reason);
   });
 
   let heartbeatInterval = setInterval(() => {
@@ -121,15 +121,15 @@ io.on('connection', (socket) => {
 app.set('io', io);
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  // console.error(err.stack);
   res.status(500).send('Something broke!');
 });
 
 process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Rejection:', err);
+  // console.error('Unhandled Rejection:', err);
 });
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log('Socket.IO server initialized');
+  // console.log(`Server running on port ${PORT}`);
+  // console.log('Socket.IO server initialized');
 });

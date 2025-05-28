@@ -1,4 +1,4 @@
-import React from "react";
+
 import "./CulinaryFavorites.css"; // Import the CSS file for custom styling
 import secondHero1 from "../../assets/secondHero1.jpg";
 import secondHero2 from "../../assets/secondHero2.jpg";
@@ -36,7 +36,7 @@ const CulinaryFavorites = () => {
             </Link>
 
             <Link to='About'>
-              <a className="fav-about-tastyflow-btn">About TastyFlow</a>
+              About TastyFlow
               </Link>
             </div>
           </div>

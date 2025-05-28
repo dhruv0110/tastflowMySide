@@ -216,14 +216,6 @@ const UserFoodPage = () => {
     }
   };
 
-  // Helper function to get slot number from time
-  const getSlotNumberFromTime = (slotTime) => {
-    if (slotTime.includes('5:00 PM')) return 1;
-    if (slotTime.includes('7:00 PM')) return 2;
-    if (slotTime.includes('9:00 PM')) return 3;
-    return 1; // default
-  };
-
   const closeModal = () => setIsModalOpen(false);
 
   if (loading) {

@@ -1,5 +1,4 @@
-// components/UserReviews/UserReviews.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Sidebar from '../Sidebar/Sidebar';
@@ -10,7 +9,7 @@ const UserReviews = () => {
   const [userReviews, setUserReviews] = useState([]);
   const [userName, setUserName] = useState('');
 
-  const fetchUserReviews = async () => {
+  const fetchUserReviews = useCallback(async () => {
     try {
       const response = await fetch(`http://localhost:5000/api/message/admin/all-reviews/${userId}`, {
         method: 'GET',
@@ -30,9 +29,9 @@ const UserReviews = () => {
     } catch (error) {
       toast.error("An error occurred while fetching reviews");
     }
-  };
+  }, [userId]);
 
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = useCallback(async () => {
     try {
       const response = await fetch(`http://localhost:5000/api/users/admin/getuser/${userId}`, {
         method: 'GET',
@@ -52,12 +51,12 @@ const UserReviews = () => {
     } catch (error) {
       toast.error("An error occurred while fetching user details");
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     fetchUserReviews();
     fetchUserDetails();
-  }, [userId]);
+  }, [fetchUserDetails, fetchUserReviews]);
 
   return (
     <div className="reviews-page-section">
@@ -66,11 +65,11 @@ const UserReviews = () => {
         <h3 className="user-name">{userName}'s Reviews</h3>
         {userReviews.length > 0 ? (
           <ul className="reviews-list">
-            {userReviews.map((review, index) => (
-             <li key={review._id} className="review-item">
-             <p className="review-text">{review.message}</p>
-             <p className="review-date">{new Date(review.date).toLocaleString()}</p>
-           </li>
+            {userReviews.map((review) => (
+              <li key={review._id} className="review-item">
+                <p className="review-text">{review.message}</p>
+                <p className="review-date">{new Date(review.date).toLocaleString()}</p>
+              </li>
             ))}
           </ul>
         ) : (

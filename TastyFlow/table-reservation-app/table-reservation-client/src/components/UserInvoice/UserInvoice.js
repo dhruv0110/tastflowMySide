@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import "./UserInvoice.css";
 import { useParams, useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ const UserInvoice = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    const fetchUserDetails = async () => {
+    const fetchUserDetails = useCallback(async () => {
         try {
             const response = await fetch(`http://localhost:5000/api/users/admin/getuser/${userId}`, {
                 method: 'GET',
@@ -31,9 +31,9 @@ const UserInvoice = () => {
         } catch (error) {
             toast.error("An error occurred while fetching user details");
         }
-    };
+    }, [userId]);
 
-    const fetchUserInvoice = async () => {
+    const fetchUserInvoice = useCallback(async () => {
         try {
             const response = await fetch(`http://localhost:5000/api/invoice/admin/invoices/${userId}`, {
                 method: 'GET',
@@ -55,12 +55,12 @@ const UserInvoice = () => {
             toast.error("An error occurred while fetching invoices");
             setLoading(false);
         }
-    };
+    }, [userId]);
 
     useEffect(() => {
         fetchUserDetails();
         fetchUserInvoice();
-    }, [userId]);
+    }, [fetchUserDetails, fetchUserInvoice]);
 
     const navigateToInvoiceDetail = (invoiceId) => {
         navigate(`/admin/invoices/${invoiceId}`);

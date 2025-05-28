@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import Pagination from '../../components/Pagination/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faUsers,
   faSearch,
   faCircleInfo,
   faUserCircle

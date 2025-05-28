@@ -1,5 +1,3 @@
-import React from 'react'
-import commonImage from './Images/commonImage.svg'
 import testQuoteWhite from './Images/Test Quote White.png'
 const TestimonialCards = ({ image, name, description }) => {
     return (

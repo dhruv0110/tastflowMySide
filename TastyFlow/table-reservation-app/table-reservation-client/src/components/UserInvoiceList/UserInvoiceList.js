@@ -40,7 +40,7 @@ const InvoiceDetail = () => {
   const sendInvoice = async () => {
     try {
       setState(prev => ({ ...prev, isSending: true }));
-      const response = await axios.post(
+      await axios.post(
         `http://localhost:5000/api/users/send-invoice/${invoiceId}`,
         { userId: state.invoice.userId._id }
       );
